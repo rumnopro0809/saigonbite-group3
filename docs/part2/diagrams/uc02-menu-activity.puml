@@ -1,0 +1,30 @@
+@startuml
+title UC02 Manage Menu and Brands | FR08-FR11, FR13, BR12
+footer Owner 524H0189 | AI-assisted design for owner review
+start
+:Authenticate and authorize Admin;
+if (Read?) then (yes)
+ :Query brand/menu lists and details;
+elseif (Create?) then (yes)
+ :Enter name, brand/category, price, availability;
+ :Validate required fields and brand reference;
+ if (Valid?) then (yes)
+  :Persist active brand/item;
+ else (no)
+  :Show field errors; no write;
+ endif
+elseif (Update?) then (yes)
+ :Edit record; validate fields and rowversion;
+ if (Valid and not stale?) then (yes)
+  :Save new catalog values;
+  :Preserve historical OrderLine snapshots;
+ else (no)
+  :Reject and reload;
+ endif
+else (Delete)
+ :Confirm deactivate/soft-delete;
+ :Set inactive/deleted flag;
+ :Exclude from new orders; preserve historical references;
+endif
+stop
+@enduml

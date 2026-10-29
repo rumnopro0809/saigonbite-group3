@@ -1,0 +1,57 @@
+@startuml
+skinparam classAttributeIconSize 0
+title Domain model and Payment Strategy
+footer Owners 524H0072 orders/payment; 524H0189 menu; 524H0188 hubs | AI-assisted draft
+abstract class Customer
+class LocalCustomer
+class ForeignTourist
+Customer <|-- LocalCustomer
+Customer <|-- ForeignTourist
+class Hub
+class Brand
+class MenuItem
+class Order
+class OrderLine
+class PriceSnapshot
+class StatusHistory
+class PaymentRecord
+Customer "1" -- "0..*" Order
+Hub "1" -- "0..*" Order
+Hub "0..*" -- "0..*" Brand : HubBrand
+Brand "1" -- "0..*" MenuItem
+Order "1" *-- "1..30" OrderLine
+MenuItem "1" -- "0..*" OrderLine
+Order "1" *-- "1" PriceSnapshot
+Order "1" *-- "1..*" StatusHistory
+Order "1" -- "1..*" PaymentRecord
+class OrderService
+class PricingService
+class PaymentSelector {
+ Select(customerType, method)
+}
+interface IPaymentStrategy {
+ Charge(request) : PaymentResult
+ Refund(request) : PaymentResult
+}
+class MoMoStrategy
+class VNPayStrategy
+class ApplePayStrategy
+class PayPalStrategy
+class CodStrategy
+IPaymentStrategy <|.. MoMoStrategy
+IPaymentStrategy <|.. VNPayStrategy
+IPaymentStrategy <|.. ApplePayStrategy
+IPaymentStrategy <|.. PayPalStrategy
+IPaymentStrategy <|.. CodStrategy
+OrderService ..> PricingService
+OrderService ..> PaymentSelector
+OrderService ..> Order
+PaymentSelector o-- IPaymentStrategy : registry
+note bottom of PaymentSelector
+Local: MoMo, VNPay, COD.
+Tourist: Apple Pay, PayPal, COD.
+Reject wrong group before invocation.
+Tier 3 uses simulated adapters.
+New method adds class + registration.
+end note
+@enduml

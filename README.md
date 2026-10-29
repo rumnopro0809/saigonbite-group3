@@ -1,0 +1,34 @@
+# SaigonBite Group 3
+
+Software Engineering final project, Sem01_2627. Cloud-kitchen food delivery for Local Customers and Foreign Tourists in Ho Chi Minh City.
+
+| Main use case | Student | ID |
+|---|---|---|
+| UC01 Place and Manage Orders | Nguyễn Hải Triều | 524H0072 |
+| UC02 Manage Menu and Brands | Dương Phạm Thái | 524H0189 |
+| UC03 Manage Hubs and Capacity | Lê Quang Tấn | 524H0188 |
+
+Tier 3: **ASP.NET MVC 5, Entity Framework 6 Code First, SQL Server, Bootstrap**. Target .NET Framework 4.8. Payments/refunds/OTP/email codes are simulated. Payment Strategy and all mandatory business rules still apply. This implementation choice follows the named MVC stack in the specification; no instructor approval or grading result is claimed.
+
+## Start here
+
+- [Part 2 design document](docs/part2/README.md)
+- [Detailed use cases](docs/part2/use-cases.md)
+- [Architecture and database decisions](docs/part2/architecture.md)
+- [UI and Figma handoff](docs/part2/ui-specification.md)
+- [Daily backlog](docs/backlog.md)
+- [Current state and remaining dependencies](docs/project-status.md)
+- [Design sources](docs/part2/diagrams)
+- [Requirement traceability](docs/part2/traceability.csv)
+
+## Development environment
+
+Use Visual Studio with ASP.NET and web development, the .NET Framework 4.8 targeting pack, SQL Server Developer/Express or LocalDB, and Git. MSBuild/MVC targets were discovered at `D:\Visual Studio`, and SQL Server Express is running. The 4.8 targeting pack still needs verification; existing reference packs include 4.7.2. A .NET runtime alone does not establish whether MVC 5 build tools are available.
+
+The initial delivery includes a design baseline plus pure C# pricing and lifecycle guards. Run `scripts/check-domain.ps1` with the installed compiler; the first run passed 53 executable checks. The full MVC application, EF migration and final unit/integration test report are not yet implemented. See `docs/project-status.md` before the next task.
+
+## Version control
+
+Keep changes small and meaningful, link FR/BR IDs in commits where useful, review before merging, and push actual completed work. Do not fabricate dates or student contributions. Each student must make and understand their own meaningful commits; the specification requires **more than 10 per student**. AI-assisted work must be declared in the report and backed by saved prompts/outputs.
+
+Private repository: https://github.com/rumnopro0809/saigonbite-group3. Do not commit the entire workspace: `tmp`, old reports and unrelated workbooks are excluded deliberately. Use the authenticated account's actual identity and never claim AI-assisted commits are independent work by the other students.

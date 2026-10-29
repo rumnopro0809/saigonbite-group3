@@ -1,0 +1,90 @@
+@startuml
+hide circle
+skinparam linetype ortho
+title Shared SQL Server schema | EF6 Code First
+footer Team 524H0072, 524H0189, 524H0188 | AI-assisted design for review
+entity Users {
+ * Id : PK
+ Identifier : UNIQUE
+ PasswordHash
+ Role
+ Active / Deleted
+}
+entity LocalProfiles {
+ * UserId : PK, FK
+ Phone
+}
+entity TouristProfiles {
+ * UserId : PK, FK
+ Passport / Nationality / Email
+}
+entity StaffProfiles {
+ * UserId : PK, FK
+ HubId : FK
+}
+entity Hubs {
+ * Id : PK
+ Capacity / Location
+ Active / Deleted
+}
+entity Brands {
+ * Id : PK
+ Category / Active / Deleted
+}
+entity HubBrands {
+ * HubId : PK, FK
+ * BrandId : PK, FK
+}
+entity MenuItems {
+ * Id : PK
+ BrandId : FK
+ Price / Available / Deleted
+}
+entity Vouchers {
+ * Id : PK
+ Code : UNIQUE
+ Type / Value / Cap / Minimum
+ Dates / Active / Deleted
+}
+entity Orders {
+ * Id : PK
+ CustomerId / HubId : FK
+ VoucherId / ShipperId : optional FK
+ Status / RowVersion / RequestKey
+ Address / Distance
+ Time / Load / Rain / BreakdownSnapshot
+}
+entity OrderLines {
+ * Id : PK
+ OrderId / MenuItemId : FK
+ Quantity / UnitPriceSnapshot
+ Name / CategorySnapshot
+}
+entity PaymentRecords {
+ * Id : PK
+ OrderId : FK
+ Method / Operation / Amount / Result
+ Timestamp / CorrelationKey
+}
+entity StatusHistory {
+ * Id : PK
+ OrderId / ActorId : FK
+ From / To / Time / Reason / Cash
+}
+Users ||--o| LocalProfiles
+Users ||--o| TouristProfiles
+Users ||--o| StaffProfiles
+Hubs ||--o{ StaffProfiles
+Hubs ||--o{ HubBrands
+Brands ||--o{ HubBrands
+Brands ||--o{ MenuItems
+Users ||--o{ Orders : customer
+Users |o--o{ Orders : assigned shipper
+Hubs ||--o{ Orders
+Vouchers |o--o{ Orders
+Orders ||--|{ OrderLines
+MenuItems ||--o{ OrderLines
+Orders ||--|{ PaymentRecords
+Orders ||--|{ StatusHistory
+Users ||--o{ StatusHistory : actor
+@enduml

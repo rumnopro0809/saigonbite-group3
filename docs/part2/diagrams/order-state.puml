@@ -1,0 +1,27 @@
+@startuml
+title Order lifecycle | BR15-BR17
+footer Team 524H0072, 524H0189, 524H0188 | AI-assisted design for review
+hide empty description
+state "Out for Delivery" as Out
+[*] --> Placed : successful placement
+Placed --> Confirmed : Kitchen Staff [own hub]
+Placed --> Cancelled : Customer [own order] or Kitchen Staff [own hub; reason]
+Confirmed --> Preparing : Kitchen Staff [own hub]
+Confirmed --> Cancelled : Customer [own order] or Admin
+Preparing --> Ready : Kitchen Staff [own hub]
+Ready --> Out : assigned Shipper [AMB01]
+Out --> Delivered : assigned Shipper [COD cash confirmed if applicable]
+Out --> Failed : assigned Shipper [customer unreachable]
+Delivered --> [*]
+Cancelled --> [*]
+Failed --> [*]
+note right of Placed
+Edit only Placed; keep original time/load/rain.
+An edit is not a state transition.
+end note
+note bottom of Cancelled
+Full simulated refund for online-paid cancellation.
+Reject every unlisted business transition.
+Terminal states have no outgoing business transitions.
+end note
+@enduml

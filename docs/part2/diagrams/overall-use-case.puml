@@ -1,0 +1,37 @@
+@startuml
+left to right direction
+title SaigonBite overall use cases
+footer Group 3 | 524H0072, 524H0189, 524H0188 | AI-assisted review draft
+actor "Customer {abstract}" as Customer
+actor "Local Customer" as Local
+actor "Foreign Tourist" as Tourist
+actor "Kitchen Staff" as Kitchen
+actor Shipper
+actor "System Admin" as Admin
+Customer <|-- Local
+Customer <|-- Tourist
+rectangle SaigonBite {
+ usecase "UC01 Place and Manage Orders" as Orders
+ usecase "UC02 Manage Menu and Brands" as Menu
+ usecase "UC03 Manage Hubs and Capacity" as Hub
+ usecase "HT01 Accounts and Authentication" as Accounts
+ usecase "HT02 Manage Vouchers" as Vouchers
+ usecase "HT03 Kitchen and Delivery Operations" as Operations
+ usecase "HT04 Reports R1 and R2" as Reports
+}
+Customer -- Orders
+Customer -- Accounts
+Admin -- Accounts
+Admin -- Menu
+Admin -- Hub
+Admin -- Vouchers
+Admin -- Operations
+Admin -- Reports
+Kitchen -- Operations
+Shipper -- Operations
+note bottom of Orders
+Create, read/track, edit Placed, cancel when allowed.
+Pricing BR1-BR12/BR14 and payment BR13 included in placement.
+UC01 owner 524H0072; UC02 524H0189; UC03 524H0188.
+end note
+@enduml

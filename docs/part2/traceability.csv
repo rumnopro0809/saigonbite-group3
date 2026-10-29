@@ -1,0 +1,29 @@
+Requirement,UseCases,BR_or_source,Design,PlannedComponent,CheckGroup,ImplementationStatus
+FR01,UC01,"BR1, BR2, BR12","docs/part2/use-cases.md; Order, OrderLine",OrderService,TC01,Pure pricing/payment guards checked; full order integration pending
+FR02,"UC01, UC03",BR8,docs/part2/use-cases.md; Hub load,HubLoadService,TC02,Pure pricing/payment guards checked; full order integration pending
+FR03,UC01,BR3–BR11,docs/part2/use-cases.md; Pricing rules,PricingService,TC03,Pure pricing/payment guards checked; full order integration pending
+FR04,UC01,"BR13, BR14; [1] Section 2G and tier rules",docs/part2/use-cases.md; Payment Strategy,IPaymentStrategy and strategies,TC04,Pure pricing/payment guards checked; full order integration pending
+FR05,UC01,BR15; [1] Section 2E Orders,docs/part2/use-cases.md; Order query/history,OrderQueryService,TC05,Design drafted; implementation pending
+FR06,UC01,"BR17; assumptions AMB03, AMB05",docs/part2/use-cases.md; Edit and snapshot,OrderEditService,TC06,Design drafted; implementation pending
+FR07,UC01,BR16,docs/part2/use-cases.md; Cancel/refund,CancellationService,TC07,Design drafted; implementation pending
+FR08,UC02,"[1] use case A, Section 2E",docs/part2/use-cases.md; Brand/Menu CRUD,MenuService,TC08,Design drafted; implementation pending
+FR09,"UC02, UC01",BR12; [1] use case A,docs/part2/use-cases.md; Brand/Menu queries,MenuService,TC09,Design drafted; implementation pending
+FR10,UC02,BR12; [1] use case A,docs/part2/use-cases.md; Menu update,MenuService,TC10,Design drafted; implementation pending
+FR11,UC02,"[1] Section 2E, use case A",docs/part2/use-cases.md; Soft delete menu,MenuService,TC11,Design drafted; implementation pending
+FR12,HT01,"BR18; [1] Sections 2A, 2E, use case E",docs/part2/use-cases.md; Account model,AccountService,TC12,Design drafted; implementation pending
+FR13,HT01; system-wide,[1] Section 2A; [3] Section 4B Security,docs/part2/use-cases.md; Role/ownership checks,Authorization service,TC13,Design drafted; implementation pending
+FR14.1,UC03,"[1] use case B, Section 2E; capacity > 0 is proposed",docs/part2/use-cases.md; Hub create,HubService,TC14.1,Design drafted; implementation pending
+FR14.2,UC03,BR8,docs/part2/use-cases.md; Hub query/load,"HubService, HubLoadService",TC14.2,Design drafted; implementation pending
+FR14.3,UC03,"[1] use case B, Section 2E",docs/part2/use-cases.md; Hub update,HubService,TC14.3,Design drafted; implementation pending
+FR14.4,UC03,[1] Section 2E; team proposal in FR14.4,docs/part2/use-cases.md; Hub soft delete,HubService,TC14.4,Design drafted; implementation pending
+FR15,"HT02, UC01",BR9; [1] use case C,docs/part2/use-cases.md; Voucher rules,VoucherService,TC15,Design drafted; implementation pending
+FR16,"UC03, UC01","BR5, BR17",docs/part2/use-cases.md; Rain setting/snapshot,RainSettingService,TC16,Design drafted; implementation pending
+FR17,"HT03, UC01",BR14-BR16; [1] Section 2C; assumption AMB01,docs/part2/use-cases.md; Order state machine,OrderTransitionService,TC17,Pure transition guards checked; persistence/auth integration pending
+FR18,HT04,[1] Section 2F R1; assumption AMB04,docs/part2/use-cases.md; R1 Revenue,RevenueReportService,TC18,Design drafted; implementation pending
+FR19,"HT04, UC03","[1] Section 2F R2; BR7, BR8; assumption AMB06",docs/part2/use-cases.md; R2 Hub Utilization,HubReportService,TC19,Design drafted; implementation pending
+NFR01,UC01,NFR baseline,docs/part2/architecture.md; Price calculation,PricingService,TN01,Design drafted; implementation pending
+NFR02,System-wide,NFR baseline,"docs/part2/architecture.md; MVC, migrations, Strategy","EF models/migrations, payment strategies",TN02,Design drafted; implementation pending
+NFR03,Main workflows,NFR baseline,"docs/part2/architecture.md; Responsive, bilingual","Bootstrap, resources",TN03,Design drafted; implementation pending
+NFR04,HT01 and other UCs,NFR baseline,docs/part2/architecture.md; Hashing and authorization,Account/authorization,TN04,Design drafted; implementation pending
+NFR05,UC01,NFR baseline,docs/part2/architecture.md; Atomic transaction,Order transaction,TN05,Design drafted; implementation pending
+NFR06,"UC01, HT03",NFR baseline,docs/part2/architecture.md; Status history,OrderStatusHistory,TN06,Design drafted; implementation pending

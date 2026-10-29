@@ -1,0 +1,45 @@
+@startuml
+skinparam componentStyle rectangle
+title MVC architecture and quality boundaries
+footer Team 524H0072, 524H0189, 524H0188 | AI-assisted design for review
+actor "Customer / Admin / Kitchen / Shipper" as Actor
+package "SaigonBite.Web | MVC 5" {
+ [Razor Views and Bootstrap] as Views
+ [Controllers and ViewModels] as Controllers
+}
+package "SaigonBite.Application" {
+ [Order / Menu / Hub / Voucher Services] as Services
+ [PricingService BR1-BR12 / BR14] as Pricing
+ [PaymentSelector and Strategies BR13] as Payments
+ [OrderTransitionService BR15-BR17] as State
+ [R1 and R2 Report Services] as Reports
+}
+package SaigonBite.Domain {
+ [Entities and immutable snapshots] as Domain
+}
+package SaigonBite.Infrastructure {
+ [EF6 DbContext mappings and migrations] as EF
+}
+database "SQL Server single schema" as DB
+Actor --> Views
+Views --> Controllers
+Controllers --> Services
+Controllers --> State
+Controllers --> Reports
+Services --> Pricing
+Services --> Payments
+Services --> Domain
+Services --> EF
+State --> EF
+Reports --> EF
+EF --> Domain
+EF --> DB
+note bottom of Pricing
+Decimal arithmetic; no HTTP/EF side effects.
+Unit-testable calculation: NFR01/NFR02.
+end note
+note right of State
+Server-side role, ownership, state and COD guards.
+Atomic writes and audit: NFR04-NFR06.
+end note
+@enduml

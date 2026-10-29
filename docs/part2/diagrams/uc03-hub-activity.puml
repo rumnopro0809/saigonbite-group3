@@ -1,0 +1,31 @@
+@startuml
+title UC03 Manage Hubs and Capacity | FR14.1-FR14.4, BR8
+footer Owner 524H0188 | AI-assisted design for owner review
+start
+:Authenticate and authorize Admin;
+if (Read?) then (yes)
+ :Query hub and Confirmed/Preparing count;
+ :Derive load from count/capacity; show details and R2;
+elseif (Create?) then (yes)
+ :Enter location, positive integer capacity, supported brands;
+ if (Valid?) then (yes)
+  :Save Hub and HubBrand links atomically;
+ else (no)
+  :Show field errors; no partial write;
+ endif
+elseif (Update?) then (yes)
+ :Edit location/capacity/brands; check rowversion;
+ if (Valid and not stale?) then (yes)
+  :Save; derive current load;
+  :Preserve orders and historical snapshots;
+ else (no)
+  :Reject and reload;
+ endif
+else (Delete)
+ :Confirm hub deactivation;
+ :Soft-delete; reject new orders;
+ :Retain existing work and history;
+endif
+:Global rain edits affect new snapshots only;
+stop
+@enduml
