@@ -2,6 +2,8 @@
 
 Priority reflects dependency and deadline risk. Dates are planning targets, not claims of work completed. Final submission date must be confirmed.
 
+31 October update: user confirms Part 2 is due in about one week. Prioritize P2-01/P2-02/P2-03/P2-04 using [the seven-day delivery plan](part2/one-week-delivery.md); application feature expansion is secondary until the design/Figma/report/rehearsal package is ready.
+
 | ID | Priority | Work | Owner of main area | Acceptance |
 |---|---|---|---|---|
 | P2-01 | P0 | Review three UC specifications and resolve open decisions | All three | CRUD flows and FR/BR/postconditions checked by each owner |

@@ -39,6 +39,8 @@ Placed is the state after successful placement; a cart is not an additional pers
 
 ### 2.4.1 CRC Cards
 
+Detailed responsibility/collaboration cards are in [crc-cards.md](crc-cards.md). The table below is the compact report summary.
+
 | Class | Responsibilities | Collaborators | Design owner |
 |---|---|---|---|
 | OrderService | Orchestrate place/edit/cancel, ownership and atomic persistence | PricingService, PaymentSelector, Order, DbContext | 524H0072 |

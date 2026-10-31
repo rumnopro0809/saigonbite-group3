@@ -4,6 +4,8 @@ Owners: 524H0072 customer/orders/payments; 524H0189 menu/accounts/vouchers; 524H
 
 ## Layout
 
+The one-week submission plan and Figma pages `01 Sketch`, `02 Wireframe`, `03 Mockup`, `04 Prototype` are defined in [one-week-delivery.md](one-week-delivery.md). Preserve each stage as evidence; Wireframe/Mockup are the proposed intermediate-stage names because the supplied guide only names Sketch and Prototype explicitly.
+
 Desktop 1440 px; mobile 390 px with a check at 375 px. Bootstrap-style 12-column grid, menu/cart 8/4 on desktop and stacked on mobile. Cream background, deep green navigation, orange primary actions and readable charcoal text. Persistent hub/customer context and EN/VI toggle. Keyboard-visible focus, labeled errors, text plus icons for statuses. Do not put tier or implementation details in customer screens.
 
 | Frame | Content/actions | Errors and guards | Traceability |

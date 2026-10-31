@@ -1,6 +1,10 @@
 # Project status
 
-Updated: 30 October 2026, Asia/Ho_Chi_Minh.
+Updated: 31 October 2026, Asia/Ho_Chi_Minh.
+
+## Current priority
+
+User confirms approximately one week remains for Part 2. Follow docs/part2/one-week-delivery.md: complete design review, native four-stage interactive Figma, official report and presentation before expanding application code. Figma is currently not installed/connected; installation has been suggested. Detailed CRC cards have been added; native prototype, Word/PDF and presentation are still pending. Exact closing time remains unconfirmed.
 
 ## Confirmed
 
