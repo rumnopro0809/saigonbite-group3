@@ -1,27 +1,56 @@
 @startuml
-title Order lifecycle | BR15-BR17
-footer Team 524H0072, 524H0189, 524H0188 | AI-assisted design for review
+title Order Lifecycle - 8 States / 8 Business Transitions\nBR15 / BR16 / BR17 | UC01 and HT03
+footer Team 524H0072 / 524H0189 / 524H0188 | UC01 review: Nguyen Hai Trieu | AI-assisted draft
+skinparam backgroundColor #FFFCF5
+skinparam shadowing false
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam stateBackgroundColor #FFF4DF
+skinparam stateBorderColor #735344
+skinparam ArrowColor #735344
 hide empty description
+state Placed
+state Confirmed
+state Preparing
+state Ready
 state "Out for Delivery" as Out
+state Delivered #E6F0E1
+state Cancelled #FCE8E2
+state Failed #FCE8E2
 [*] --> Placed : successful placement
-Placed --> Confirmed : Kitchen Staff [own hub]
-Placed --> Cancelled : Customer [own order] or Kitchen Staff [own hub; reason]
-Confirmed --> Preparing : Kitchen Staff [own hub]
-Confirmed --> Cancelled : Customer [own order] or Admin
-Preparing --> Ready : Kitchen Staff [own hub]
-Ready --> Out : assigned Shipper [AMB01]
-Out --> Delivered : assigned Shipper [COD cash confirmed if applicable]
-Out --> Failed : assigned Shipper [customer unreachable]
+Placed --> Confirmed : Kitchen Staff\n[own hub]
+Placed --> Cancelled : Customer [own order]\nor Kitchen Staff [own hub; reason required]
+Confirmed --> Preparing : Kitchen Staff\n[own hub]
+Confirmed --> Cancelled : Customer [own order]\nor Admin
+Preparing --> Ready : Kitchen Staff\n[own hub]
+Ready --> Out : Shipper\n[assigned to this order]
+Out --> Delivered : assigned Shipper\n[online-paid OR COD cash confirmed]
+Out --> Failed : assigned Shipper\n[customer unreachable]
 Delivered --> [*]
 Cancelled --> [*]
 Failed --> [*]
 note right of Placed
-Edit only Placed; keep original time/load/rain.
-An edit is not a state transition.
+  Edit items only in Placed (BR17).
+  Reuse original time/load/rain.
+  Edit does not change the Order state.
 end note
-note bottom of Cancelled
-Full simulated refund for online-paid cancellation.
-Reject every unlisted business transition.
-Terminal states have no outgoing business transitions.
+note right of Ready
+  Assignment policy is AMB01:
+  proposed manual Admin assignment at Ready;
+  not an extra Order state or transition.
 end note
+note left of Cancelled
+  FULL simulated refund if paid online (BR16).
+  Retain order, lines and history.
+end note
+note right of Failed
+  Financial policy after Failed is AMB02;
+  BR16 cancellation refund is a separate rule.
+end note
+legend bottom
+  Check every action in the business layer, including actor scope.
+  Delivered, Cancelled and Failed have no outgoing business transitions.
+  Reject every unlisted transition; UI visibility alone is insufficient.
+  Initial/final arrows are not the eight business transitions.
+endlegend
 @enduml

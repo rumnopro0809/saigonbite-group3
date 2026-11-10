@@ -1,0 +1,72 @@
+@startuml
+title UC01 - Create Order\nFR01-FR04 | BR1-BR14 | NFR05/NFR06
+footer Nguyen Hai Trieu - 524H0072 | Group 3 | AI-assisted draft for owner review
+skinparam backgroundColor #FFFCF5
+skinparam shadowing false
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam activityBackgroundColor #FFF4DF
+skinparam activityBorderColor #735344
+skinparam activityDiamondBackgroundColor #FFE9A7
+skinparam activityDiamondBorderColor #735344
+skinparam ArrowColor #735344
+|Customer|
+start
+:Choose hub and available items;\nenter quantities, address/distance\nand optional voucher;
+|System|
+:Check authenticated customer;
+if (Authenticated?) then (yes)
+else (no)
+ :Request sign-in; no order created;
+ stop
+endif
+:Check request key - D05 proposal;
+if (Already processed?) then (yes)
+ :Return the existing order result;\ndo not create or charge again;
+ stop
+else (no)
+endif
+:Read hub/menu, time, load and rain;\nvalidate cart, coverage and voucher;
+if (Valid and hub accepting orders?) then (yes)
+else (no)
+ :Show field/item/voucher errors;\noffer another hub if unavailable/overloaded;
+ stop
+endif
+:Calculate and display S, Q, V, F,\nD, R, RainFee and final total;\nBR10 order, one final rounding BR11;
+|Customer|
+:Select method for own customer type\nand confirm order;
+|System|
+:Recheck rules and payment at placement;\nBR13 actor/method and BR14 COD cap;
+if (Still valid?) then (yes)
+else (no)
+ :Show errors or offer another method;\nno order created;
+ stop
+endif
+if (Quote changed? - D01 proposal) then (yes)
+ :Return updated quote to checkout;\nrequire a fresh customer confirmation;
+ stop
+else (no)
+endif
+if (COD?) then (yes)
+ :Prepare payment record\nAwaiting Collection; no cash collected yet;
+else (online)
+ :Select matching Payment Strategy;\nprepare simulated payment result;
+ if (Simulated payment successful?) then (yes)
+ else (no)
+  :Show payment failure;\nno accepted order created;
+  stop
+ endif
+endif
+:Save atomically: Order = Placed, lines,\ntime/load/rain and price snapshots,\npayment record and initial history;
+if (Save successful?) then (yes)
+ :Return order ID, total and Placed status;
+else (no)
+ :Roll back all simulated records;\nshow storage error;
+endif
+stop
+legend bottom
+  Local: MoMo / VNPay / COD. Tourist: Apple Pay / PayPal / COD.
+  Transaction guarantee covers Tier 3 simulated payments.
+  D01 and D05 are design proposals, not official BRs.
+endlegend
+@enduml

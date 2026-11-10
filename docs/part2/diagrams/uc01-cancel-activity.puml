@@ -1,0 +1,61 @@
+@startuml
+title UC01 - Customer Cancels Order\nFR07 | BR16 | NFR04/NFR05/NFR06
+footer Nguyen Hai Trieu - 524H0072 | Group 3 | AI-assisted draft for owner review
+skinparam backgroundColor #FFFCF5
+skinparam shadowing false
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam activityBackgroundColor #FFF4DF
+skinparam activityBorderColor #735344
+skinparam activityDiamondBackgroundColor #FFE9A7
+skinparam activityDiamondBorderColor #735344
+skinparam ArrowColor #735344
+|Customer|
+start
+:Request cancellation;
+if (Confirm cancellation?) then (yes)
+else (no)
+ :Return to order details;
+ stop
+endif
+|System|
+:Check authentication, existence\nand ownership on server;
+if (Authorized?) then (yes)
+else (no)
+ :Deny request; no data changed;
+ stop
+endif
+if (Current state = Placed or Confirmed?) then (yes)
+else (no)
+ :Reject cancellation; show current state;
+ stop
+endif
+if (Already paid online?) then (yes)
+ :Prepare FULL simulated refund - BR16;
+ if (Refund simulation successful?) then (yes)
+ else (no)
+  :Show refund error; retain original order\nand payment - D04 proposal;
+  stop
+ endif
+else (no)
+ :COD not collected: no refund needed;
+endif
+:Recheck cancellable state/version\nat the transaction boundary;
+if (State/version still valid?) then (yes)
+else (no)
+ :Discard proposed result; reload;\ndo not cancel a newly Preparing order;
+ stop
+endif
+:Save Cancelled + refund result if any\n+ history (from/to, actor and timestamp)\nin one transaction; retain lines/records;
+if (Save successful?) then (yes)
+ :Return Cancelled and refund outcome;
+else (no)
+ :Roll back; show error;\nretain original records;
+endif
+stop
+legend bottom
+  Successful online-paid cancellation refunds the FULL paid amount.
+  D04 (simulation-error handling) remains a proposal for review.
+  Kitchen rejection and Admin cancellation are HT03 actions.
+endlegend
+@enduml

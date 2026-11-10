@@ -40,3 +40,45 @@ Kiểm tra cấu trúc bằng PowerShell sau khi tạo tài liệu: 5 tệp, 13 
 - Ngày kế tiếp: rà soát và hoàn thiện Activity UC01; đối chiếu vòng đời 8 trạng thái, 8 chuyển trạng thái nghiệp vụ; xuất hình và ghi kết quả kiểm tra.
 
 **Kết luận ngày 1:** sản phẩm tài liệu trong phạm vi ngày 10/11 đã được soạn và rà soát với nguồn đã đọc. Toàn bộ Part 2 và các phần ngày 11–17 chưa được đánh dấu hoàn thành.
+
+## Hạng mục 11/11/2026 — Activity và vòng đời đơn
+
+Thực hiện sớm ngày 10/11/2026 theo yêu cầu tiếp tục của Triều; ngày trong tiêu đề là mốc của kế hoạch, không phải giả lập thời điểm thực hiện.
+
+### Đã thực hiện
+
+- Đọc đặc tả ngày 1, ambiguity log, sơ đồ cũ và bảng chuyển trạng thái mục 2C của đề.
+- Rút Activity chung thành tổng quan bốn thao tác; bổ sung bốn hình CRUD chi tiết có swimlane Customer/System.
+- Create làm rõ kiểm tra lại báo giá, phương thức, nhánh COD chờ thu tiền/online mô phỏng, lỗi thanh toán/lưu và đề xuất chống trùng.
+- Read làm rõ dữ liệu theo chủ đơn, nhánh rỗng và kiểm tra quyền khi mở chi tiết.
+- Edit dùng snapshot BR17; có xác nhận tổng mới, kiểm tra COD, điều chỉnh mô phỏng và kiểm tra trạng thái/phiên bản trước lưu.
+- Cancel kiểm tra Placed/Confirmed, hoàn đầy đủ online, giữ lịch sử và tách D04 là đề xuất.
+- Cập nhật state diagram dùng chung với đúng 8 trạng thái, 8 chuyển trạng thái nghiệp vụ; actor/guard rõ; AMB01/02 không trở thành quy tắc chính thức.
+- Soạn bảng đối chiếu và tài liệu học riêng giữ local theo yêu cầu. Không stage, commit hoặc push.
+
+### Bằng chứng kiểm tra
+
+| Kiểm tra | Kết quả |
+|---|---|
+| PlantUML local | 6 nguồn xuất thành công thành 6 SVG và 6 PNG; không gọi dịch vụ vẽ online |
+| Độ mới của hình | Mỗi SVG/PNG được sinh sau lần sửa nguồn tương ứng |
+| Kiểm tra trực quan | Đã mở cả 6 PNG; chữ/nút/nhãn nhánh hiển thị, các bước và lane đọc được; SVG dùng để phóng lớn |
+| State declarations | 8 |
+| Business transition pairs | 8, khớp danh sách đã đối chiếu bảng 2C; không thêm đường tắt |
+| Trạng thái cuối | Không có chuyển nghiệp vụ đi ra từ Delivered/Cancelled/Failed |
+| Liên kết Markdown | Không có đường dẫn local hỏng trong các tài liệu UC01 và file học tại thời điểm kiểm tra |
+| Tài liệu học | `git check-ignore` xác nhận thuộc quy tắc `/outputs/`; `git ls-files` không có file trong thư mục học |
+| Kiểm tra diff | `git diff --check` không có lỗi khoảng trắng; các thay đổi vẫn local |
+
+### Giới hạn và bàn giao
+
+- Kiểm tra render/cấu trúc/đối chiếu không phải kiểm thử ứng dụng hoặc kiểm chứng NFR hiệu năng.
+- Triều chưa được ghi nhận đã đọc/duyệt; thầy chưa xác nhận AMB và các quyết định D.
+- Chưa thao tác Figma online, chưa sửa CRC/class/ERD/architecture, chưa tạo Word/PDF trong hạng mục này.
+- Ngày tiếp theo theo lịch **12/11**: CRC, class và Payment Strategy; dùng các trách nhiệm đã hiện trong Activity làm đầu vào.
+
+**Kết luận hạng mục 11/11:** phần việc thiết kế hành vi đã hoàn thành và có hình/đối chiếu. Phần học riêng dành cho Triều tự luyện, không phải minh chứng đã được Triều duyệt toàn bộ thiết kế.
+
+### Chỉ dẫn Git bổ sung sau khi hoàn thành hạng mục
+
+Triều xác nhận công việc dự án theo ngày cần được commit và push, riêng tài liệu học vẫn chỉ local. Đã tách commit ngày 10/11 `5f17f99` cho yêu cầu/đặc tả. Phần 11/11 được đóng gói riêng gồm sơ đồ, đối chiếu và cập nhật tiến độ. Các ghi chú “không stage/commit/push” phía trên mô tả thời điểm soạn ban đầu, trước chỉ dẫn bổ sung này. Không đổi ngày commit để giả lập ngày thực hiện; không đưa file học vào Git.

@@ -4,6 +4,8 @@ Design baseline; AI-assisted drafts for the designated owners to review. Main UC
 
 ## 2.2.1 UC01 Place and Manage Orders
 
+Behavioral review for the 11 November work item: [overview, four CRUD activity details and lifecycle cross-check](uc01/05-behavioral-review.md). The Vietnamese specification and unresolved policies are maintained in the UC01 follow-up folder; owner/instructor approval remains unclaimed.
+
 **Owner:** Nguyễn Hải Triều — 524H0072. **Primary actor:** Customer, specialized into Local Customer and Foreign Tourist. **Collaborators:** payment strategy (simulated), hub/menu/voucher services; kitchen and shipper operations are HT03.
 
 **References:** FR01–FR07; shared FR09, FR13, FR15–FR17; BR1–BR17. Reporting consumers: FR18/FR19. Assumptions AMB01–AMB06 where stated.

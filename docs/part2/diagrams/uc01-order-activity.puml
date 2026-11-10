@@ -1,46 +1,41 @@
 @startuml
-title UC01 Place and Manage Orders | FR01-FR07, BR1-BR17
-footer Owner 524H0072 | AI-assisted design for owner review
+title UC01 - Place and Manage Orders\nOverview | FR01-FR07
+footer Nguyen Hai Trieu - 524H0072 | Group 3 | AI-assisted draft for owner review
+skinparam backgroundColor #FFFCF5
+skinparam shadowing false
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam activityBackgroundColor #FFF4DF
+skinparam activityBorderColor #735344
+skinparam activityDiamondBackgroundColor #FFE9A7
+skinparam activityDiamondBorderColor #735344
+skinparam ArrowColor #735344
 start
-:Authenticate; check ownership for existing order;
-if (Create?) then (yes)
- :Select active hub, lines, address and optional voucher;
- :Read time/load/rain placement context;
- :Validate BR1, BR2, BR8, BR12;
- if (Valid?) then (yes)
-  :Calculate breakdown in BR10 order; round once BR11;
-  :Choose method; validate customer group and COD cap;
-  :Customer confirms authoritative quote;
-  :Invoke selected simulated payment strategy;
-  if (Successful?) then (yes)
-   :Save Placed order, lines, snapshot, payment and history atomically;
-  else (no)
-   :Show failure; no partial order;
-  endif
- else (no)
-  :Show errors or alternative hubs;
- endif
-elseif (Read?) then (yes)
- :Return own orders, breakdown and history;
-elseif (Edit?) then (yes)
- if (Current state Placed?) then (yes)
-  :Validate edited lines; price using stored context BR17;
-  :Simulate adjustment under AMB03/AMB05;
-  if (Adjustment and concurrency checks succeed?) then (yes)
-   :Commit new lines, breakdown and adjustment;
-  else (no)
-   :Retain original order/amount; reload if stale;
-  endif
- else (no)
-  :Reject edit;
- endif
-else (Cancel)
- if (Current state Placed or Confirmed?) then (yes)
-  :Set Cancelled; fully mock-refund online payment;
-  :Append history; retain records;
- else (no)
-  :Reject cancellation;
- endif
+:Customer requests an order action;
+if (Authenticated?) then (yes)
+else (no)
+ :Request sign-in through account support;
+ stop
 endif
+switch (Requested action)
+case (Create)
+ :Run Create detail\nFR01-FR04;
+ :Validate hub/cart, show price,\nselect allowed payment and save Placed;
+case (Read)
+ :Run Read detail\nFR05;
+ :Check ownership; show stored\ndetails, payment and status history;
+case (Edit)
+ :Run Edit detail\nFR06 / BR17;
+ :Check ownership and Placed;\nreprice from snapshot and save safely;
+case (Cancel)
+ :Run Cancel detail\nFR07 / BR16;
+ :Check ownership and Placed/Confirmed;\nrefund online-paid amount and retain history;
+endswitch
+:Return success or a specific error\nfrom the selected detail flow;
 stop
+legend bottom
+  Conditions and errors are expanded in four detail diagrams.
+  Activity final ends this request, not the lifetime of the Order.
+  Payment/pricing proposals remain subject to the Ambiguity Log.
+endlegend
 @enduml

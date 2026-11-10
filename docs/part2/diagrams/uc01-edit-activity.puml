@@ -1,0 +1,80 @@
+@startuml
+title UC01 - Edit Order Items\nFR06 | BR17 / BR1/2/9-14 | AMB03/AMB05
+footer Nguyen Hai Trieu - 524H0072 | Group 3 | AI-assisted draft for owner review
+skinparam backgroundColor #FFFCF5
+skinparam shadowing false
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam activityBackgroundColor #FFF4DF
+skinparam activityBorderColor #735344
+skinparam activityDiamondBackgroundColor #FFE9A7
+skinparam activityDiamondBorderColor #735344
+skinparam ArrowColor #735344
+|Customer|
+start
+:Request item edit;
+|System|
+:Check authentication, existence\nand ownership on server;
+if (Authorized?) then (yes)
+else (no)
+ :Deny access; no data changed;
+ stop
+endif
+if (Current state = Placed?) then (yes)
+else (no)
+ :Reject edit; show latest state;
+ stop
+endif
+:Load original lines, amount,\ntime/load/rain snapshot and version;
+|Customer|
+:Change items/quantities;\nrequest updated quote;
+|System|
+:Validate edited cart and voucher;\nkeep hub/address/distance - D02 proposal;
+if (Valid?) then (yes)
+else (no)
+ :Show validation errors;\nretain original order;
+ stop
+endif
+:Recalculate with ORIGINAL time/load/rain;\nold/new line prices follow AMB03;\nvoucher-on-edit policy D03 is unresolved;
+if (COD and new rounded total > 1,000,000?) then (yes)
+ :Reject edit and show COD limit;\nretain original order;
+ stop
+else (no)
+endif
+:Display new breakdown and\nadditional/refundable difference;
+|Customer|
+if (Confirm updated total?) then (yes)
+else (no)
+ :Return without saving changes;
+ stop
+endif
+|System|
+if (Already paid online and total changed?) then (yes)
+ :Prepare simulated additional charge\nor partial refund - AMB05 proposal;
+ if (Simulated adjustment successful?) then (yes)
+ else (no)
+  :Retain original lines and amount;\nshow adjustment failure;
+  stop
+ endif
+else (no)
+ :No online adjustment required;
+endif
+:Recheck current state/version at save;
+if (Still Placed and version unchanged?) then (yes)
+else (no)
+ :Discard proposed changes/results;\nreload order and reject stale edit;
+ stop
+endif
+:Save lines, breakdown and simulated\nadjustment record in one transaction;
+if (Save successful?) then (yes)
+ :Return updated order;\nstate remains Placed;
+else (no)
+ :Roll back; retain original lines/amount;
+endif
+stop
+legend bottom
+  BR17 fixes original time/load/rain, not the total after changing items.
+  AMB03/AMB05 and D02/D03 are proposals or open decisions.
+  Failed saves of simulated results have no live payment effects.
+endlegend
+@enduml

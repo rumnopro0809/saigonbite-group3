@@ -8,12 +8,12 @@ Mức thiết kế: sinh viên năm 3 Khoa học Máy tính; dùng MVC, EF6 Code
 
 ## Cách thực hiện từng ngày
 
-Mỗi lần làm một ngày: đọc kết quả ngày trước, hoàn thành sản phẩm của ngày hiện tại, đối chiếu yêu cầu, rồi cập nhật trạng thái và điểm còn thiếu. Không đánh dấu hoàn tất chỉ vì đã có kế hoạch. Các hạng mục 11–17/11 chưa được thực hiện trong lượt ngày 10/11. Không có tác vụ tự chạy hằng ngày được cài đặt.
+Mỗi lần làm một ngày: đọc kết quả ngày trước, hoàn thành sản phẩm của ngày hiện tại, đối chiếu yêu cầu, rồi cập nhật trạng thái và điểm còn thiếu. Không đánh dấu hoàn tất chỉ vì đã có kế hoạch. Theo yêu cầu tiếp tục, hạng mục 11/11 đã được thực hiện sớm ngày 10/11; các hạng mục 12–17/11 vẫn chưa thực hiện. Không có tác vụ tự chạy hằng ngày được cài đặt.
 
 | Ngày | Công việc | Sản phẩm và điều kiện hoàn thành | Trạng thái |
 |---|---|---|---|
 | 10/11 | Rà soát yêu cầu và viết đặc tả UC01 | Đủ tác nhân, tiền/hậu điều kiện, CRUD, luồng lỗi; tách FR/BR/NFR; giữ giả định chưa xác nhận | Đã hoàn thành bản tài liệu ngày 1; Triều chưa duyệt |
-| 11/11 | Hoàn thiện Activity UC01 và đối chiếu vòng đời đơn | Activity khớp đặc tả; vòng đời dùng đúng 8 trạng thái và 8 chuyển trạng thái nghiệp vụ; có actor/guard; xuất hình | Chưa thực hiện |
+| 11/11 | Hoàn thiện Activity UC01 và đối chiếu vòng đời đơn | Activity khớp đặc tả; vòng đời dùng đúng 8 trạng thái và 8 chuyển trạng thái nghiệp vụ; có actor/guard; xuất hình | Đã rà soát và xuất 6 sơ đồ SVG/PNG; Triều chưa duyệt |
 | 12/11 | CRC, class diagram và Payment Strategy | CRC các lớp UC01; interface thanh toán, 5 lớp phương thức và selector theo loại khách; đối chiếu lớp/dữ liệu chung | Chưa thực hiện |
 | 13/11 | Dữ liệu và kiến trúc UC01 | Phần ERD đơn/dòng món/snapshot/payment/history; khóa và quan hệ; MVC và vị trí tính giá; liên kết NFR | Chưa thực hiện |
 | 14/11 | Figma V2 — luồng chính | Xác minh bản online; nối chọn bếp/món → checkout → đặt thành công → chi tiết/theo dõi; đủ phương thức của từng loại khách | Chưa thực hiện |
@@ -23,12 +23,22 @@ Mỗi lần làm một ngày: đọc kết quả ngày trước, hoàn thành s�
 
 Ngày 16 chỉ hoàn thiện phần đóng góp UC01. Báo cáo nhóm vẫn cần nội dung UC02, UC03, R1/R2 và sự thống nhất của ba thành viên.
 
+## Lưu công việc trên GitHub
+
+Theo chỉ dẫn bổ sung của Triều: sau khi hoàn thành và kiểm tra một hạng mục ngày, commit phần việc dự án theo hạng mục rồi push lên repository hiện tại. Tên commit ghi mốc công việc; ngày tác giả/commit giữ thời điểm thực tế, không giả lập ngày tương lai. Riêng tài liệu hướng dẫn học cá nhân giữ local trong thư mục đã được Git bỏ qua, không stage, commit hoặc push. Không đưa file đầu vào riêng, bản nháp local và công cụ tải về vào commit.
+
 ## Sản phẩm ngày 10/11
 
 - [Đặc tả UC01 tiếng Việt](01-dac-ta-uc01.md).
 - [Ambiguity Log và quyết định thiết kế cần xác nhận](02-ambiguity-log.md).
 - [Đối chiếu FR/NFR với thiết kế dự kiến](03-traceability.csv).
 - [Nhật ký và kiểm tra ngày đầu tiên](04-nhat-ky.md).
+
+## Sản phẩm hạng mục 11/11
+
+- [Bộ sơ đồ và bảng đối chiếu hành vi](05-behavioral-review.md): tổng quan UC01, bốn Activity CRUD chi tiết, vòng đời đơn dùng chung.
+- Đã xuất SVG/PNG, xem cả 6 hình và kiểm tra trạng thái/chuyển trạng thái; xem kết quả trong nhật ký.
+- Chưa thực hiện CRC/class/ERD/Figma/báo cáo của các ngày tiếp theo. Việc kiểm tra thiết kế không thay kiểm thử ứng dụng hoặc sự duyệt của thầy.
 
 ## Nguồn và nguyên tắc đối chiếu
 
