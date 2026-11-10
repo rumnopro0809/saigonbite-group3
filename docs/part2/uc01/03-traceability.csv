@@ -1,0 +1,14 @@
+ID,Loai,Noi_dung,BR_nguon,Muc_dac_ta,Thiet_ke_du_kien,Bang_chung_can_co,Trang_thai_10_11
+FR01,FR,Tao don,"BR1;BR2;BR12",4,OrderService va OrderLine,Activity va Figma tao don,Dac ta da ra soat; thiet ke/Figma chua kiem tra trong ke hoach nay
+FR02,FR,Kiem tra tai bep,BR8,4,HubLoadService dung chung UC03,Nhanh qua tai va de nghi doi bep,Dac ta da ra soat; phoi hop UC03
+FR03,FR,Tinh va hien thi bang gia,BR3-BR11,4,PricingService,Bang gia va vi du 205000,Dac ta va vi du tinh tay da doi chieu
+FR04,FR,Thanh toan theo loai khach,"BR13;BR14;Tier 3",4,IPaymentStrategy va 5 strategy va PaymentSelector,Class diagram va Figma Local/Tourist,Chua ra soat class/Figma trong ke hoach nay
+FR05,FR,Xem don cua minh,"BR15;Specification 2E",5,OrderQueryService,Chi tiet don va lich su,Da dac ta; chua kiem tra ung dung
+FR06,FR,Sua mon khi duoc phep,"BR17;AMB03;AMB05",6,OrderService va PricingService,Activity sua va Figma snapshot,Gia dinh chua duoc thay xac nhan
+FR07,FR,Huy va hoan tien,BR16,7,OrderService va PaymentStrategy,Nhanh huy va ket qua hoan tien,D04 loi hoan tien la de xuat chua duyet
+NFR01,NFR,Tinh gia duoi 1.5 giay toi da 30 dong,CaseStudy performance,10,PricingService,Do thoi gian khi trien khai,Muc tieu; chua do
+NFR02,NFR,Bao tri MVC EF Code First Strategy,Specification tier va Strategy,10,Phan lop va giao dien thanh toan,Class architecture migrations va diff,Thiet ke can ra soat ngay 12-13
+NFR03,NFR,Responsive va Viet/Anh,CaseStudy usability,10,Bootstrap va nhan Viet/Anh,Desktop/mobile va hai ngon ngu,Chua kiem tra V2 online trong ke hoach nay
+NFR04,NFR,Mat khau bam va phan quyen,CaseStudy security,10,Chuc nang tai khoan va kiem tra ownership,Thu truy cap trai quyen khi trien khai,Mat khau thuoc tai khoan dung chung
+NFR05,NFR,Luu nguyen tu,Team-added,10,Giao dich EF/SQL,Thu loi giua chung khi trien khai,Muc tieu; chua chay kiem tra tich hop
+NFR06,NFR,Lich su chuyen trang thai,Team-added,10,OrderStatusHistory,Doi chieu actor trang thai va thoi gian,Muc tieu; chua chay kiem tra tich hop

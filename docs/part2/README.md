@@ -2,6 +2,8 @@
 
 Group 3 • SaigonBite • Sem01_2627 • Design baseline 30 October 2026.
 
+UC01 follow-up, 10 November 2026: [daily work plan and Vietnamese specification, 10–17 November](uc01/README.md). Day 1 reviews requirements/specification only; later UML/Figma/report work remains pending. This supplements the shared baseline and does not claim a revised course deadline or instructor approval.
+
 This baseline translates the agreed Part 1 requirements into a design for Tier 3. It includes all three main CRUD use cases and the shared pricing/payment/lifecycle/report features. It is ready for team review; instructor approval, a completed Figma prototype and implementation results are not claimed.
 
 | Main UC | Author responsible for review and development |
