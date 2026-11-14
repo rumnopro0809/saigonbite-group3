@@ -8,15 +8,15 @@ Mức thiết kế: sinh viên năm 3 Khoa học Máy tính; dùng MVC, EF6 Code
 
 ## Cách thực hiện từng ngày
 
-Mỗi lần làm một ngày: đọc kết quả ngày trước, hoàn thành sản phẩm của ngày hiện tại, đối chiếu yêu cầu, rồi cập nhật trạng thái và điểm còn thiếu. Không đánh dấu hoàn tất chỉ vì đã có kế hoạch. Theo yêu cầu tiếp tục, hạng mục 11/11 đã được thực hiện sớm ngày 10/11; các hạng mục 12–17/11 vẫn chưa thực hiện. Không có tác vụ tự chạy hằng ngày được cài đặt.
+Mỗi lần làm một ngày, đọc kết quả ngày trước, hoàn thành sản phẩm của ngày hiện tại, đối chiếu yêu cầu rồi cập nhật trạng thái. Hạng mục 11/11 được thực hiện sớm ngày 10/11. Ngày 14/11 đã kiểm tra bản Figma online và chuẩn bị gói cập nhật local.
 
 | Ngày | Công việc | Sản phẩm và điều kiện hoàn thành | Trạng thái |
 |---|---|---|---|
 | 10/11 | Rà soát yêu cầu và viết đặc tả UC01 | Đủ tác nhân, tiền/hậu điều kiện, CRUD, luồng lỗi; tách FR/BR/NFR; giữ giả định chưa xác nhận | Đã hoàn thành bản tài liệu ngày 1; Triều chưa duyệt |
 | 11/11 | Hoàn thiện Activity UC01 và đối chiếu vòng đời đơn | Activity khớp đặc tả; vòng đời dùng đúng 8 trạng thái và 8 chuyển trạng thái nghiệp vụ; có actor/guard; xuất hình | Đã rà soát và xuất 6 sơ đồ SVG/PNG; Triều chưa duyệt |
-| 12/11 | CRC, class diagram và Payment Strategy | CRC các lớp UC01; interface thanh toán, 5 lớp phương thức và selector theo loại khách; đối chiếu lớp/dữ liệu chung | Chưa thực hiện |
-| 13/11 | Dữ liệu và kiến trúc UC01 | Phần ERD đơn/dòng món/snapshot/payment/history; khóa và quan hệ; MVC và vị trí tính giá; liên kết NFR | Chưa thực hiện |
-| 14/11 | Figma V2 — luồng chính | Xác minh bản online; nối chọn bếp/món → checkout → đặt thành công → chi tiết/theo dõi; đủ phương thức của từng loại khách | Chưa thực hiện |
+| 12/11 | CRC, class diagram và Payment Strategy | CRC các lớp UC01; interface thanh toán, 5 lớp phương thức và selector theo loại khách; đối chiếu lớp/dữ liệu chung | Có bản nháp chung, chờ rà soát UC01 |
+| 13/11 | Dữ liệu và kiến trúc UC01 | Phần ERD đơn/dòng món/snapshot/payment/history; khóa và quan hệ; MVC và vị trí tính giá; liên kết NFR | Có bản nháp chung, chờ rà soát UC01 |
+| 14/11 | Figma V2 — luồng chính | Xác minh bản online; nối chọn bếp/món → checkout → đặt thành công → chi tiết/theo dõi; đủ phương thức của từng loại khách | Đã kiểm tra 91 frame online và gói local 93 frame. Chờ đồng bộ và chạy Present |
 | 15/11 | Figma V2 — sửa, hủy, lỗi và responsive | Sửa Placed, hủy Placed/Confirmed, lỗi tải bếp/COD/thanh toán; mobile; giữ bằng chứng Sketch/Wireframe/Mockup/Prototype; lưu kết quả kiểm tra | Chưa thực hiện |
 | 16/11 | Ghép nội dung UC01 vào báo cáo Part 2 và chuẩn bị lời nói | Phần đóng góp UC01 theo mục 2.1–2.6 của mẫu chung, hình/chú thích/FR-BR/MSSV/link; bản Word/PDF đóng góp UC01; kịch bản trình bày | Chưa thực hiện |
 | 17/11 | Kiểm tra cuối và ôn trình bày | Đối chiếu yêu cầu–sơ đồ–Figma–báo cáo; kiểm tra link xem công khai; sửa lỗi; diễn tập phần Triều trong bài nhóm 7–10 phút | Chưa thực hiện |
@@ -49,11 +49,11 @@ Theo chỉ dẫn bổ sung của Triều: sau khi hoàn thành và kiểm tra m�
 
 BR giữ nguyên mã và nội dung của đề. FR/NFR giữ mã của nhóm từ Part 1. Đặc tả tiếng Việt này là phần bổ sung UC01 để tiếp tục hoàn thiện Part 2, không tự thay thế thiết kế chung hay giả lập sự đồng ý của thầy.
 
-## Trạng thái Figma tại đầu kế hoạch
+## Trạng thái Figma ngày 14/11
 
 [File SaigonBite của nhóm](https://www.figma.com/design/Ao6NzrJvoRxJevn1gpn9QP).
 
-Gói V2 local có báo cáo QA 91 màn, 669 liên kết; runtime của plugin được kiểm tra bằng API mô phỏng. Những con số đó không chứng minh toàn bộ màn đã nhập và chạy đúng trên Figma online. Chưa kiểm tra lại bản online trong ngày 10/11. Không xóa màn cũ trong bước rà soát tài liệu này.
+Đã đọc frame và liên kết trong bản online 91 màn. Gói local 93 màn bổ sung theo dõi VNPay và Apple Pay, với 683 liên kết và 45 đường bắt buộc đã qua kiểm tra mô phỏng. Xem bảng đối chiếu và các bước xác nhận trên Figma Desktop. [Kết quả 14/11](06-figma-main-flow.md)
 
 ## Điều kiện chốt phần UC01 ngày 17/11
 

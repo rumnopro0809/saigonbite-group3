@@ -82,3 +82,11 @@ Thực hiện sớm ngày 10/11/2026 theo yêu cầu tiếp tục của Triều;
 ### Chỉ dẫn Git bổ sung sau khi hoàn thành hạng mục
 
 Triều xác nhận công việc dự án theo ngày cần được commit và push, riêng tài liệu học vẫn chỉ local. Đã tách commit ngày 10/11 `5f17f99` cho yêu cầu/đặc tả. Phần 11/11 được đóng gói riêng gồm sơ đồ, đối chiếu và cập nhật tiến độ. Các ghi chú “không stage/commit/push” phía trên mô tả thời điểm soạn ban đầu, trước chỉ dẫn bổ sung này. Không đổi ngày commit để giả lập ngày thực hiện; không đưa file học vào Git.
+
+## Ngày 14/11/2026 — Luồng đặt món V2
+
+- Đã đối chiếu nhánh main trên GitHub. Hai hạng mục 10–11/11 đã có commit. Hai đợt rà soát riêng cho ngày 12–13/11 còn chờ.
+- Đã đọc 91 frame V2 và kiểm tra đích của sáu nút đặt đơn cho khách Việt và khách du lịch. Mỗi nhóm hiển thị đúng ba lựa chọn trong checkout mẫu.
+- Bản local bổ sung bước chọn bếp sau địa chỉ, màn theo dõi VNPay và Apple Pay cùng nhãn thanh toán mô phỏng cho các ví online trong luồng mẫu.
+- Gói local có 93 màn, 683 liên kết và 45 đường bắt buộc. Mô phỏng cập nhật từ 91 màn thêm đúng 2 màn, đổi 3 liên kết và chạy lại thêm 0 màn. Đã xem hai hình theo dõi mới.
+- Figma Starter hết hạn mức thao tác ghi. Tab Desktop đã mở nhưng chưa truy cập được vùng thiết kế qua công cụ điều khiển. Chờ chạy plugin và thử các luồng sau khi nhập. [Bảng đối chiếu và kết quả](06-figma-main-flow.md)
