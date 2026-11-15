@@ -1,0 +1,22 @@
+{
+  "boards": 107,
+  "mobile": 21,
+  "links": 772,
+  "reachable": 107,
+  "checks": {
+    "whiteOnRed": 6.7982106841831085,
+    "bodyOnPaper": 16.231580561707915,
+    "mutedOnPaper": 7.121028178961504
+  },
+  "requiredEdges": 63,
+  "uc01Upgrade": {
+    "from": 91,
+    "to": 107,
+    "routesUpdated": 4,
+    "repeatAdded": 0,
+    "fromDay14": 93,
+    "addedFromDay14": 14
+  },
+  "mobileActionWidthChecked": 375,
+  "figmaRuntime": "Plugin import and interactions tested with a mocked Plugin API."
+}

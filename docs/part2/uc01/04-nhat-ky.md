@@ -90,3 +90,10 @@ Triều xác nhận công việc dự án theo ngày cần được commit và p
 - Bản local bổ sung bước chọn bếp sau địa chỉ, màn theo dõi VNPay và Apple Pay cùng nhãn thanh toán mô phỏng cho các ví online trong luồng mẫu.
 - Gói local có 93 màn, 683 liên kết và 45 đường bắt buộc. Mô phỏng cập nhật từ 91 màn thêm đúng 2 màn, đổi 3 liên kết và chạy lại thêm 0 màn. Đã xem hai hình theo dõi mới.
 - Figma Starter hết hạn mức thao tác ghi. Tab Desktop đã mở nhưng chưa truy cập được vùng thiết kế qua công cụ điều khiển. Chờ chạy plugin và thử các luồng sau khi nhập. [Bảng đối chiếu và kết quả](06-figma-main-flow.md)
+
+## Ngày 15/11/2026 — Quản lý đơn, lỗi và mobile
+
+- Bổ sung mẫu Confirmed cho hủy đơn và Preparing cho chỉ theo dõi. Thêm lối thử lỗi bếp đạt tải 90%, COD vượt 1.000.000 đồng và thanh toán mô phỏng thất bại.
+- Bổ sung sửa/hủy mobile và kết quả hoàn. Đối chiếu ảnh render ở 375 px. Xuất Sketch, Wireframe, Mockup và bản Prototype tương tác.
+- Gói local có 107 màn, 772 liên kết và 63 đường kiểm tra bắt buộc. Đã kiểm tra cập nhật mô phỏng từ cả hai bản 91 và 93 màn.
+- Figma Starter đã hết hạn mức đọc. Mốc online vẫn là 91 màn xác minh ngày 14/11. Còn bước nhập và Present. [Bằng chứng và đường đi](07-figma-order-management.md)
