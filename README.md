@@ -10,6 +10,21 @@ Software Engineering final project, Sem01_2627. Cloud-kitchen food delivery for 
 
 Tier 3: **ASP.NET MVC 5, Entity Framework 6 Code First, SQL Server, Bootstrap**. Target .NET Framework 4.8. Payments/refunds/OTP/email codes are simulated. Payment Strategy and all mandatory business rules still apply. This implementation choice follows the named MVC stack in the specification; no instructor approval or grading result is claimed.
 
+## Part 2 submission (19/11/2026)
+
+Design, architecture and UI/UX package. Everything below is the version submitted to eLearning and to the shared Drive folder.
+
+| File | What it is |
+|---|---|
+| [Team3_Part2_Design.pdf](output/part2/Team3_Part2_Design.pdf) | 18-page design report, sections 2.1–2.6, 26 PDF bookmarks |
+| [Team3_Part2_Presentation.pptx](output/part2/Team3_Part2_Presentation.pptx) | Design Review deck, 12 slides with speaker notes (7–10 minutes) |
+| [readme.txt](output/part2/readme.txt) | Figma links, GitHub link and use case owners |
+
+- Figma prototype (public, anyone with the link can view): https://www.figma.com/proto/Ao6NzrJvoRxJevn1gpn9QP
+- Figma design file (V2 screens, page `04 Prototype`): https://www.figma.com/design/Ao6NzrJvoRxJevn1gpn9QP
+- Report and deck are rebuilt from source with `scripts/build_part2_report.py --pdf` and `scripts/build_part2_slides.py`; `scripts/check_part2_deliverables.py` re-runs every submission check.
+- Payments stay simulated (Tier 3); implementation and test evidence belong to Part 3 and are not claimed here.
+
 ## Start here
 
 - [Part 2 design document](docs/part2/README.md)
