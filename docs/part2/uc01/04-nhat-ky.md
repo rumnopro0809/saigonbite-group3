@@ -97,3 +97,12 @@ Triều xác nhận công việc dự án theo ngày cần được commit và p
 - Bổ sung sửa/hủy mobile và kết quả hoàn. Đối chiếu ảnh render ở 375 px. Xuất Sketch, Wireframe, Mockup và bản Prototype tương tác.
 - Gói local có 107 màn, 772 liên kết và 63 đường kiểm tra bắt buộc. Đã kiểm tra cập nhật mô phỏng từ cả hai bản 91 và 93 màn.
 - Figma Starter đã hết hạn mức đọc. Mốc online vẫn là 91 màn xác minh ngày 14/11. Còn bước nhập và Present. [Bằng chứng và đường đi](07-figma-order-management.md)
+
+## Ngày 19/11/2026 — Nhập V2 vào Figma và chốt bộ nộp Part 2
+
+- Đã chạy plugin "SaigonBite V2 — Nhập thiết kế" trong Figma Desktop (tài khoản Nguyễn Hải Triều) trên file nhóm; trang "04 Prototype" nhận bộ frame V2 còn thiếu và giữ nguyên các frame đã có.
+- Kiểm tra công khai bằng trình duyệt ẩn danh (không đăng nhập): link prototype mở đúng màn hình khách "Sài Gòn lên món". Quyền chia sẻ của file là "Anyone with the link → can view".
+- Link nộp: prototype `https://www.figma.com/proto/Ao6NzrJvoRxJevn1gpn9QP`, file thiết kế `https://www.figma.com/design/Ao6NzrJvoRxJevn1gpn9QP`.
+- Chốt bộ nộp Part 2: báo cáo 18 trang có 26 bookmark, slide 12 trang có ghi chú và phân thời gian 7–10 phút, readme ghi link Figma, GitHub và ba chủ sở hữu use case.
+- Chạy lại bộ kiểm tra tự động `scripts/check_part2_deliverables.py`: toàn bộ điều kiện đạt (bookmark, 2.1–2.6, FR/BR/NFR, Strategy thanh toán, ERD, ảnh UI, MSSV từng mục).
+- Đã đẩy commit `6cda3a7` lên GitHub. Việc còn lại của nhóm: tải đúng ba tệp lên eLearning và thư mục Drive chung, rồi diễn tập bài nói.

@@ -18,8 +18,8 @@ Mỗi lần làm một ngày, đọc kết quả ngày trước, hoàn thành s�
 | 13/11 | Dữ liệu và kiến trúc UC01 | Phần ERD đơn/dòng món/snapshot/payment/history; khóa và quan hệ; MVC và vị trí tính giá; liên kết NFR | Có bản nháp chung, chờ rà soát UC01 |
 | 14/11 | Figma V2 — luồng chính | Xác minh bản online; nối chọn bếp/món → checkout → đặt thành công → chi tiết/theo dõi; đủ phương thức của từng loại khách | Đã kiểm tra 91 frame online và gói local 93 frame. Chờ đồng bộ và chạy Present |
 | 15/11 | Figma V2 — sửa, hủy, lỗi và responsive | Sửa Placed, hủy Placed/Confirmed, lỗi tải bếp/COD/thanh toán; mobile; giữ bằng chứng Sketch/Wireframe/Mockup/Prototype; lưu kết quả kiểm tra | Đã kiểm tra gói local và xuất bằng chứng. Chờ đồng bộ và chạy Present |
-| 16/11 | Ghép nội dung UC01 vào báo cáo Part 2 và chuẩn bị lời nói | Phần đóng góp UC01 theo mục 2.1–2.6 của mẫu chung, hình/chú thích/FR-BR/MSSV/link; bản Word/PDF đóng góp UC01; kịch bản trình bày | Chưa thực hiện |
-| 17/11 | Kiểm tra cuối và ôn trình bày | Đối chiếu yêu cầu–sơ đồ–Figma–báo cáo; kiểm tra link xem công khai; sửa lỗi; diễn tập phần Triều trong bài nhóm 7–10 phút | Chưa thực hiện |
+| 16/11 | Ghép nội dung UC01 vào báo cáo Part 2 và chuẩn bị lời nói | Phần đóng góp UC01 theo mục 2.1–2.6 của mẫu chung, hình/chú thích/FR-BR/MSSV/link; bản Word/PDF đóng góp UC01; kịch bản trình bày | Xong 17/11 |
+| 17/11 | Kiểm tra cuối và ôn trình bày | Đối chiếu yêu cầu–sơ đồ–Figma–báo cáo; kiểm tra link xem công khai; sửa lỗi; diễn tập phần Triều trong bài nhóm 7–10 phút | Xong 19/11 |
 
 Ngày 16 chỉ hoàn thiện phần đóng góp UC01. Báo cáo nhóm vẫn cần nội dung UC02, UC03, R1/R2 và sự thống nhất của ba thành viên.
 
