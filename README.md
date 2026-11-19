@@ -27,7 +27,6 @@ Design, architecture and UI/UX package. Everything below is the version submitte
 
 ## Start here
 
-- [Project context handoff](PROJECT-CONTEXT.md) — one file describing the project, schema, rules and the absolute file paths to hand to another AI
 - [Part 2 design document](docs/part2/README.md)
 - [Detailed use cases](docs/part2/use-cases.md)
 - [Architecture and database decisions](docs/part2/architecture.md)
