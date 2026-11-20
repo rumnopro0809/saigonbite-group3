@@ -29,7 +29,7 @@ Use case owners:
   UC03 — Manage Hubs and Capacity     — Lê Quang Tấn   — 524H0188
 
 Files in this submission:
-  1. Team3_Part2_Design.pdf        Design report, sections 2.1–2.6, 18 pages, PDF bookmarks
+  1. Team3_Part2_Design.pdf        Design report, sections 2.1–2.6, 19 pages, PDF bookmarks
   2. Team3_Part2_Presentation.pptx Design Review slides, 12 slides, 7–10 minutes, speaker notes
   3. readme.txt                    This file
 
