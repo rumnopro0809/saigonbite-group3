@@ -1,6 +1,6 @@
 @startuml
 title Order Lifecycle - 8 States / 8 Business Transitions\nBR15 / BR16 / BR17 | UC01 and HT03
-footer Team 524H0072 / 524H0189 / 524H0188 | UC01 review: Nguyen Hai Trieu | AI-assisted draft
+footer Team 3 | 524H0072, 524H0189, 524H0188
 skinparam backgroundColor #FFFCF5
 skinparam shadowing false
 skinparam defaultFontName SansSerif

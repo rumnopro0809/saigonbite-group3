@@ -2,7 +2,7 @@
 hide circle
 skinparam linetype ortho
 title Shared SQL Server schema | EF6 Code First
-footer Team 524H0072, 524H0189, 524H0188 | AI-assisted design for review
+footer Team 3 | 524H0072, 524H0189, 524H0188
 entity Users {
  * Id : PK
  Identifier : UNIQUE
@@ -45,6 +45,11 @@ entity Vouchers {
  Code : UNIQUE
  Type / Value / Cap / Minimum
  Dates / Active / Deleted
+}
+entity SystemSettings {
+ * Id : PK
+ IsHeavyRainOn : BIT
+ UpdatedAt / RowVersion
 }
 entity Orders {
  * Id : PK

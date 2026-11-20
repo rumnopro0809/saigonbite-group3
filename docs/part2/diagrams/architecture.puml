@@ -1,7 +1,7 @@
 @startuml
 skinparam componentStyle rectangle
 title MVC architecture and quality boundaries
-footer Team 524H0072, 524H0189, 524H0188 | AI-assisted design for review
+footer Team 3 | 524H0072, 524H0189, 524H0188
 actor "Customer / Admin / Kitchen / Shipper" as Actor
 package "SaigonBite.Web | MVC 5" {
  [Razor Views and Bootstrap] as Views

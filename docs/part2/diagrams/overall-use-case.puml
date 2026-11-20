@@ -1,7 +1,7 @@
 @startuml
 left to right direction
 title SaigonBite overall use cases
-footer Group 3 | 524H0072, 524H0189, 524H0188 | AI-assisted review draft
+footer Team 3 | 524H0072, 524H0189, 524H0188
 actor "Customer {abstract}" as Customer
 actor "Local Customer" as Local
 actor "Foreign Tourist" as Tourist

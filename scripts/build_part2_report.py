@@ -17,10 +17,13 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.shared import Cm, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parents[1]
-TEMPLATE = Path(r"C:\Users\rumno\OneDrive\Desktop\drive-download-20261117T120953Z-1-001\SE_Sem01_2627_Report_Template.docx")
+TEMPLATE = ROOT / "outputs" / "instructor-source" / "SE_Sem01_2627_Report_Template.docx"
+if not TEMPLATE.exists():
+    TEMPLATE = Path(r"C:\Users\rumno\OneDrive\Desktop\drive-download-20261117T120953Z-1-001\SE_Sem01_2627_Report_Template.docx")
 OUT_DIR = ROOT / "output" / "part2"
 BUILD = ROOT / "tmp" / "part2build"
 DOCX = BUILD / "Team3_Part2_Design.docx"
@@ -93,6 +96,47 @@ def set_col_widths(table, widths_cm: list[float]) -> None:
         for idx, width in enumerate(widths_cm):
             if idx < len(row.cells):
                 row.cells[idx].width = Cm(width)
+
+
+def add_hyperlink(paragraph, url: str, text: str | None = None, size: float = 9.5,
+                  color: str = "0B5394", underline: bool = True):
+    part = paragraph.part
+    r_id = part.relate_to(url, RT.HYPERLINK, is_external=True)
+    hyperlink = OxmlElement("w:hyperlink")
+    hyperlink.set(qn("r:id"), r_id)
+
+    new_run = OxmlElement("w:r")
+    r_pr = OxmlElement("w:rPr")
+    r_fonts = OxmlElement("w:rFonts")
+    r_fonts.set(qn("w:ascii"), "Calibri")
+    r_fonts.set(qn("w:hAnsi"), "Calibri")
+    r_pr.append(r_fonts)
+    sz = OxmlElement("w:sz")
+    sz.set(qn("w:val"), str(int(size * 2)))
+    r_pr.append(sz)
+    c = OxmlElement("w:color")
+    c.set(qn("w:val"), color)
+    r_pr.append(c)
+    if underline:
+        u = OxmlElement("w:u")
+        u.set(qn("w:val"), "single")
+        r_pr.append(u)
+    new_run.append(r_pr)
+
+    t = OxmlElement("w:t")
+    t.text = text or url
+    new_run.append(t)
+    hyperlink.append(new_run)
+    paragraph._p.append(hyperlink)
+    return hyperlink
+
+
+def cell_hyperlink(cell, url: str, size: float = 8.5):
+    cell.text = ""
+    p = cell.paragraphs[0]
+    p.paragraph_format.space_before = Pt(0)
+    p.paragraph_format.space_after = Pt(1)
+    add_hyperlink(p, url, url, size=size)
 
 
 def cell_text(cell, text: str, bold: bool = False, size: float = 9.0, color=None, align=None):
@@ -352,15 +396,19 @@ def cover(doc: Document):
         ("Team", "Team 3"),
         ("Chosen tier", "Tier 3 — ASP.NET MVC, Entity Framework Code First, SQL Server, Bootstrap"),
         ("Document version", "v1.0"),
-        ("Date", "17 November 2026"),
+        ("Date", "20 November 2026"),
         ("Repository", GITHUB),
+        ("Figma prototype (V2)", FIGMA_PROTO),
         ("Figma design file", FIGMA_FILE),
     ]
     for k, v in rows:
         cells = info.add_row().cells
         cell_text(cells[0], k, bold=True, size=9.5)
         set_cell_bg(cells[0], "EAF0F6")
-        cell_text(cells[1], v, size=8.5 if k in ("Repository", "Figma design file") else 9.5)
+        if v.startswith("http"):
+            cell_hyperlink(cells[1], v, size=8.5)
+        else:
+            cell_text(cells[1], v, size=9.5)
     set_col_widths(info, [4.2, 11.0])
 
     doc.add_paragraph().paragraph_format.space_after = Pt(6)
@@ -387,12 +435,11 @@ def cover(doc: Document):
 
 def front_matter(doc: Document):
     doc.add_heading("Intellectual Property", level=1)
-    para(doc, "Copyright 2026 the SaigonBite student team. The documentation, its content and its presentation are "
+    para(doc, "Copyright 2026 Team 3 (SaigonBite). The documentation, its content and its presentation are "
               "proprietary to Team 3 and embody the team's design work. All copyright, trademarks, trade names and "
               "other intellectual property rights contained herein remain the exclusive property of Team 3 unless "
               "otherwise specified. The information is provided for assessment of the SE Final Project and may not be "
-              "reproduced or disclosed without permission. The design was prepared with AI assistance as declared in "
-              "Appendix B; the named owners remain responsible for the content.")
+              "reproduced or disclosed without permission.")
 
     doc.add_heading("Table of Contents", level=1)
     add_toc(doc)
@@ -613,22 +660,22 @@ def section_2_3(doc: Document):
 
     doc.add_heading("2.3.1 Activity Diagram for UC01 Place and Manage Orders (author: 524H0072)", level=2)
     add_image(doc, DIAG / "uc01-order-activity.png", 15.0,
-              "Figure 2 — UC01 overview: customer and system lanes for create, read, edit and cancel.")
+              "Figure 2 — UC01 overview: customer and system lanes for create, read, edit and cancel (author: 524H0072).")
     para(doc, "The overview shows the four CRUD branches behind one customer entry point. Create validates the hub, "
               "the menu and the load before pricing; edit is reachable only in Placed and reuses the original "
               "snapshot; cancel is reachable in Placed or Confirmed and always records the refund outcome.")
 
     doc.add_heading("2.3.2 Activity Diagram for UC02 Manage Menu and Brands (author: 524H0189)", level=2)
     add_image(doc, DIAG / "uc02-menu-activity.png", 15.5,
-              "Figure 3 — UC02 activity: create, read, update and soft-delete of brands and menu items.")
+              "Figure 3 — UC02 activity: create, read, update and soft-delete of brands and menu items (author: 524H0189).")
 
     doc.add_heading("2.3.3 Activity Diagram for UC03 Manage Hubs and Capacity (author: 524H0188)", level=2)
     add_image(doc, DIAG / "uc03-hub-activity.png", 15.5,
-              "Figure 4 — UC03 activity: hub CRUD, capacity validation and derived load.")
+              "Figure 4 — UC03 activity: hub CRUD, capacity validation and derived load (author: 524H0188).")
 
     doc.add_heading("2.3.4 Order State Diagram (team)", level=2)
     add_image(doc, DIAG / "order-state.png", 10.5,
-              "Figure 5 — Order lifecycle: eight states and eight business transitions (team model, BR15–BR17).",
+              "Figure 5 — Order lifecycle: eight states and eight business transitions (team: 524H0072, 524H0189, 524H0188; BR15–BR17).",
               max_height_cm=17.5)
     para(doc, "The eight states are Placed, Confirmed, Preparing, Ready, Out for Delivery, Delivered, Cancelled and "
               "Failed. Only the eight transitions in the diagram are permitted; Delivered, Cancelled and Failed are "
@@ -691,16 +738,17 @@ def section_2_4(doc: Document):
     add_image(doc, DIAG / "domain-and-payment.png", 15.8,
               "Figure 6 — Domain model and Payment Strategy (author: 524H0072, reviewed with 524H0189 and 524H0188).")
     add_image(doc, DIAG / "database-erd.png", 15.2,
-              "Figure 7 — Shared-schema ERD: users and profiles, hubs, brands, menu items, orders, payments and history.")
+              "Figure 7 — Shared-schema ERD (14 tables): users/profiles, hubs, brands, menu items, vouchers, system settings, orders, payments and history (team: 524H0072, 524H0189, 524H0188).")
     para(doc, "The ERD keeps one Users table with LocalProfile, TouristProfile and StaffProfile because the "
               "specification requires two customer types with different registration data but shared authentication. "
-              "OrderLines store the item name, unit price and line total at placement, and PriceSnapshot stores the "
-              "placement time, hub load and rain flag, so historical orders stay reproducible after catalog or "
-              "capacity changes.")
+              "SystemSettings stores the global heavy-rain flag (BR5/FR16). OrderLines store the item name, unit price "
+              "and line total at placement, and PriceSnapshot stores the placement time, hub load and rain flag, so "
+              "historical orders stay reproducible after catalog or capacity changes.")
 
     doc.add_heading("2.4.3 Database Design Notes", level=2)
-    bullet(doc, "money is decimal(18,2) and all rounding happens once on the final total, half-up to 1,000 VND; "
-                "stored line totals are not re-rounded individually.")
+    bullet(doc, "money is stored as SQL decimal(19,4) (C# decimal) for intermediate calculations and all rounding "
+                "happens once on the final total, half-up to 1,000 VND (BR11); stored line totals are not re-rounded "
+                "individually.")
     bullet(doc, "Order, OrderLines, PriceSnapshot, PaymentRecord and the first StatusHistory row are written in one "
                 "transaction (NFR05); a failure leaves no partial order.")
     bullet(doc, "rowversion columns protect Order, MenuItem and Hub writes from lost updates; a mismatch is rejected "
@@ -716,7 +764,7 @@ def section_2_4(doc: Document):
 def section_2_5(doc: Document):
     doc.add_heading("2.5 Architecture & Quality Design", level=1)
     add_image(doc, DIAG / "architecture.png", 15.8,
-              "Figure 8 — Target MVC architecture and layer dependencies (team model).")
+              "Figure 8 — Target MVC architecture and layer dependencies (team: 524H0072, 524H0189, 524H0188).")
     add_table(doc,
               ["Project", "Responsibility", "References"],
               [["SaigonBite.Domain", "Entities, value objects, lifecycle enums and contracts", "None"],
@@ -761,19 +809,24 @@ def section_2_5(doc: Document):
 def section_2_6(doc: Document):
     doc.add_heading("2.6 UI/UX Design", level=1)
     para(doc, "The interactive prototype follows the four required stages — Sketch, Wireframe, Mockup and Prototype — "
-              "and uses the V2 visual language: amber background, brick-red primary action, Vietnamese food imagery "
-              "and a desktop/mobile responsive layout. The prototype covers the customer ordering flow, order "
-              "management, menu and hub administration, and reports R1 and R2.")
+              "and uses the SaigonBite V2 visual system: warm amber surfaces, brick-red primary actions, Vietnamese food "
+              "imagery, bilingual VI/EN switching (NFR03) and a responsive Bootstrap 12-column grid layout (Bootstrap "
+              "container/row/col breakpoints adapting between 1440 px desktop two-column layouts such as col-lg-7/col-lg-5 "
+              "and 375–390 px single-column mobile views). The V2 prototype covers customer ordering for both Local "
+              "Customers and Foreign Tourists, order management, menu and hub administration, and reports R1 and R2.")
 
     p = doc.add_paragraph()
-    r = p.add_run("Figma prototype link (page 04 Prototype → Present): ")
+    r = p.add_run("Figma V2 prototype link (page 04 Prototype → Present): ")
     r.bold = True
     r.font.size = Pt(10.5)
-    r = p.add_run(FIGMA_PROTO)
-    r.font.size = Pt(10.5)
-    r.font.color.rgb = RGBColor(0x0B, 0x53, 0x94)
-    r.underline = True
-    para(doc, "Design file (editor view): " + FIGMA_FILE, size=9, italic=True)
+    add_hyperlink(p, FIGMA_PROTO, FIGMA_PROTO, size=10.5)
+
+    p2 = doc.add_paragraph()
+    p2.paragraph_format.space_after = Pt(4)
+    r2 = p2.add_run("Figma design file (editor view): ")
+    r2.italic = True
+    r2.font.size = Pt(9)
+    add_hyperlink(p2, FIGMA_FILE, FIGMA_FILE, size=9)
 
     add_table(doc,
               ["Stage", "What it shows", "Evidence"],
@@ -783,8 +836,8 @@ def section_2_6(doc: Document):
                 "UC01 wireframe, 15/11"],
                ["Mockup", "V2 visual design applied to Confirmed desktop and Placed mobile.",
                 "Confirmed desktop, mobile 390 px"],
-               ["Prototype", "Clickable paths, error branches and the public share link.",
-                "107 frames, 63 required routes"]],
+               ["Prototype", "V2 clickable paths, error branches and the public share link.",
+                "91 V2 frames, 8 V2 flows"]],
               [2.6, 10.2, 3.7], font_size=8.5)
 
     sketch = svg_to_png(UC01IMG / "uc01-sketch-15.svg", BUILD / "sketch-15.png")
@@ -792,49 +845,51 @@ def section_2_6(doc: Document):
     add_image_grid(doc, [
         (sketch, "Figure 9 — Sketch stage (UC01, 524H0072)."),
         (wire, "Figure 10 — Wireframe stage (UC01, 524H0072)."),
-        (STAGES / "03-Mockup-Desktop.png", "Figure 11 — Mockup: order tracking on desktop."),
-        (STAGES / "03-Mockup-Mobile.png", "Figure 12 — Mockup: order tracking on mobile (390 px)."),
+        (STAGES / "03-Mockup-Desktop.png", "Figure 11 — Mockup: V2 order tracking on desktop (524H0072)."),
+        (STAGES / "03-Mockup-Mobile.png", "Figure 12 — Mockup: V2 order tracking on mobile 390 px (524H0072)."),
     ])
 
-    doc.add_heading("Key screens", level=2)
+    doc.add_heading("Key screens (SaigonBite V2)", level=2)
     add_image_grid(doc, [
-        (PREV / "trang-chu-desktop.png", "Figure 13 — Customer home and ordering entry, desktop."),
-        (PREV / "trang-chu-mobile.png", "Figure 14 — Customer home, mobile 375–390 px."),
-        (PREV / "thanh-toan-desktop.png", "Figure 15 — Checkout with the full price breakdown (FR03)."),
-        (PREV / "uc01-theo-doi-vnpay.png", "Figure 16 — Tracking after a VNPay payment."),
-        (PREV / "uc01-kiem-tra-tinh-huong.png", "Figure 17 — Error and edge-case entry points (hub load, COD cap, "
-                                                "payment failure)."),
-        (PREV / "uc01-mobile-huy-375.png", "Figure 18 — Mobile cancel flow with the refund result (FR07/BR16)."),
-        (PREV / "uc02-thuc-don-v2.png", "Figure 19 — UC02 menu and brand administration (524H0189)."),
-        (PREV / "uc03-cong-suat-v2.png", "Figure 20 — UC03 hub capacity and derived load (524H0188)."),
-        (PREV / "r1-doanh-thu-v2.png", "Figure 21 — R1 revenue by category and payment method."),
-        (PREV / "r2-hieu-suat-v2.png", "Figure 22 — R2 hub performance and current load."),
+        (PREV / "trang-chu-desktop.png", "Figure 13 — V2 customer home and hub brand browsing, desktop (524H0072)."),
+        (PREV / "trang-chu-mobile.png", "Figure 14 — V2 customer home, responsive mobile 375–390 px (524H0072)."),
+        (PREV / "thanh-toan-desktop.png", "Figure 15 — V2 Local Customer checkout: MoMo, VNPay, COD & price breakdown (FR03/BR13, 524H0072)."),
+        (PREV / "thanh-toan-tourist-desktop.png", "Figure 16 — V2 Foreign Tourist checkout (EN): Apple Pay, PayPal, COD & price breakdown (FR03/BR13/NFR03, 524H0072)."),
+        (PREV / "uc01-theo-doi-vnpay.png", "Figure 17 — V2 Local Customer order tracking after VNPay payment (524H0072)."),
+        (PREV / "uc01-theo-doi-apple-pay.png", "Figure 18 — V2 Foreign Tourist order tracking (EN) after Apple Pay (524H0072)."),
+        (PREV / "uc01-kiem-tra-tinh-huong.png", "Figure 19 — V2 order lifecycle states and error scenarios: hub load ≥ 90%, COD cap, payment failure (524H0072)."),
+        (PREV / "uc01-mobile-huy-375.png", "Figure 20 — V2 mobile cancel flow with simulated refund result (FR07/BR16, 524H0072)."),
+        (PREV / "uc02-thuc-don-v2.png", "Figure 21 — V2 UC02 menu and brand administration (524H0189)."),
+        (PREV / "uc03-cong-suat-v2.png", "Figure 22 — V2 UC03 hub capacity, rain flag and derived load (524H0188)."),
+        (PREV / "r1-doanh-thu-v2.png", "Figure 23 — V2 R1 revenue report by category and all five payment methods (Team)."),
+        (PREV / "r2-hieu-suat-v2.png", "Figure 24 — V2 R2 hub utilization, prep time and Quiet Kitchen report (524H0188)."),
     ])
 
     doc.add_heading("Interaction coverage", level=2)
-    bullet(doc, "Checkout shows only the three methods allowed for the customer type, and the COD cap is enforced "
-                "before the order is placed (BR13/BR14).")
+    bullet(doc, "Checkout enforces actor-specific payment methods (MoMo, VNPay, COD for Local Customers; Apple Pay, "
+                "PayPal, COD for Foreign Tourists) and the 1,000,000 VND COD cap before order placement (BR13/BR14).")
     bullet(doc, "Edit is offered only in Placed, cancel only in Placed or Confirmed, and tracking without actions from "
-                "Preparing onward (BR16/BR17).")
+                "Preparing onward as Kitchen Staff and Shipper advance order states via HT03 (BR15–BR17).")
     bullet(doc, "Error branches cover hub load ≥ 90%, COD above 1,000,000 VND and a failed simulated payment.")
-    bullet(doc, "Desktop and mobile layouts were checked at 1440 px and 375–390 px; mobile action targets are at "
-                "least 44 × 44 px.")
-    bullet(doc, "The prototype package contains 107 frames, 772 links and 63 required routes; all frames are reachable "
-                "from the published entry points.")
+    bullet(doc, "Bootstrap responsive grid layouts were verified at 1440 px desktop and 375–390 px mobile with VI/EN "
+                "language toggle support; mobile action targets are at least 44 × 44 px (NFR03).")
+    bullet(doc, "Page 04 Prototype in the published Figma file contains 91 V2 screens across 8 V2 interactive flows "
+                "(Local desktop, Mobile 375–390 px, Tourist checkout, Admin dashboard, UC02, UC03, R1 and R2).")
 
 
 def references(doc: Document):
     doc.add_heading("References", level=1)
     refs = [
-        "SE_FinalProject_Requirements_SaigonBite_Sem01_2627.pdf. Specification version 1.0: BR1–BR18, technology "
-        "tiers, use cases A–F and deliverables.",
-        "SE_FP_SaigonBite_StudentSurvivalGuide_Sem01_2627.pdf. Part 2 deliverables and Design Review guidance.",
-        "SE_FP_SaigonBite_CaseStudy_Sem01_2627.pdf. Business context and NFR baselines.",
-        "SE_Sem01_2627_Report_Template.docx. Official report structure, sections 2.1–2.6.",
-        "SaigonBite Team 3 Figma file: " + FIGMA_FILE,
-        "SaigonBite Team 3 repository: " + GITHUB,
+        ("SE_FinalProject_Requirements_SaigonBite_Sem01_2627.pdf. Specification version 1.0: BR1–BR18, technology "
+         "tiers, use cases A–F and deliverables.", None),
+        ("SE_FP_SaigonBite_StudentSurvivalGuide_Sem01_2627.pdf. Part 2 deliverables and Design Review guidance.", None),
+        ("SE_FP_SaigonBite_CaseStudy_Sem01_2627.pdf. Business context and NFR baselines.", None),
+        ("SE_Sem01_2627_Report_Template.docx. Official report structure, sections 2.1–2.6.", None),
+        ("SaigonBite Team 3 Figma V2 prototype: ", FIGMA_PROTO),
+        ("SaigonBite Team 3 Figma design file: ", FIGMA_FILE),
+        ("SaigonBite Team 3 repository: ", GITHUB),
     ]
-    for i, text in enumerate(refs, 1):
+    for i, (text, url) in enumerate(refs, 1):
         p = doc.add_paragraph()
         p.paragraph_format.left_indent = Cm(0.8)
         p.paragraph_format.first_line_indent = Cm(-0.8)
@@ -843,11 +898,13 @@ def references(doc: Document):
         r.font.size = Pt(9.5)
         r = p.add_run(text)
         r.font.size = Pt(9.5)
+        if url:
+            add_hyperlink(p, url, url, size=9.5)
 
 
 def appendices(doc: Document):
-    doc.add_page_break()
-    doc.add_heading("Appendix A: Contribution Statement", level=1)
+    h = doc.add_heading("Appendix A: Contribution Statement", level=1)
+    h.paragraph_format.page_break_before = True
     add_table(doc,
               ["Member", "Student ID", "Use case", "Contribution to Part 2"],
               [["Nguyễn Hải Triều", "524H0072", "UC01 Place and Manage Orders",
@@ -861,16 +918,27 @@ def appendices(doc: Document):
               [3.6, 2.4, 4.6, 5.9], font_size=8.5)
 
     doc.add_heading("Appendix B: Generative AI Usage Log", level=1)
-    para(doc, "The team used ChatGPT/Codex to interpret the specification, draft diagrams and prototype frames, and to "
-              "check consistency. Members reviewed the output and remain responsible for the submitted content. Full "
-              "prompts and records are retained and can be supplied on request.")
+    para(doc, "Per Section 7 of the course specification, all generative AI assistance used for brainstorming, "
+              "structuring and review is declared below. Team members verified every diagram, business rule and "
+              "requirement against the specification and retain full prompt records on request.")
     add_table(doc,
-              ["Tool and date", "Purpose", "What was kept or changed", "How it was checked"],
-              [["ChatGPT / Codex, Oct–Nov 2026",
-                "Interpret BR1–BR18, draft use cases, CRC, diagrams and the V2 prototype.",
-                "Identifiers and business rules kept from the specification; wording and layout edited by the owners.",
-                "Cross-checked against the specification, the rendered diagrams and the 63-route prototype QA."]],
-              [3.4, 4.8, 4.6, 3.7], font_size=8.5)
+              ["Tool and date", "Purpose", "Prompt (summary)", "What you kept or changed", "How you verified it"],
+              [["ChatGPT, 30 Oct 2026",
+                "Interpret BR1–BR18 and check FR/BR mapping for UC01–UC03.",
+                "\"Map BR1–BR18 to UC01, UC02 and UC03 pre/post-conditions and highlight ambiguities.\"",
+                "Kept BR IDs from spec; rewrote flows and recorded AMB01–AMB06 as team assumptions.",
+                "Cross-checked every rule and boundary against Specification Section 2B–C."],
+               ["ChatGPT / Codex, 10–11 Nov 2026",
+                "Draft PlantUML source for Use Case, Activity, State, Class/Strategy and ERD diagrams.",
+                "\"Generate PlantUML diagrams for SaigonBite Payment Strategy, 8-state order lifecycle and single-schema ERD.\"",
+                "Added SystemSettings table, aligned actor guards with BR15 and verified all student IDs.",
+                "Rendered locally with PlantUML and checked against Section 2C state table and CRC cards."],
+               ["ChatGPT / Codex, 14–19 Nov 2026",
+                "Structure V2 Figma screens, responsive layout QA and English wording refinement.",
+                "\"Audit SaigonBite V2 checkout, tracking and R1/R2 screens against Part 2 checklist and refine English report prose.\"",
+                "Retained V2 orange theme only; added Foreign Tourist checkout (Apple Pay/PayPal) and fixed formatting.",
+                "Tested public Figma link unauthenticated and ran automated deliverable checklist."]],
+              [2.6, 2.9, 3.8, 3.8, 3.4], font_size=8.0)
 
     doc.add_heading("Appendix C: Detailed UC01 Activity Diagrams", level=1)
     para(doc, "UC01 was modelled at two levels. Section 2.3.1 contains the readable overview used for review; the four "
@@ -880,16 +948,17 @@ def appendices(doc: Document):
     add_table(doc,
               ["Diagram", "Focus", "Source file"],
               [["Create order", "Hub and menu checks, pricing, payment branches, atomic save",
-                "diagrams/uc01-create-activity.svg"],
+                "docs/part2/diagrams/uc01-create-activity.svg"],
                ["Read and track", "Ownership check, stored breakdown, status history",
-                "diagrams/uc01-read-activity.svg"],
+                "docs/part2/diagrams/uc01-read-activity.svg"],
                ["Edit while Placed", "Snapshot reuse, price adjustment, concurrency guard",
-                "diagrams/uc01-edit-activity.svg"],
+                "docs/part2/diagrams/uc01-edit-activity.svg"],
                ["Cancel", "Placed/Confirmed guard, simulated refund, retained history",
-                "diagrams/uc01-cancel-activity.svg"]],
-              [3.6, 9.2, 4.2], font_size=9)
-    para(doc, "The four SVG/PNG pairs are kept in the project repository and in the team Drive folder together with "
-              "this report, so the diagrams can be opened at full resolution during the Design Review.")
+                "docs/part2/diagrams/uc01-cancel-activity.svg"]],
+              [3.4, 7.6, 5.5], font_size=8.5)
+    para(doc, "The four SVG/PNG pairs are kept in the project repository (docs/part2/diagrams/) and in the team Drive "
+              "folder together with this report, so the diagrams can be opened at full resolution during the Design "
+              "Review.")
 
 
 # --------------------------------------------------------------------------- build

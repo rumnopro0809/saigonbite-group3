@@ -1,6 +1,6 @@
 @startuml
 title UC03 Manage Hubs and Capacity | FR14.1-FR14.4, BR8
-footer Owner 524H0188 | AI-assisted design for owner review
+footer Author: Le Quang Tan (524H0188) | Team 3
 start
 :Authenticate and authorize Admin;
 if (Read?) then (yes)

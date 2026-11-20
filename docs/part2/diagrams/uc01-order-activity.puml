@@ -1,6 +1,6 @@
 @startuml
 title UC01 - Place and Manage Orders\nOverview | FR01-FR07
-footer Nguyen Hai Trieu - 524H0072 | Group 3 | AI-assisted draft for owner review
+footer Author: Nguyen Hai Trieu (524H0072) | Team 3
 skinparam backgroundColor #FFFCF5
 skinparam shadowing false
 skinparam defaultFontName SansSerif

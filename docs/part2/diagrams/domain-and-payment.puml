@@ -1,7 +1,7 @@
 @startuml
 skinparam classAttributeIconSize 0
 title Domain model and Payment Strategy
-footer Owners 524H0072 orders/payment; 524H0189 menu; 524H0188 hubs | AI-assisted draft
+footer Team 3 | 524H0072 (orders/payment), 524H0189 (menu), 524H0188 (hubs)
 abstract class Customer
 class LocalCustomer
 class ForeignTourist

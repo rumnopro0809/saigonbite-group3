@@ -1,6 +1,6 @@
 @startuml
 title UC02 Manage Menu and Brands | FR08-FR11, FR13, BR12
-footer Owner 524H0189 | AI-assisted design for owner review
+footer Author: Duong Pham Thai (524H0189) | Team 3
 start
 :Authenticate and authorize Admin;
 if (Read?) then (yes)
