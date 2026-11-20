@@ -837,7 +837,7 @@ def section_2_6(doc: Document):
                ["Mockup", "V2 visual design applied to Confirmed desktop and Placed mobile.",
                 "Confirmed desktop, mobile 390 px"],
                ["Prototype", "V2 clickable paths, error branches and the public share link.",
-                "91 V2 frames, 8 V2 flows"]],
+                "107 V2 frames, 9 V2 flows"]],
               [2.6, 10.2, 3.7], font_size=8.5)
 
     sketch = svg_to_png(UC01IMG / "uc01-sketch-15.svg", BUILD / "sketch-15.png")
@@ -873,8 +873,9 @@ def section_2_6(doc: Document):
     bullet(doc, "Error branches cover hub load ≥ 90%, COD above 1,000,000 VND and a failed simulated payment.")
     bullet(doc, "Bootstrap responsive grid layouts were verified at 1440 px desktop and 375–390 px mobile with VI/EN "
                 "language toggle support; mobile action targets are at least 44 × 44 px (NFR03).")
-    bullet(doc, "Page 04 Prototype in the published Figma file contains 91 V2 screens across 8 V2 interactive flows "
-                "(Local desktop, Mobile 375–390 px, Tourist checkout, Admin dashboard, UC02, UC03, R1 and R2).")
+    bullet(doc, "Page 04 Prototype in the published Figma file contains 107 V2 screens across 9 V2 interactive flows "
+                "(Local desktop, Mobile 375–390 px, Tourist checkout, UC01 edit/cancel/error scenarios, Admin dashboard, "
+                "UC02, UC03, R1 and R2).")
 
 
 def references(doc: Document):
