@@ -1,0 +1,18 @@
+@model HubFormVm
+@{
+    ViewBag.Title = "Thêm bếp";
+    ViewBag.ActiveTab = "hubs";
+}
+
+<div class="sb-eyebrow"><a href="@Url.Action("Index", "Hubs")">← Danh sách bếp</a></div>
+<h1 class="sb-h1">Thêm bếp</h1>
+
+<div class="sb-card sb-form">
+    @using (Html.BeginForm("Create", "Hubs", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Partial("_Form", Model)
+        <button type="submit" class="btn sb-btn-primary">Lưu bếp</button>
+        <a class="btn sb-btn-outline" href="@Url.Action("Index", "Hubs")">Hủy</a>
+    }
+</div>

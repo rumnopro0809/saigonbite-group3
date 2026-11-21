@@ -1,0 +1,35 @@
+@model HubFormVm
+
+@Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.RowVersion)
+
+<div class="mb-3">
+    @Html.LabelFor(m => m.Name, new { @class = "form-label" })
+    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", maxlength = 100 })
+    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+</div>
+<div class="mb-3">
+    @Html.LabelFor(m => m.Location, new { @class = "form-label" })
+    @Html.TextBoxFor(m => m.Location, new { @class = "form-control", maxlength = 200 })
+    @Html.ValidationMessageFor(m => m.Location, "", new { @class = "text-danger" })
+</div>
+<div class="mb-3">
+    @Html.LabelFor(m => m.Capacity, new { @class = "form-label" })
+    @Html.TextBoxFor(m => m.Capacity, new { @class = "form-control", type = "number", min = 1, step = 1 })
+    @Html.ValidationMessageFor(m => m.Capacity, "", new { @class = "text-danger" })
+</div>
+<div class="mb-3">
+    <label class="form-label">@Html.DisplayNameFor(m => m.SelectedBrandIds)</label>
+    <div>
+        @foreach (var brand in Model.AllBrands)
+        {
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="brand-@brand.Id" name="SelectedBrandIds" value="@brand.Id"
+                       checked="@(Model.SelectedBrandIds.Contains(brand.Id) ? "checked" : null)" />
+                <label class="form-check-label" for="brand-@brand.Id">@brand.Name</label>
+            </div>
+        }
+    </div>
+    @Html.ValidationMessageFor(m => m.SelectedBrandIds, "", new { @class = "text-danger" })
+</div>

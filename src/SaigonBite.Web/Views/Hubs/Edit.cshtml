@@ -1,0 +1,19 @@
+@model HubFormVm
+@{
+    ViewBag.Title = "Sửa bếp";
+    ViewBag.ActiveTab = "hubs";
+}
+
+<div class="sb-eyebrow"><a href="@Url.Action("Details", "Hubs", new { id = Model.Id })">← Chi tiết bếp</a></div>
+<h1 class="sb-h1">Sửa bếp</h1>
+<p class="sb-sub">Giảm công suất có thể làm tải vượt 100%, nhưng không làm thay đổi các đơn đã có.</p>
+
+<div class="sb-card sb-form">
+    @using (Html.BeginForm("Edit", "Hubs", new { id = Model.Id }, FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Partial("_Form", Model)
+        <button type="submit" class="btn sb-btn-primary">Lưu thay đổi</button>
+        <a class="btn sb-btn-outline" href="@Url.Action("Details", "Hubs", new { id = Model.Id })">Hủy</a>
+    }
+</div>

@@ -1,0 +1,55 @@
+@model HubIndexVm
+@{
+    ViewBag.Title = "Quản lý bếp và công suất";
+    ViewBag.ActiveTab = "hubs";
+}
+
+<div class="sb-eyebrow">SAIGONBITE / VẬN HÀNH</div>
+<h1 class="sb-h1">Quản lý bếp và công suất</h1>
+<p class="sb-sub">Theo dõi công suất và tải để điều phối việc nhận đơn.</p>
+
+<div class="sb-toolbar">
+    @* Nút cờ mưa gọi REST API PUT /api/rain-flag (xem Scripts/uc03.js). *@
+    <button type="button" id="rain-toggle" class="btn sb-btn-outline"
+            data-url="@Url.Content("~/api/rain-flag")"
+            data-on="@(Model.Rain.IsHeavyRainOn ? "true" : "false")"
+            data-rowversion="@Model.Rain.RowVersion">
+        Có mưa lớn · <span id="rain-state">@(Model.Rain.IsHeavyRainOn ? "Đang bật" : "Đang tắt")</span>
+    </button>
+    <a class="btn sb-btn-primary" href="@Url.Action("Create", "Hubs")">Thêm bếp +</a>
+</div>
+
+<div class="sb-note">Tải bếp = đơn Confirmed và Preparing ÷ công suất. Bếp từ 90% tải trở lên tạm ngừng nhận đơn mới.</div>
+<div id="sb-flash" role="status"></div>
+
+<div class="sb-card">
+    <table class="table sb-table align-middle mb-0">
+        <thead>
+            <tr>
+                <th>Bếp</th>
+                <th>Đang xử lý</th>
+                <th>Công suất</th>
+                <th>Tải hiện tại</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hub in Model.Hubs)
+            {
+                <tr>
+                    <td><strong>@hub.Name</strong><div class="sb-muted">@hub.Location</div></td>
+                    <td>@hub.ActiveOrders đơn</td>
+                    <td>@hub.Capacity đơn</td>
+                    <td>@hub.LoadPercent%</td>
+                    <td><span class="@HubDisplay.StatusCss(hub)">@HubDisplay.StatusText(hub)</span></td>
+                    <td><a class="btn sb-btn-outline btn-sm" href="@Url.Action("Details", "Hubs", new { id = hub.Id })">Xem chi tiết</a></td>
+                </tr>
+            }
+            @if (Model.Hubs.Count == 0)
+            {
+                <tr><td colspan="6" class="text-center sb-muted py-4">Chưa có bếp nào. Hãy bấm "Thêm bếp".</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

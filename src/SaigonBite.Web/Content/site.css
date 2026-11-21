@@ -1,0 +1,74 @@
+/* Giao diện UC03, bám theo màu và bố cục của Figma V2 (nền kem, đỏ đậm, cam nhạt). */
+:root {
+    --sb-bg: #fdf8ee;
+    --sb-red: #a3271b;
+    --sb-red-dark: #86201a;
+    --sb-head: #fdecd2;
+    --sb-text: #2b2420;
+    --sb-muted: #7a6e66;
+    --sb-line: #eadfce;
+    --sb-ok-bg: #e2f0dd;
+    --sb-ok: #2f6b2f;
+    --sb-bad-bg: #fde3df;
+    --sb-bad: #b3261e;
+}
+
+body { background: var(--sb-bg); color: var(--sb-text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
+a { color: var(--sb-red); }
+
+.sb-topbar { display: flex; align-items: center; gap: 16px; padding: 12px 32px; background: #fff; border-bottom: 1px solid var(--sb-line); }
+.sb-logo { font-size: 1.5rem; font-weight: 800; color: var(--sb-red); }
+.sb-pill { background: var(--sb-head); color: var(--sb-red); font-size: .75rem; font-weight: 700; padding: 6px 28px; border-radius: 8px; }
+.sb-user { margin-left: auto; background: var(--sb-ok-bg); color: var(--sb-ok); font-size: .75rem; padding: 4px 12px; border-radius: 999px; }
+.sb-bypass { background: #fff3cd; color: #664d03; font-size: .8rem; text-align: center; padding: 4px 8px; }
+
+.sb-container { max-width: 1120px; padding-top: 24px; padding-bottom: 48px; }
+
+.sb-tabs { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+.sb-tab { padding: 10px 22px; border: 1px solid var(--sb-line); border-radius: 10px; background: #fff; color: var(--sb-text); text-decoration: none; font-size: .85rem; font-weight: 600; }
+.sb-tab-active { background: var(--sb-red); border-color: var(--sb-red); color: #fff; }
+.sb-tab-off { color: var(--sb-muted); cursor: not-allowed; }
+
+.sb-eyebrow { color: var(--sb-red); font-size: .7rem; font-weight: 700; letter-spacing: .04em; margin-bottom: 8px; }
+.sb-eyebrow a { text-decoration: none; }
+.sb-h1 { font-size: 2rem; font-weight: 800; margin-bottom: 4px; }
+.sb-sub { color: var(--sb-muted); margin-bottom: 20px; }
+.sb-muted { color: var(--sb-muted); font-size: .8rem; }
+
+.sb-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.sb-actions-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+.sb-presets { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
+.sb-range { display: flex; align-items: center; gap: 8px; margin-left: 8px; }
+
+.sb-btn-primary { background: var(--sb-red); color: #fff; border: 1px solid var(--sb-red); font-weight: 600; }
+.sb-btn-primary:hover { background: var(--sb-red-dark); color: #fff; }
+.sb-btn-outline { background: #fff; color: var(--sb-red); border: 1px solid var(--sb-line); font-weight: 600; }
+.sb-btn-outline:hover { background: var(--sb-head); color: var(--sb-red); }
+.btn:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #1b6ef3; outline-offset: 2px; }
+
+.sb-note { background: var(--sb-ok-bg); color: var(--sb-ok); border: 1px solid #cfe3c8; border-radius: 8px; padding: 10px 14px; font-size: .8rem; font-weight: 600; margin-bottom: 16px; }
+
+.sb-card { background: #fff; border: 1px solid var(--sb-line); border-radius: 12px; padding: 20px; }
+.sb-table { --bs-table-bg: transparent; }
+.sb-card:has(.sb-table) { padding: 0; overflow: hidden; }
+.sb-table thead th { background: var(--sb-head); color: var(--sb-red); font-size: .75rem; padding: 14px 20px; border: 0; }
+.sb-table td { padding: 16px 20px; font-size: .85rem; }
+
+.sb-chip { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+.sb-chip-ok { background: var(--sb-ok-bg); color: var(--sb-ok); }
+.sb-chip-bad { background: var(--sb-bad-bg); color: var(--sb-bad); }
+
+.sb-stat-label { color: var(--sb-muted); font-size: .8rem; font-weight: 600; }
+.sb-stat-value { color: var(--sb-red); font-size: 2.2rem; font-weight: 800; line-height: 1.2; }
+
+.sb-progress { height: 10px; background: var(--sb-head); }
+.sb-bar { background: var(--sb-red); }
+.sb-badge { background: var(--sb-head); color: var(--sb-red); margin-right: 6px; }
+.sb-form { max-width: 640px; }
+
+/* Màn hình hẹp (điện thoại): tab và bảng cuộn ngang thay vì vỡ bố cục (NFR03). */
+@media (max-width: 575px) {
+    .sb-topbar { padding: 10px 16px; }
+    .sb-card { overflow-x: auto; }
+    .sb-range { margin-left: 0; flex-wrap: wrap; }
+}
