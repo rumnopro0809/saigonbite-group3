@@ -90,6 +90,19 @@ internal static class Program
         Check("STATE-COD-uncollected-invalid", () => True(!OrderLifecycle.CanTransition(OrderStatus.OutForDelivery,OrderStatus.Delivered,shipper)));
         Check("STATE-kitchen-reject-needs-reason", () => True(!OrderLifecycle.CanTransition(OrderStatus.Placed,OrderStatus.Cancelled,kitchen)));
         Check("STATE-unassigned-shipper-invalid", () => True(!OrderLifecycle.CanTransition(OrderStatus.Ready,OrderStatus.OutForDelivery,new TransitionContext {Role=ActorRole.Shipper})));
+        // UC03: tải bếp (FR14.2, BR7, BR8). Kiểm tra biên 29/30/89/90% và các đơn không được tính.
+        Check("HUBLOAD-0-orders", () => Equal(0m, HubLoad.Calculate(0, 20)));
+        Check("HUBLOAD-29pct-quiet", () => True(HubLoad.Classify(HubLoad.Calculate(29, 100)) == HubLoadLevel.Quiet));
+        Check("HUBLOAD-30pct-normal", () => True(HubLoad.Classify(HubLoad.Calculate(30, 100)) == HubLoadLevel.Normal));
+        Check("HUBLOAD-89pct-normal", () => True(HubLoad.Classify(HubLoad.Calculate(89, 100)) == HubLoadLevel.Normal));
+        Check("HUBLOAD-90pct-full", () => True(HubLoad.Classify(HubLoad.Calculate(18, 20)) == HubLoadLevel.Full));
+        Check("HUBLOAD-over-100pct", () => Equal(1.5m, HubLoad.Calculate(30, 20)));
+        Check("HUBLOAD-capacity-0-reject", () => Reject("FR14.1", () => HubLoad.Calculate(1, 0)));
+        Check("HUBLOAD-capacity-negative-reject", () => Reject("FR14.1", () => HubLoad.Calculate(1, -1)));
+        Check("HUBLOAD-capacity-1-valid", () => Equal(1m, HubLoad.Calculate(1, 1)));
+        Check("HUBLOAD-counts-confirmed-preparing", () => True(HubLoad.CountsTowardLoad(OrderStatus.Confirmed) && HubLoad.CountsTowardLoad(OrderStatus.Preparing)));
+        Check("HUBLOAD-ignores-others", () => True(!HubLoad.CountsTowardLoad(OrderStatus.Placed) && !HubLoad.CountsTowardLoad(OrderStatus.Ready) && !HubLoad.CountsTowardLoad(OrderStatus.Cancelled) && !HubLoad.CountsTowardLoad(OrderStatus.Delivered)));
+        Check("HUBLOAD-pricing-uses-90-threshold", () => Reject("BR8", () => Price(x => x.HubLoad = HubLoad.Calculate(18, 20))));
         Console.WriteLine("RESULT " + passed + " passed; " + failed + " failed");
         return failed == 0 ? 0 : 1;
     }

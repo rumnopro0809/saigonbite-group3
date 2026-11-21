@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Lớp domain thuần: không phụ thuộc EF hay System.Web (ADR-001). -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <RootNamespace>SaigonBite.Domain</RootNamespace>
+    <AssemblyName>SaigonBite.Domain</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Thư mục bin/obj do script check-domain.ps1 tạo ra, không biên dịch lại. -->
+    <Compile Remove="bin\**;obj\**" />
+  </ItemGroup>
+</Project>
