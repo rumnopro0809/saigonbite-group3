@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Lớp service: chứa nghiệp vụ UC03. Chỉ biết Domain và giao diện IAppDbContext, không biết web. -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <RootNamespace>SaigonBite.Application</RootNamespace>
+    <AssemblyName>SaigonBite.Application</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SaigonBite.Domain\SaigonBite.Domain.csproj" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+  </ItemGroup>
+</Project>
