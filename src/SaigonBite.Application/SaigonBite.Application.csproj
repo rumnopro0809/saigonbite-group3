@@ -36,6 +36,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Menu\IMenuRepository.cs" />
+    <Compile Include="Menu\MenuDtos.cs" />
+    <Compile Include="Menu\MenuService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
