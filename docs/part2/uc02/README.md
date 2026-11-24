@@ -20,6 +20,6 @@ Tài liệu rà soát và đặc tả chi tiết cho **UC02 (Manage Menu and Bra
 - [x] Đặc tả chi tiết CRUD & bảng truy vết `FR08–FR11`, `BR12`, `BR17`
 - [x] Rà soát Activity Diagram (`uc02-menu-activity.puml`), `CRC06 MenuService`, và đối chiếu thực thể EF6 trên `main`
 - [x] Thuyết trình Part 2 Design Review (`Slide 8`, `Slide 12`) & demo Figma V2 (`UC02 Thực đơn`, `R1 Doanh thu`) ngày 23/11/2026
-- [ ] Hoàn thiện `MenuService`, `EfMenuRepository`, `BrandsController`/`MenuController` (MVC 5 + Bootstrap song ngữ `vi`/`en`) trên nhánh `feature/uc02-menu`
-- [ ] Viết và chạy MSTest cho `TC08–TC11`, `TC13`, `BR12` và bảo toàn snapshot `BR17`
-- [ ] Phối hợp triển khai phần hỗ trợ (`HT01` Accounts/Auth & `HT02` Vouchers) sau khi chốt với nhóm
+- [x] Hoàn thiện `MenuService`, `EfMenuRepository`, `BrandsController`/`MenuController` (MVC 5 + Bootstrap song ngữ `vi`/`en`) trên nhánh `feature/uc02-menu`
+- [x] Viết và chạy MSTest cho `TC08–TC11`, `TC13`, `BR12` và bảo toàn snapshot `BR17` (12/12 UC02 tests + 2/2 pricing smoke tests pass, 0 warnings, 0 errors trên `.NET Framework 4.7.2`)
+- [ ] Phối hợp triển khai phần hỗ trợ (`HT01` Accounts/Auth & `HT02` Vouchers) và chạy thử end-to-end với `.\SQLEXPRESS` sau khi chốt với nhóm
