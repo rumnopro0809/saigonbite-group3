@@ -40,7 +40,20 @@
     <PackageReference Include="EntityFramework" Version="6.4.4" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\SaigonBiteDbContext.cs" />
+    <Compile Include="Data\SaigonBiteSeeder.cs" />
+    <Compile Include="Migrations\202611240719260_InitialCreate.cs" />
+    <Compile Include="Migrations\202611240719260_InitialCreate.Designer.cs">
+      <DependentUpon>202611240719260_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\PasswordHasher.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202611240719260_InitialCreate.resx">
+      <DependentUpon>202611240719260_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SaigonBite.Domain\SaigonBite.Domain.csproj">

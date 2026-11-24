@@ -41,8 +41,12 @@
     <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DatabaseSeedTests.cs" />
     <Compile Include="PricingSmokeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SaigonBite.Domain\SaigonBite.Domain.csproj">

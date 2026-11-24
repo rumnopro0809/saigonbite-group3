@@ -1,6 +1,101 @@
+@model SaigonBite.Web.Models.HomeViewModel
 @{
-    ViewBag.Title = "Home";
+    bool isVi = Model.Lang == "vi";
+    ViewBag.Title = isVi ? "Trang chủ" : "Home";
 }
 
-<h1>SaigonBite</h1>
-<p>Cloud-Kitchen Food Delivery Hub skeleton is ready.</p>
+<section class="sb-hero p-4 p-md-5 mb-5">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="badge text-bg-light text-danger mb-2">
+                @(isVi ? "BẾP SÀI GÒN · GIAO TẬN CỬA" : "SAIGON CLOUD KITCHENS · FRESH DELIVERY")
+            </span>
+            <h1 class="display-5 fw-bold mb-3">
+                @(isVi ? "Sài Gòn lên món." : "Saigon dishes, cooked to order.")
+            </h1>
+            <p class="lead mb-3">
+                @(isVi
+                    ? "Chọn một bếp đám mây gần bạn, gom nhiều thương hiệu trong một đơn với giá minh bạch."
+                    : "Pick a nearby cloud-kitchen hub and order across multiple Saigon brands in one checkout.")
+            </p>
+            @if (Model.IsHeavyRainOn)
+            {
+                <div class="alert alert-warning d-inline-block py-1 px-3 mb-0 small fw-semibold">
+                    @(isVi ? "Phụ thu mưa lớn đang bật (+10.000 đ)" : "Heavy rain surcharge is active (+10,000 VND)")
+                </div>
+            }
+        </div>
+        <div class="col-lg-5 text-center">
+            <img src="@Url.Content("~/Content/images/hero.jpg")"
+                 alt="SaigonBite Hero"
+                 class="img-fluid rounded-4 shadow-sm"
+                 style="max-height: 260px; width: 100%; object-fit: cover;" />
+        </div>
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+        <div>
+            <h2 class="h4 fw-bold mb-1">@(isVi ? "Các bếp đang hoạt động" : "Active Kitchen Hubs")</h2>
+            <p class="text-muted small mb-0">
+                @(isVi ? "Dữ liệu đọc trực tiếp từ SQL Server (SaigonBiteDb)." : "Loaded directly from SQL Server (SaigonBiteDb).")
+            </p>
+        </div>
+        <span class="badge text-bg-success">@Model.Hubs.Count @(isVi ? "bếp" : "hubs")</span>
+    </div>
+
+    <div class="row g-3">
+        @foreach (var hub in Model.Hubs)
+        {
+            <div class="col-md-4">
+                <div class="card h-100 sb-card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h3 class="h6 fw-bold mb-0">@hub.Name</h3>
+                            <span class="badge text-bg-light border">@hub.District</span>
+                        </div>
+                        <p class="text-muted small mb-2">@hub.Address</p>
+                        <div class="small fw-semibold text-success">
+                            @(isVi ? "Công suất tối đa:" : "Max capacity:") @hub.MaxCapacity @(isVi ? "đơn" : "orders")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<section>
+    <div class="d-flex justify-content-between align-items-end mb-3">
+        <div>
+            <h2 class="h4 fw-bold mb-1">@(isVi ? "Thực đơn đặc trưng Sài Gòn" : "Signature Saigon Menu")</h2>
+            <p class="text-muted small mb-0">
+                @(isVi ? "8 món từ 4 thương hiệu đã seed sẵn trong cơ sở dữ liệu." : "8 dishes across 4 brands seeded in the database.")
+            </p>
+        </div>
+        <span class="badge text-bg-danger">@Model.MenuItems.Count @(isVi ? "món" : "items")</span>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var item in Model.MenuItems)
+        {
+            <div class="col-sm-6 col-lg-3">
+                <div class="card h-100 sb-card shadow-sm overflow-hidden">
+                    <img src="@Url.Content("~" + item.ImageUrl)"
+                         alt="@item.Name"
+                         class="card-img-top"
+                         style="height: 170px; object-fit: cover;" />
+                    <div class="card-body d-flex flex-column">
+                        <div class="text-uppercase text-danger fw-bold" style="font-size: 0.72rem;">
+                            @(item.Brand != null ? item.Brand.Name : "SaigonBite")
+                        </div>
+                        <h3 class="h6 fw-bold mt-1 mb-1">@item.Name</h3>
+                        <p class="text-muted small flex-grow-1 mb-2">@item.Description</p>
+                        <div class="fw-bold fs-6">@string.Format("{0:N0} đ", item.Price)</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

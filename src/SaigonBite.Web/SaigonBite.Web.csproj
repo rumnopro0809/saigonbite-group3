@@ -57,9 +57,19 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\images\banhmi.jpg" />
+    <Content Include="Content\images\comtam.jpg" />
+    <Content Include="Content\images\detham.jpg" />
+    <Content Include="Content\images\goicuon.jpg" />
+    <Content Include="Content\images\heoquay.jpg" />
+    <Content Include="Content\images\hero.jpg" />
+    <Content Include="Content\images\lauthai.jpg" />
+    <Content Include="Content\images\logo.png" />
+    <Content Include="Content\images\miencua.jpg" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
     <Content Include="Views\Web.config" />
