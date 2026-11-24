@@ -70,6 +70,15 @@
                     <li class="nav-item">
                         <a class="nav-link fw-semibold" href="@Url.Action("Index", "Home")">@(isVi ? "Trang chủ" : "Home")</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="@Url.Action("Browse", "Menu")">@(isVi ? "Thực đơn theo Bếp" : "Hub Menu")</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="@Url.Action("Index", "Menu")">@(isVi ? "UC02 · Thực đơn" : "UC02 · Menu")</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="@Url.Action("Index", "Brands")">@(isVi ? "UC02 · Thương hiệu" : "UC02 · Brands")</a>
+                    </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
                     <a class="btn btn-sm btn-outline-secondary"
