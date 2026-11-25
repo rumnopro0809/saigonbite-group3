@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabaseSeedTests.cs" />
+    <Compile Include="OrderTransitionTests.cs" />
     <Compile Include="PaymentStrategyTests.cs" />
     <Compile Include="PricingSmokeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
