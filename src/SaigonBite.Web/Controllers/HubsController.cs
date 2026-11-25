@@ -51,11 +51,12 @@ namespace SaigonBite.Web.Controllers
                 var result = _hubs.Create(vm.ToInput());
                 if (result.IsSuccess)
                 {
-                    TempData["Message"] = "Đã tạo bếp mới.";
+                    TempData["Message"] = HubText.Localize("Đã tạo bếp mới.", English);
                     return RedirectToAction("Details", new { id = result.Value.Id });
                 }
                 AddErrors(result);
             }
+            LocalizeModelState();
             vm.AllBrands = _hubs.GetBrandOptions();
             return View(vm);
         }
@@ -83,11 +84,12 @@ namespace SaigonBite.Web.Controllers
                 if (result.Status == ResultStatus.NotFound) return HttpNotFound();
                 if (result.IsSuccess)
                 {
-                    TempData["Message"] = "Đã lưu thay đổi.";
+                    TempData["Message"] = HubText.Localize("Đã lưu thay đổi.", English);
                     return RedirectToAction("Details", new { id });
                 }
                 AddErrors(result);
             }
+            LocalizeModelState();
             vm.AllBrands = _hubs.GetBrandOptions();
             return View(vm);
         }

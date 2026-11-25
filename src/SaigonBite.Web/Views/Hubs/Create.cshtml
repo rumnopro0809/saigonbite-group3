@@ -1,18 +1,19 @@
 @model HubFormVm
 @{
-    ViewBag.Title = "Thêm bếp";
+    bool en = HubText.IsEnglish(Request);
+    ViewBag.Title = en ? "Add hub" : "Thêm bếp";
     ViewBag.ActiveTab = "hubs";
 }
 
-<div class="sb-eyebrow"><a href="@Url.Action("Index", "Hubs")">← Danh sách bếp</a></div>
-<h1 class="sb-h1">Thêm bếp</h1>
+<div class="sb-eyebrow"><a href="@Url.Action("Index", "Hubs")">← @(en ? "Hub list" : "Danh sách bếp")</a></div>
+<h1 class="sb-h1">@(en ? "Add hub" : "Thêm bếp")</h1>
 
 <div class="sb-card sb-form">
     @using (Html.BeginForm("Create", "Hubs", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
         @Html.Partial("_Form", Model)
-        <button type="submit" class="btn sb-btn-primary">Lưu bếp</button>
-        <a class="btn sb-btn-outline" href="@Url.Action("Index", "Hubs")">Hủy</a>
+        <button type="submit" class="btn sb-btn-primary">@(en ? "Save hub" : "Lưu bếp")</button>
+        <a class="btn sb-btn-outline" href="@Url.Action("Index", "Hubs")">@(en ? "Cancel" : "Hủy")</a>
     }
 </div>

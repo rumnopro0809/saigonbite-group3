@@ -41,7 +41,7 @@ namespace SaigonBite.Web.Controllers
 
             var result = _report.Build(start, end);
             if (result.IsSuccess) vm.Report = result.Value;
-            else vm.ErrorMessage = result.Errors.Count > 0 ? result.Errors[0].Message : "Không tạo được báo cáo.";
+            else vm.ErrorMessage = HubText.Localize(result.Errors.Count > 0 ? result.Errors[0].Message : "Không tạo được báo cáo.", English);
             return View(vm);
         }
     }

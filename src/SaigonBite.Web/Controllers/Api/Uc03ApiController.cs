@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using SaigonBite.Application;
 using SaigonBite.Infrastructure;
 using SaigonBite.Web.Security;
+using SaigonBite.Web.ViewModels;
 
 namespace SaigonBite.Web.Controllers.Api
 {
@@ -23,6 +25,17 @@ namespace SaigonBite.Web.Controllers.Api
     public abstract class Uc03ApiController : ApiController
     {
         protected readonly AppDbContext Db = new AppDbContext();
+
+        /// <summary>Người gọi đang dùng tiếng Anh (cookie sb_lang = en). Thông báo lỗi được dịch theo đó (NFR03).</summary>
+        private bool English
+        {
+            get
+            {
+                var header = Request.Headers.GetCookies("sb_lang").FirstOrDefault();
+                var cookie = header == null ? null : header.Cookies.FirstOrDefault(c => c.Name == "sb_lang");
+                return cookie != null && cookie.Value == "en";
+            }
+        }
 
         /// <summary>
         /// Đổi ServiceResult thành phản hồi HTTP:
@@ -45,12 +58,18 @@ namespace SaigonBite.Web.Controllers.Api
 
         protected IHttpActionResult BadRequestMessage(string message)
         {
-            return Content(HttpStatusCode.BadRequest, new ApiError { Message = message, Errors = new List<ValidationError>() });
+            return Content(HttpStatusCode.BadRequest,
+                new ApiError { Message = HubText.Localize(message, English), Errors = new List<ValidationError>() });
         }
 
-        private static ApiError ToError<T>(string message, ServiceResult<T> result)
+        private ApiError ToError<T>(string message, ServiceResult<T> result)
         {
-            return new ApiError { Message = message, Errors = result.Errors.ToList() };
+            bool en = English;
+            return new ApiError
+            {
+                Message = HubText.Localize(message, en),
+                Errors = result.Errors.Select(e => new ValidationError(e.Field, HubText.Localize(e.Message, en))).ToList()
+            };
         }
 
         protected override void Dispose(bool disposing)

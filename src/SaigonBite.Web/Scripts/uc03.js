@@ -5,6 +5,10 @@
 (function () {
     'use strict';
 
+    // Ngôn ngữ trang (NFR03): layout đặt <html lang="en"> hoặc "vi" theo cookie sb_lang.
+    var en = document.documentElement.lang === 'en';
+    function t(vi, english) { return en ? english : vi; }
+
     /** Hiện thông báo ngắn ở vùng #sb-flash. kind là "success" hoặc "danger". */
     function flash(kind, text) {
         var box = document.getElementById('sb-flash');
@@ -27,14 +31,14 @@
         });
     }
 
-    /** Đổi kết quả lỗi của API thành câu tiếng Việt cho người dùng. */
+    /** Đổi kết quả lỗi của API thành câu cho người dùng, theo ngôn ngữ đang chọn. */
     function errorText(result) {
-        if (result.status === 409) return 'Dữ liệu vừa được người khác sửa. Hãy tải lại trang rồi thử lại.';
+        if (result.status === 409) return t('Dữ liệu vừa được người khác sửa. Hãy tải lại trang rồi thử lại.', 'Someone else just changed this data. Reload the page and try again.');
         if (result.data && result.data.errors && result.data.errors.length) {
             return result.data.errors.map(function (e) { return e.message; }).join(' ');
         }
         if (result.data && result.data.message) return result.data.message;
-        return 'Có lỗi xảy ra (mã ' + result.status + ').';
+        return t('Có lỗi xảy ra (mã ', 'Something went wrong (code ') + result.status + ').';
     }
 
     // ---- Cờ mưa (FR16): PUT /api/rain-flag ----
@@ -49,10 +53,10 @@
                 if (!result.ok) { flash('danger', errorText(result)); return; }
                 rainButton.setAttribute('data-on', result.data.isHeavyRainOn ? 'true' : 'false');
                 rainButton.setAttribute('data-rowversion', result.data.rowVersion);
-                document.getElementById('rain-state').textContent = result.data.isHeavyRainOn ? 'Đang bật' : 'Đang tắt';
+                document.getElementById('rain-state').textContent = result.data.isHeavyRainOn ? t('Đang bật', 'On') : t('Đang tắt', 'Off');
                 flash('success', result.data.isHeavyRainOn
-                    ? 'Đã bật cờ mưa. Chỉ các đơn đặt sau đó bị tính phí mưa.'
-                    : 'Đã tắt cờ mưa.');
+                    ? t('Đã bật cờ mưa. Chỉ các đơn đặt sau đó bị tính phí mưa.', 'Heavy rain is on. Only orders placed from now on pay the rain fee.')
+                    : t('Đã tắt cờ mưa.', 'Heavy rain is off.'));
             });
         });
     }
@@ -77,7 +81,7 @@
                 } else if (action === 'delete') {
                     if (!armed) {
                         armed = true;
-                        button.textContent = 'Bấm lần nữa để xác nhận xóa';
+                        button.textContent = t('Bấm lần nữa để xác nhận xóa', 'Select again to confirm deletion');
                         return;
                     }
                     callApi('DELETE', apiUrl + '?rowVersion=' + encodeURIComponent(rowVersion)).then(function (result) {

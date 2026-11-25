@@ -1,12 +1,13 @@
 @model HubReportVm
 @{
-    ViewBag.Title = "R2 · Báo cáo hiệu suất bếp";
+    bool en = HubText.IsEnglish(Request);
+    ViewBag.Title = en ? "R2 · Hub performance report" : "R2 · Báo cáo hiệu suất bếp";
     ViewBag.ActiveTab = "r2";
 }
 
-<div class="sb-eyebrow">SAIGONBITE / VẬN HÀNH</div>
-<h1 class="sb-h1">R2 · Báo cáo hiệu suất bếp</h1>
-<p class="sb-sub">Theo dõi số đơn xử lý, thời gian chuẩn bị, tải hiện tại và số lượt ưu đãi theo bếp.</p>
+<div class="sb-eyebrow">@(en ? "SAIGONBITE / OPERATIONS" : "SAIGONBITE / VẬN HÀNH")</div>
+<h1 class="sb-h1">@(en ? "R2 · Hub performance report" : "R2 · Báo cáo hiệu suất bếp")</h1>
+<p class="sb-sub">@(en ? "Track handled orders, preparation time, current load and Quiet Kitchen discounts per hub." : "Theo dõi số đơn xử lý, thời gian chuẩn bị, tải hiện tại và số lượt ưu đãi theo bếp.")</p>
 
 <div class="sb-presets">
     @foreach (var p in Model.Presets)
@@ -16,12 +17,12 @@
     }
     @* Chọn khoảng ngày tùy ý. Ngày kết thúc được tính trọn ngày, theo giờ Việt Nam. *@
     <form method="get" action="@Url.Action("HubUtilization", "Reports")" class="sb-range">
-        <label for="from" class="visually-hidden">Từ ngày</label>
+        <label for="from" class="visually-hidden">@(en ? "From" : "Từ ngày")</label>
         <input type="date" id="from" name="from" value="@Model.From" class="form-control form-control-sm" />
         <span>–</span>
-        <label for="to" class="visually-hidden">Đến ngày</label>
+        <label for="to" class="visually-hidden">@(en ? "To" : "Đến ngày")</label>
         <input type="date" id="to" name="to" value="@Model.To" class="form-control form-control-sm" />
-        <button type="submit" class="btn sb-btn-outline btn-sm">Chọn khoảng ngày</button>
+        <button type="submit" class="btn sb-btn-outline btn-sm">@(en ? "Apply range" : "Chọn khoảng ngày")</button>
     </form>
 </div>
 
@@ -34,13 +35,13 @@ else
     var report = Model.Report;
     <div class="row g-3 mb-3">
         <div class="col-md-4">
-            <div class="sb-card sb-stat"><div class="sb-stat-label">Bếp theo dõi</div><div class="sb-stat-value">@report.HubCount</div><div class="sb-muted">Tất cả bếp đang theo dõi</div></div>
+            <div class="sb-card sb-stat"><div class="sb-stat-label">@(en ? "Hubs tracked" : "Bếp theo dõi")</div><div class="sb-stat-value">@report.HubCount</div><div class="sb-muted">@(en ? "All hubs being tracked" : "Tất cả bếp đang theo dõi")</div></div>
         </div>
         <div class="col-md-4">
-            <div class="sb-card sb-stat"><div class="sb-stat-label">Đơn đã xử lý</div><div class="sb-stat-value">@report.TotalHandled</div><div class="sb-muted">Đơn từng đạt Confirmed trong kỳ</div></div>
+            <div class="sb-card sb-stat"><div class="sb-stat-label">@(en ? "Orders handled" : "Đơn đã xử lý")</div><div class="sb-stat-value">@report.TotalHandled</div><div class="sb-muted">@(en ? "Orders that reached Confirmed in the period" : "Đơn từng đạt Confirmed trong kỳ")</div></div>
         </div>
         <div class="col-md-4">
-            <div class="sb-card sb-stat"><div class="sb-stat-label">Lượt ưu đãi bếp vắng</div><div class="sb-stat-value">@report.TotalQuietGranted</div><div class="sb-muted">Đếm theo ưu đãi ghi nhận lúc đặt</div></div>
+            <div class="sb-card sb-stat"><div class="sb-stat-label">@(en ? "Quiet Kitchen discounts" : "Lượt ưu đãi bếp vắng")</div><div class="sb-stat-value">@report.TotalQuietGranted</div><div class="sb-muted">@(en ? "Counted from the discount recorded at placement" : "Đếm theo ưu đãi ghi nhận lúc đặt")</div></div>
         </div>
     </div>
 
@@ -48,11 +49,11 @@ else
         <table class="table sb-table align-middle mb-0">
             <thead>
                 <tr>
-                    <th>Bếp</th>
-                    <th>Đơn đã xử lý</th>
-                    <th>Chuẩn bị trung bình</th>
-                    <th>Tải hiện tại</th>
-                    <th>Lượt ưu đãi</th>
+                    <th>@(en ? "Hub" : "Bếp")</th>
+                    <th>@(en ? "Orders handled" : "Đơn đã xử lý")</th>
+                    <th>@(en ? "Average preparation" : "Chuẩn bị trung bình")</th>
+                    <th>@(en ? "Current load" : "Tải hiện tại")</th>
+                    <th>@(en ? "Discounts" : "Lượt ưu đãi")</th>
                 </tr>
             </thead>
             <tbody>
@@ -64,12 +65,13 @@ else
                         <td>
                             @if (row.AveragePrepMinutes.HasValue)
                             {
-                                <text>@(Math.Round(row.AveragePrepMinutes.Value, 0, MidpointRounding.AwayFromZero)) phút</text>
+                                <text>@(Math.Round(row.AveragePrepMinutes.Value, 0, MidpointRounding.AwayFromZero)) @(en ? "min" : "phút")</text>
+                                <div class="sb-muted">@(en ? row.PrepSampleCount + " samples" : row.PrepSampleCount + " mẫu")</div>
                             }
                             else
                             {
                                 @* Không có đơn đủ cặp Confirmed/Ready thì báo "chưa có dữ liệu", không hiện 0 phút. *@
-                                <span class="sb-muted">Chưa có dữ liệu</span>
+                                <span class="sb-muted">@(en ? "No data yet" : "Chưa có dữ liệu")</span>
                             }
                         </td>
                         <td><span class="@HubDisplay.LoadCss(row.CurrentLoadLevel)">@row.CurrentLoadPercent%</span></td>
@@ -79,5 +81,5 @@ else
             </tbody>
         </table>
     </div>
-    <p class="sb-muted mt-3">Thời gian chuẩn bị tính từ Confirmed đến Ready. Tải hiện tại lấy tại thời điểm xem, theo quy tắc BR8.</p>
+    <p class="sb-muted mt-3">@(en ? "Preparation time runs from Confirmed to Ready and uses only orders with both timestamps. Current load is taken when you view the page (BR8); the other columns cover the selected period. Discounts include orders cancelled later." : "Thời gian chuẩn bị tính từ Confirmed đến Ready và chỉ dùng đơn có đủ hai mốc. Tải hiện tại lấy tại thời điểm xem trang (BR8); các cột còn lại tính theo kỳ đã chọn. Lượt ưu đãi gồm cả đơn bị hủy sau đó.")</p>
 }

@@ -1,11 +1,12 @@
 @model HubDto
 @{
+    bool en = HubText.IsEnglish(Request);
     ViewBag.Title = Model.Name;
     ViewBag.ActiveTab = "hubs";
     string apiUrl = Url.Content("~/api/hubs/" + Model.Id);
 }
 
-<div class="sb-eyebrow"><a href="@Url.Action("Index", "Hubs")">← Danh sách bếp</a></div>
+<div class="sb-eyebrow"><a href="@Url.Action("Index", "Hubs")">← @(en ? "Hub list" : "Danh sách bếp")</a></div>
 <h1 class="sb-h1">@Model.Name</h1>
 <p class="sb-sub">@Model.Location</p>
 
@@ -17,35 +18,35 @@
 
 @if (!Model.IsActive)
 {
-    <div class="alert alert-warning">Bếp đang ngừng hoạt động: không nhận đơn mới. Các đơn đang chạy vẫn được xử lý tiếp.</div>
+    <div class="alert alert-warning">@(en ? "This hub is stopped: it accepts no new orders. Orders already in progress continue." : "Bếp đang ngừng hoạt động: không nhận đơn mới. Các đơn đang chạy vẫn được xử lý tiếp.")</div>
 }
 @if (Model.Load > 1m)
 {
-    <div class="alert alert-warning">Tải hiện tại vượt 100% vì công suất đang thấp hơn số đơn đang xử lý. Đơn cũ không bị thay đổi.</div>
+    <div class="alert alert-warning">@(en ? "Current load is above 100% because capacity is lower than the orders in progress. Existing orders are unchanged." : "Tải hiện tại vượt 100% vì công suất đang thấp hơn số đơn đang xử lý. Đơn cũ không bị thay đổi.")</div>
 }
 
 <div class="sb-card sb-detail" id="hub-detail" data-api="@apiUrl" data-rowversion="@Model.RowVersion" data-active="@(Model.IsActive ? "true" : "false")" data-list-url="@Url.Action("Index", "Hubs")">
     <dl class="row mb-0">
-        <dt class="col-sm-3">Trạng thái</dt>
-        <dd class="col-sm-9"><span class="@HubDisplay.StatusCss(Model)">@HubDisplay.StatusText(Model)</span></dd>
+        <dt class="col-sm-3">@(en ? "Status" : "Trạng thái")</dt>
+        <dd class="col-sm-9"><span class="@HubDisplay.StatusCss(Model)">@HubDisplay.StatusText(Model, en)</span></dd>
 
-        <dt class="col-sm-3">Công suất</dt>
-        <dd class="col-sm-9">@Model.Capacity đơn cùng lúc</dd>
+        <dt class="col-sm-3">@(en ? "Capacity" : "Công suất")</dt>
+        <dd class="col-sm-9">@(en ? Model.Capacity + " orders at the same time" : Model.Capacity + " đơn cùng lúc")</dd>
 
-        <dt class="col-sm-3">Đang xử lý</dt>
-        <dd class="col-sm-9">@Model.ActiveOrders đơn (Confirmed + Preparing)</dd>
+        <dt class="col-sm-3">@(en ? "In progress" : "Đang xử lý")</dt>
+        <dd class="col-sm-9">@Model.ActiveOrders @(en ? "orders" : "đơn") (Confirmed + Preparing)</dd>
 
-        <dt class="col-sm-3">Tải hiện tại</dt>
+        <dt class="col-sm-3">@(en ? "Current load" : "Tải hiện tại")</dt>
         <dd class="col-sm-9">
             <span class="@HubDisplay.LoadCss(Model.LoadLevel)">@Model.LoadPercent%</span>
             <div class="progress sb-progress mt-2"><div class="progress-bar sb-bar" style="width:@(Model.LoadPercent > 100 ? 100 : Model.LoadPercent)%"></div></div>
         </dd>
 
-        <dt class="col-sm-3">Brand phục vụ</dt>
+        <dt class="col-sm-3">@(en ? "Brands served" : "Brand phục vụ")</dt>
         <dd class="col-sm-9">
             @if (Model.BrandNames.Count == 0)
             {
-                <span class="sb-muted">Chưa chọn brand nào</span>
+                <span class="sb-muted">@(en ? "No brand selected" : "Chưa chọn brand nào")</span>
             }
             @foreach (var name in Model.BrandNames)
             {
@@ -56,8 +57,8 @@
 </div>
 
 <div class="sb-actions-row">
-    <a class="btn sb-btn-primary" href="@Url.Action("Edit", "Hubs", new { id = Model.Id })">Sửa thông tin</a>
+    <a class="btn sb-btn-primary" href="@Url.Action("Edit", "Hubs", new { id = Model.Id })">@(en ? "Edit hub" : "Sửa thông tin")</a>
     @* Hai nút dưới gọi REST API (PATCH và DELETE), xem Scripts/uc03.js. *@
-    <button type="button" class="btn sb-btn-outline" data-hub-action="toggle-active">@(Model.IsActive ? "Ngừng nhận đơn mới" : "Nhận đơn trở lại")</button>
-    <button type="button" class="btn btn-outline-danger" data-hub-action="delete">Xóa bếp</button>
+    <button type="button" class="btn sb-btn-outline" data-hub-action="toggle-active">@(Model.IsActive ? (en ? "Stop accepting new orders" : "Ngừng nhận đơn mới") : (en ? "Resume accepting orders" : "Nhận đơn trở lại"))</button>
+    <button type="button" class="btn btn-outline-danger" data-hub-action="delete">@(en ? "Delete hub" : "Xóa bếp")</button>
 </div>

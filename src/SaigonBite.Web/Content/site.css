@@ -16,7 +16,7 @@
 body { background: var(--sb-bg); color: var(--sb-text); font-family: "Segoe UI", Roboto, Arial, sans-serif; }
 a { color: var(--sb-red); }
 
-.sb-topbar { display: flex; align-items: center; gap: 16px; padding: 12px 32px; background: #fff; border-bottom: 1px solid var(--sb-line); }
+.sb-topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 12px 32px; background: #fff; border-bottom: 1px solid var(--sb-line); }
 .sb-logo { font-size: 1.5rem; font-weight: 800; color: var(--sb-red); }
 .sb-pill { background: var(--sb-head); color: var(--sb-red); font-size: .75rem; font-weight: 700; padding: 6px 28px; border-radius: 8px; }
 .sb-user { margin-left: auto; background: var(--sb-ok-bg); color: var(--sb-ok); font-size: .75rem; padding: 4px 12px; border-radius: 999px; }
@@ -70,5 +70,8 @@ a { color: var(--sb-red); }
 @media (max-width: 575px) {
     .sb-topbar { padding: 10px 16px; }
     .sb-card { overflow-x: auto; }
+    /* Bảng rộng cuộn ngang trong thẻ thay vì bị cắt (NFR03). */
+    .sb-card:has(.sb-table) { overflow-x: auto; }
+    .sb-pill { padding: 6px 14px; }
     .sb-range { margin-left: 0; flex-wrap: wrap; }
 }
