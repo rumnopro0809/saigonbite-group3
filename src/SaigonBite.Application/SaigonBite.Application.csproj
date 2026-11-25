@@ -36,6 +36,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Payments\ApplePayStrategy.cs" />
+    <Compile Include="Payments\CodStrategy.cs" />
+    <Compile Include="Payments\IPaymentStrategy.cs" />
+    <Compile Include="Payments\MoMoStrategy.cs" />
+    <Compile Include="Payments\PaymentRequest.cs" />
+    <Compile Include="Payments\PaymentResult.cs" />
+    <Compile Include="Payments\PaymentSelector.cs" />
+    <Compile Include="Payments\PayPalStrategy.cs" />
+    <Compile Include="Payments\SimulatedOnlinePaymentStrategy.cs" />
+    <Compile Include="Payments\VNPayStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
