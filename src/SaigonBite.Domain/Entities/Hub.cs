@@ -27,6 +27,7 @@ namespace SaigonBite.Domain
 
         /// <summary>Các brand mà bếp này phục vụ.</summary>
         public virtual ICollection<HubBrand> Brands { get; set; }
+        public virtual ICollection<StaffProfile> StaffProfiles { get; set; } = new List<StaffProfile>();
 
         public Hub()
         {
