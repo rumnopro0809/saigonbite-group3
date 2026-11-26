@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using SaigonBite.Application.Orders;
 using SaigonBite.Application.Payments;
@@ -11,7 +12,7 @@ using SaigonBite.Infrastructure.Data;
 namespace SaigonBite.Infrastructure.Services
 {
     /// <summary>
-    /// Handles UC01 order quoting, atomic placement (D01/D05), and role-scoped tracking queries.
+    /// Handles UC01 order quoting, atomic placement (D01/D05), Placed-only editing (BR17), and tracking queries.
     /// </summary>
     public sealed class OrderService : IOrderService
     {
@@ -50,68 +51,20 @@ namespace SaigonBite.Infrastructure.Services
             if (string.IsNullOrWhiteSpace(request.DeliveryAddress))
                 throw new BusinessRuleException("VALIDATION", "Delivery address is required.");
 
-            User customer = _db.Users.FirstOrDefault(u => u.Id == request.CustomerId && !u.IsDeleted && u.IsActive);
-            if (customer == null || customer.Role != ActorRole.Customer || !customer.CustomerType.HasValue)
-                throw new BusinessRuleException("UNAUTHORIZED", "An active customer account is required.");
+            User customer = LoadCustomerAccount(request.CustomerId);
 
             Hub hub = _db.Hubs.FirstOrDefault(h => h.Id == request.HubId && !h.IsDeleted && h.IsActive);
             if (hub == null)
                 throw new BusinessRuleException("NOT_FOUND", "Selected kitchen hub is unavailable.");
 
-            if (request.Items == null || request.Items.Count == 0)
-                throw new BusinessRuleException("BR12", "Use 1-30 order lines.");
-
-            // Combine duplicate MenuItemId selections while preserving non-positive inputs for BR12 checks.
-            List<OrderItemRequest> normalizedItems = NormalizeItems(request.Items);
-            List<int> menuItemIds = normalizedItems.Select(i => i.MenuItemId).Distinct().ToList();
-
-            Dictionary<int, MenuItem> menuLookup = _db.MenuItems
-                .Include(m => m.Brand)
-                .Where(m => menuItemIds.Contains(m.Id))
-                .ToDictionary(m => m.Id);
-
-            HashSet<int> hubBrandIds = new HashSet<int>(_db.HubBrands
-                .Where(hb => hb.HubId == hub.Id)
-                .Select(hb => hb.BrandId)
-                .ToList());
-
-            var resolvedItems = new List<ResolvedOrderLineDto>();
-            var quantities = new List<int>();
-            decimal subtotal = 0m;
-            bool allAvailableAtHub = true;
-
-            foreach (OrderItemRequest line in normalizedItems)
-            {
-                quantities.Add(line.Quantity);
-
-                MenuItem item;
-                if (!menuLookup.TryGetValue(line.MenuItemId, out item) ||
-                    item.IsDeleted ||
-                    !item.IsAvailable ||
-                    item.Brand == null ||
-                    item.Brand.IsDeleted ||
-                    !item.Brand.IsActive ||
-                    !hubBrandIds.Contains(item.BrandId))
-                {
-                    allAvailableAtHub = false;
-                    continue;
-                }
-
-                decimal lineTotal = item.Price * line.Quantity;
-                subtotal += lineTotal;
-                resolvedItems.Add(new ResolvedOrderLineDto
-                {
-                    MenuItemId = item.Id,
-                    ItemName = item.Name,
-                    Category = item.Brand.Category,
-                    UnitPrice = item.Price,
-                    Quantity = line.Quantity,
-                    LineTotal = lineTotal
-                });
-            }
-
-            if (!allAvailableAtHub)
-                throw new BusinessRuleException("BR12", "Item is unavailable or not served by this hub.");
+            int[] quantities;
+            decimal subtotal;
+            List<ResolvedOrderLineDto> resolvedItems = ResolveItemsForHub(
+                hub.Id,
+                request.Items,
+                null,
+                out quantities,
+                out subtotal);
 
             decimal hubLoad = CalculateHubLoad(hub.Id, hub.MaxCapacity);
             SystemSetting setting = _db.SystemSettings.FirstOrDefault();
@@ -127,16 +80,7 @@ namespace SaigonBite.Infrastructure.Services
                 if (voucher == null)
                     throw new BusinessRuleException("BR9", "Voucher code not found.");
 
-                voucherInput = new VoucherInput
-                {
-                    Type = voucher.Type,
-                    Value = voucher.Value,
-                    Cap = voucher.Cap,
-                    MinimumSubtotal = voucher.MinimumSubtotal,
-                    Active = voucher.IsActive,
-                    ValidFrom = voucher.ValidFrom,
-                    ValidTo = voucher.ValidTo
-                };
+                voucherInput = ToVoucherInput(voucher);
             }
 
             PriceBreakdown breakdown = _pricingService.Calculate(new PricingInput
@@ -144,7 +88,7 @@ namespace SaigonBite.Infrastructure.Services
                 Subtotal = subtotal,
                 DistanceKm = request.DistanceKm,
                 HubLoad = hubLoad,
-                Quantities = quantities.ToArray(),
+                Quantities = quantities,
                 PlacedAt = placedAt,
                 HeavyRain = heavyRain,
                 AllItemsAvailableAtHub = true,
@@ -290,6 +234,133 @@ namespace SaigonBite.Infrastructure.Services
             }
         }
 
+        public EditOrderQuoteResult QuoteEdit(EditOrderRequest request)
+        {
+            Order order;
+            User customer;
+            return EvaluateEdit(request, out order, out customer);
+        }
+
+        public Order EditOrder(EditOrderRequest request)
+        {
+            Order order;
+            User customer;
+            EditOrderQuoteResult quote = EvaluateEdit(request, out order, out customer);
+
+            if (request.ExpectedRowVersion != null &&
+                (order.RowVersion == null || !order.RowVersion.SequenceEqual(request.ExpectedRowVersion)))
+            {
+                throw new BusinessRuleException(
+                    "CONCURRENCY",
+                    "Order was modified or confirmed while you were editing. Please refresh.");
+            }
+
+            PaymentResult adjustmentResult = null;
+            string adjustmentOperation = null;
+
+            // Prepare simulated online adjustment (AMB05) before entering DB transaction.
+            if (quote.HasOnlineAdjustment)
+            {
+                IPaymentStrategy strategy = _paymentSelector.SelectForRefund(order.PaymentMethod);
+                if (quote.Difference > 0m)
+                {
+                    adjustmentOperation = "EditAdditionalCharge";
+                    adjustmentResult = strategy.Charge(new PaymentRequest
+                    {
+                        OrderCode = order.OrderCode,
+                        Amount = quote.Difference,
+                        CustomerType = customer.CustomerType.Value,
+                        Reason = "Order edit additional charge"
+                    });
+                }
+                else if (quote.Difference < 0m)
+                {
+                    adjustmentOperation = "EditPartialRefund";
+                    adjustmentResult = strategy.Refund(new PaymentRequest
+                    {
+                        OrderCode = order.OrderCode,
+                        Amount = Math.Abs(quote.Difference),
+                        CustomerType = customer.CustomerType.Value,
+                        Reason = "Order edit partial refund"
+                    });
+                }
+
+                if (adjustmentResult != null && !adjustmentResult.Success)
+                {
+                    throw new BusinessRuleException(
+                        "PAYMENT",
+                        adjustmentResult.Message ?? "Simulated payment adjustment failed.");
+                }
+            }
+
+            using (var tx = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    _db.OrderLines.RemoveRange(order.Lines.ToList());
+
+                    foreach (ResolvedOrderLineDto line in quote.ResolvedItems)
+                    {
+                        _db.OrderLines.Add(new OrderLine
+                        {
+                            OrderId = order.Id,
+                            MenuItemId = line.MenuItemId,
+                            Quantity = line.Quantity,
+                            UnitPriceSnapshot = line.UnitPrice,
+                            ItemNameSnapshot = line.ItemName,
+                            CategorySnapshot = line.Category
+                        });
+                    }
+
+                    if (!request.KeepVoucher)
+                    {
+                        order.VoucherId = null;
+                    }
+
+                    if (request.Notes != null)
+                    {
+                        order.Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
+                    }
+
+                    // BR17: update breakdown while keeping original PlacedAt, HubLoadSnapshot, HeavyRainSnapshot, and Placed status.
+                    order.Subtotal = quote.Breakdown.Subtotal;
+                    order.QuietDiscount = quote.Breakdown.QuietDiscount;
+                    order.VoucherDiscount = quote.Breakdown.VoucherDiscount;
+                    order.FoodTotal = quote.Breakdown.FoodTotal;
+                    order.DeliveryFee = quote.Breakdown.DeliveryFee;
+                    order.RushFee = quote.Breakdown.RushFee;
+                    order.RainFee = quote.Breakdown.RainFee;
+                    order.RawTotal = quote.Breakdown.RawTotal;
+                    order.PayableTotal = quote.Breakdown.PayableTotal;
+
+                    if (adjustmentResult != null)
+                    {
+                        _db.PaymentRecords.Add(new PaymentRecord
+                        {
+                            OrderId = order.Id,
+                            Method = order.PaymentMethod,
+                            Operation = adjustmentOperation,
+                            Amount = adjustmentResult.Amount,
+                            Result = adjustmentResult.Status,
+                            CorrelationKey = adjustmentResult.CorrelationKey,
+                            CreatedAt = adjustmentResult.ProcessedAt
+                        });
+                    }
+
+                    _db.SaveChanges();
+                    tx.Commit();
+                    return BuildOrderDetailsQuery().First(o => o.Id == order.Id);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    tx.Rollback();
+                    throw new BusinessRuleException(
+                        "CONCURRENCY",
+                        "Order was modified concurrently. Please reload the latest state.");
+                }
+            }
+        }
+
         public List<Order> GetOrdersForActor(int actorId)
         {
             User actor = LoadActiveUser(actorId);
@@ -331,6 +402,153 @@ namespace SaigonBite.Infrastructure.Services
             return order;
         }
 
+        private EditOrderQuoteResult EvaluateEdit(EditOrderRequest request, out Order order, out User customer)
+        {
+            if (request == null) throw new ArgumentNullException("request");
+
+            customer = LoadCustomerAccount(request.CustomerId);
+            order = BuildOrderDetailsQuery().FirstOrDefault(o => o.Id == request.OrderId);
+            if (order == null || order.CustomerId != customer.Id)
+                throw new BusinessRuleException("UNAUTHORIZED", "Order was not found or access is denied.");
+
+            if (order.Status != OrderStatus.Placed)
+                throw new BusinessRuleException("BR17", "Only orders in Placed status can be edited.");
+
+            Dictionary<int, decimal> existingUnitPrices = order.Lines
+                .ToDictionary(l => l.MenuItemId, l => l.UnitPriceSnapshot);
+
+            int[] quantities;
+            decimal subtotal;
+            List<ResolvedOrderLineDto> resolvedItems = ResolveItemsForHub(
+                order.HubId,
+                request.Items,
+                existingUnitPrices,
+                out quantities,
+                out subtotal);
+
+            VoucherInput voucherInput = (request.KeepVoucher && order.Voucher != null)
+                ? ToVoucherInput(order.Voucher)
+                : null;
+
+            // BR17: recalculate strictly with the frozen PlacedAt, HubLoadSnapshot, HeavyRainSnapshot, and DistanceKm.
+            PriceBreakdown breakdown = _pricingService.Calculate(new PricingInput
+            {
+                Subtotal = subtotal,
+                DistanceKm = order.DistanceKm,
+                HubLoad = order.HubLoadSnapshot,
+                Quantities = quantities,
+                PlacedAt = order.PlacedAt,
+                HeavyRain = order.HeavyRainSnapshot,
+                AllItemsAvailableAtHub = true,
+                Voucher = voucherInput
+            });
+
+            PricingService.ValidatePayment(customer.CustomerType.Value, order.PaymentMethod, breakdown.PayableTotal);
+
+            decimal difference = breakdown.PayableTotal - order.PayableTotal;
+            IPaymentStrategy strategy = _paymentSelector.SelectForRefund(order.PaymentMethod);
+            bool isOnlinePaid = strategy.IsOnline &&
+                string.Equals(order.PaymentStatus, "Paid", StringComparison.OrdinalIgnoreCase);
+            bool hasAdjustment = isOnlinePaid && difference != 0m;
+            string adjustmentType = !hasAdjustment
+                ? "None"
+                : (difference > 0m ? "AdditionalCharge" : "PartialRefund");
+
+            return new EditOrderQuoteResult
+            {
+                OrderId = order.Id,
+                OrderCode = order.OrderCode,
+                OriginalPayableTotal = order.PayableTotal,
+                NewPayableTotal = breakdown.PayableTotal,
+                Difference = difference,
+                OriginalPlacedAt = order.PlacedAt,
+                OriginalHubLoad = order.HubLoadSnapshot,
+                OriginalHeavyRain = order.HeavyRainSnapshot,
+                HasOnlineAdjustment = hasAdjustment,
+                AdjustmentType = adjustmentType,
+                Breakdown = breakdown,
+                ResolvedItems = resolvedItems
+            };
+        }
+
+        private List<ResolvedOrderLineDto> ResolveItemsForHub(
+            int hubId,
+            List<OrderItemRequest> items,
+            Dictionary<int, decimal> existingUnitPrices,
+            out int[] quantities,
+            out decimal subtotal)
+        {
+            if (items == null || items.Count == 0)
+                throw new BusinessRuleException("BR12", "Use 1-30 order lines.");
+
+            List<OrderItemRequest> normalizedItems = NormalizeItems(items);
+            List<int> menuItemIds = normalizedItems.Select(i => i.MenuItemId).Distinct().ToList();
+
+            Dictionary<int, MenuItem> menuLookup = _db.MenuItems
+                .Include(m => m.Brand)
+                .Where(m => menuItemIds.Contains(m.Id))
+                .ToDictionary(m => m.Id);
+
+            HashSet<int> hubBrandIds = new HashSet<int>(_db.HubBrands
+                .Where(hb => hb.HubId == hubId)
+                .Select(hb => hb.BrandId)
+                .ToList());
+
+            var resolvedItems = new List<ResolvedOrderLineDto>();
+            var qtyList = new List<int>();
+            subtotal = 0m;
+            bool allAvailableAtHub = true;
+
+            foreach (OrderItemRequest line in normalizedItems)
+            {
+                qtyList.Add(line.Quantity);
+
+                MenuItem item;
+                if (!menuLookup.TryGetValue(line.MenuItemId, out item) ||
+                    item.IsDeleted ||
+                    !item.IsAvailable ||
+                    item.Brand == null ||
+                    item.Brand.IsDeleted ||
+                    !item.Brand.IsActive ||
+                    !hubBrandIds.Contains(item.BrandId))
+                {
+                    allAvailableAtHub = false;
+                    continue;
+                }
+
+                // AMB03: preserve frozen price for lines already on the order; use DB price for newly added items.
+                decimal unitPrice = (existingUnitPrices != null && existingUnitPrices.ContainsKey(item.Id))
+                    ? existingUnitPrices[item.Id]
+                    : item.Price;
+
+                decimal lineTotal = unitPrice * line.Quantity;
+                subtotal += lineTotal;
+                resolvedItems.Add(new ResolvedOrderLineDto
+                {
+                    MenuItemId = item.Id,
+                    ItemName = item.Name,
+                    Category = item.Brand.Category,
+                    UnitPrice = unitPrice,
+                    Quantity = line.Quantity,
+                    LineTotal = lineTotal
+                });
+            }
+
+            if (!allAvailableAtHub)
+                throw new BusinessRuleException("BR12", "Item is unavailable or not served by this hub.");
+
+            quantities = qtyList.ToArray();
+            return resolvedItems;
+        }
+
+        private User LoadCustomerAccount(int customerId)
+        {
+            User customer = _db.Users.FirstOrDefault(u => u.Id == customerId && !u.IsDeleted && u.IsActive);
+            if (customer == null || customer.Role != ActorRole.Customer || !customer.CustomerType.HasValue)
+                throw new BusinessRuleException("UNAUTHORIZED", "An active customer account is required.");
+            return customer;
+        }
+
         private User LoadActiveUser(int actorId)
         {
             User actor = _db.Users
@@ -353,6 +571,20 @@ namespace SaigonBite.Infrastructure.Services
                 .Include(o => o.Lines)
                 .Include(o => o.Payments)
                 .Include(o => o.StatusHistory.Select(h => h.Actor));
+        }
+
+        private static VoucherInput ToVoucherInput(Voucher voucher)
+        {
+            return new VoucherInput
+            {
+                Type = voucher.Type,
+                Value = voucher.Value,
+                Cap = voucher.Cap,
+                MinimumSubtotal = voucher.MinimumSubtotal,
+                Active = voucher.IsActive,
+                ValidFrom = voucher.ValidFrom,
+                ValidTo = voucher.ValidTo
+            };
         }
 
         private static bool CanActorAccessOrder(User actor, Order order)

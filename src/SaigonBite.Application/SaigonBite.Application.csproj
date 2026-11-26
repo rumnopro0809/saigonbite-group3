@@ -37,6 +37,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Orders\CreateOrderRequest.cs" />
+    <Compile Include="Orders\EditOrderQuoteResult.cs" />
+    <Compile Include="Orders\EditOrderRequest.cs" />
     <Compile Include="Orders\IOrderService.cs" />
     <Compile Include="Orders\IOrderTransitionService.cs" />
     <Compile Include="Orders\OrderItemRequest.cs" />

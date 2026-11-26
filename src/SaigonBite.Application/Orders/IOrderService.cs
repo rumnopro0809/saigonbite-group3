@@ -7,6 +7,8 @@ namespace SaigonBite.Application.Orders
     {
         OrderQuoteResult Quote(CreateOrderRequest request);
         Order PlaceOrder(CreateOrderRequest request);
+        EditOrderQuoteResult QuoteEdit(EditOrderRequest request);
+        Order EditOrder(EditOrderRequest request);
         List<Order> GetOrdersForActor(int actorId);
         Order GetOrderDetails(int orderId, int actorId);
     }
