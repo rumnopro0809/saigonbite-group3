@@ -1,0 +1,202 @@
+@model SaigonBite.Web.Models.CreateOrderViewModel
+@{
+    bool isVi = Model.Lang == "vi";
+    ViewBag.Title = isVi ? "Đặt đơn mới (UC01)" : "Place Order (UC01)";
+}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">@(isVi ? "Đặt món từ Bếp đám mây" : "Place New Order")</h1>
+        <p class="text-muted small mb-0">
+            @(isVi
+                ? "Tính giá minh bạch theo BR1–BR14 trên server. Đổi tài khoản Local/Tourist trên thanh menu để kiểm tra phương thức thanh toán."
+                : "Authoritative server pricing (BR1-BR14). Switch between Local and Tourist demo accounts to verify allowed payment methods.")
+        </p>
+    </div>
+    <span class="badge text-bg-warning">
+        @(isVi ? "Nhóm khách:" : "Customer group:") @Model.CustomerType
+    </span>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>[@Model.ErrorRule]</strong> @Model.ErrorMessage
+    </div>
+}
+
+@using (Html.BeginForm("Create", "Orders", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.RequestKey)
+    @Html.HiddenFor(m => m.ExpectedPayableTotal)
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card sb-card shadow-sm mb-4">
+                <div class="card-body">
+                    <label class="form-label fw-bold" for="HubId">
+                        @(isVi ? "1. Chọn Bếp phục vụ (Hub)" : "1. Select Kitchen Hub")
+                    </label>
+                    <select id="HubId" name="HubId" class="form-select"
+                            onchange="window.location='@Url.Action("Create", "Orders")?hubId=' + this.value;">
+                        @foreach (var hub in Model.AvailableHubs)
+                        {
+                            bool isSelected = hub.Id == Model.HubId;
+                            <option value="@hub.Id" @(isSelected ? "selected=\"selected\"" : "")>
+                                @hub.Name (@hub.District) - Max @hub.MaxCapacity
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="card sb-card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold mb-3">@(isVi ? "2. Chọn món ăn (tối đa 20 phần/món)" : "2. Select Dishes (1-20 qty per item)")</h2>
+                    <div class="row g-3">
+                        @for (int i = 0; i < Model.Items.Count; i++)
+                        {
+                            var row = Model.Items[i];
+                            <div class="col-md-6">
+                                <div class="border rounded-3 p-2 h-100 d-flex flex-column bg-white">
+                                    <div class="d-flex gap-2 mb-2">
+                                        <img src="@Url.Content("~" + row.ImageUrl)" alt="@row.ItemName"
+                                             class="rounded-2" style="width: 68px; height: 68px; object-fit: cover;" />
+                                        <div class="flex-grow-1">
+                                            <div class="text-danger fw-bold text-uppercase" style="font-size: 0.7rem;">@row.BrandName</div>
+                                            <div class="fw-bold small">@row.ItemName</div>
+                                            <div class="fw-semibold text-dark small">@string.Format("{0:N0} đ", row.Price)</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-auto d-flex align-items-center justify-content-between">
+                                        <label class="small text-muted mb-0">@(isVi ? "Số lượng:" : "Qty:")</label>
+                                        <input type="hidden" name="Items[@i].MenuItemId" value="@row.MenuItemId" />
+                                        <input type="number" name="Items[@i].Quantity" value="@row.Quantity"
+                                               min="0" max="20" class="form-control form-control-sm text-center" style="width: 80px;" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card sb-card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold mb-3">@(isVi ? "3. Giao hàng & Thanh toán" : "3. Delivery & Payment")</h2>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="DeliveryAddress">@(isVi ? "Địa chỉ giao hàng" : "Delivery Address")</label>
+                        <input type="text" id="DeliveryAddress" name="DeliveryAddress" value="@Model.DeliveryAddress" class="form-control" required />
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold" for="DistanceKm">@(isVi ? "Khoảng cách (km, 0-8)" : "Distance (km, 0-8)")</label>
+                            <input type="number" id="DistanceKm" name="DistanceKm" step="0.1" min="0" max="8"
+                                   value="@Model.DistanceKm.ToString(System.Globalization.CultureInfo.InvariantCulture)" class="form-control" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold" for="VoucherCode">@(isVi ? "Mã Voucher (tùy chọn)" : "Voucher Code (optional)")</label>
+                            <input type="text" id="VoucherCode" name="VoucherCode" value="@Model.VoucherCode"
+                                   placeholder="SAIGON15 / WELCOME20K" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">@(isVi ? "Phương thức thanh toán (BR13)" : "Payment Method (BR13)")</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var method in Model.AvailablePaymentMethods)
+                            {
+                                bool isChecked = method == Model.PaymentMethod;
+                                <div class="form-check border rounded px-3 py-2 bg-white">
+                                    <input class="form-check-input ms-0 me-2" type="radio"
+                                           name="PaymentMethod" id="pm_@method" value="@method"
+                                           @(isChecked ? "checked=\"checked\"" : "") />
+                                    <label class="form-check-label fw-semibold" for="pm_@method">@method</label>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-text">
+                            @(isVi
+                                ? "COD tối đa 1.000.000 đ (BR14). Thanh toán online là mô phỏng (Tier 3)."
+                                : "COD capped at 1,000,000 VND (BR14). Online payments are simulated (Tier 3).")
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="Notes">@(isVi ? "Ghi chú cho bếp" : "Kitchen Notes")</label>
+                        <input type="text" id="Notes" name="Notes" value="@Model.Notes" class="form-control" />
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" name="submitAction" value="quote" class="btn btn-outline-danger fw-semibold">
+                            @(isVi ? "Tính báo giá (Quote)" : "Calculate Quote")
+                        </button>
+                        <button type="submit" name="submitAction" value="place" class="btn btn-sb-primary">
+                            @(isVi ? "Xác nhận đặt đơn (Place Order)" : "Confirm & Place Order")
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Quote != null && Model.Quote.Breakdown != null)
+            {
+                var b = Model.Quote.Breakdown;
+                <div class="card sb-card shadow-sm border-danger">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h3 class="h6 fw-bold mb-0">@(isVi ? "Chi tiết tính giá (BR10–BR11)" : "Price Breakdown (BR10-BR11)")</h3>
+                            <span class="badge text-bg-light border">
+                                @(isVi ? "Tải bếp:" : "Hub load:") @string.Format("{0:P0}", Model.Quote.HubLoad)
+                            </span>
+                        </div>
+                        <table class="table table-sm mb-2">
+                            <tbody>
+                                <tr>
+                                    <td>@(isVi ? "Tiền món (S)" : "Subtotal (S)")</td>
+                                    <td class="text-end">@string.Format("{0:N0} đ", b.Subtotal)</td>
+                                </tr>
+                                <tr>
+                                    <td>@(isVi ? "Ưu đãi bếp vắng (Q)" : "Quiet-hub discount (Q)")</td>
+                                    <td class="text-end text-success">-@string.Format("{0:N0} đ", b.QuietDiscount)</td>
+                                </tr>
+                                <tr>
+                                    <td>@(isVi ? "Voucher (V)" : "Voucher discount (V)")</td>
+                                    <td class="text-end text-success">-@string.Format("{0:N0} đ", b.VoucherDiscount)</td>
+                                </tr>
+                                <tr class="table-light fw-semibold">
+                                    <td>@(isVi ? "Tiền món sau giảm (F)" : "Food total (F)")</td>
+                                    <td class="text-end">@string.Format("{0:N0} đ", b.FoodTotal)</td>
+                                </tr>
+                                <tr>
+                                    <td>@(isVi ? "Phí giao hàng (D)" : "Delivery fee (D)")</td>
+                                    <td class="text-end">@string.Format("{0:N0} đ", b.DeliveryFee)</td>
+                                </tr>
+                                <tr>
+                                    <td>@(isVi ? "Phụ thu giờ cao điểm (R)" : "Rush-hour fee (R)")</td>
+                                    <td class="text-end">@string.Format("{0:N0} đ", b.RushFee)</td>
+                                </tr>
+                                <tr>
+                                    <td>@(isVi ? "Phụ thu mưa lớn (RainFee)" : "Heavy rain fee")</td>
+                                    <td class="text-end">@string.Format("{0:N0} đ", b.RainFee)</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted small">@(isVi ? "Tổng trước làm tròn" : "Raw total")</td>
+                                    <td class="text-end text-muted small">@string.Format("{0:N0} đ", b.RawTotal)</td>
+                                </tr>
+                                <tr class="fw-bold fs-5 text-danger">
+                                    <td>@(isVi ? "Tổng thanh toán" : "Payable Total")</td>
+                                    <td class="text-end">@string.Format("{0:N0} đ", b.PayableTotal)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

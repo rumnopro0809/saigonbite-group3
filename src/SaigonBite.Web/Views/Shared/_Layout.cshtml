@@ -1,9 +1,12 @@
+@using System.Collections.Generic
+@using SaigonBite.Domain.Entities
 @{
-    var langCookie = Request.Cookies["sb_lang"];
-    string lang = (langCookie != null && langCookie.Value == "en") ? "en" : "vi";
+    string lang = (ViewBag.Lang as string) == "en" ? "en" : "vi";
     bool isVi = lang == "vi";
     string toggleLang = isVi ? "en" : "vi";
     string currentUrl = Request.RawUrl ?? "/";
+    User currentUser = ViewBag.CurrentUser as User;
+    List<User> demoUsers = ViewBag.DemoUsers as List<User> ?? new List<User>();
 }
 <!DOCTYPE html>
 <html lang="@lang">
@@ -70,8 +73,37 @@
                     <li class="nav-item">
                         <a class="nav-link fw-semibold" href="@Url.Action("Index", "Home")">@(isVi ? "Trang chủ" : "Home")</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="@Url.Action("Create", "Orders")">@(isVi ? "Đặt món" : "Place Order")</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="@Url.Action("Index", "Orders")">@(isVi ? "Đơn hàng" : "My Orders")</a>
+                    </li>
                 </ul>
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    @using (Html.BeginForm("SwitchDemoUser", "Home", FormMethod.Post, new { @class = "d-flex align-items-center gap-2" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="returnUrl" value="@currentUrl" />
+                        <select name="userId" class="form-select form-select-sm" style="max-width: 240px;">
+                            <option value="">@(isVi ? "-- Chưa đăng nhập (Khách) --" : "-- Signed out (Guest) --")</option>
+                            @foreach (var u in demoUsers)
+                            {
+                                string label = u.FullName + " (" + (u.CustomerType.HasValue ? u.CustomerType.Value.ToString() : u.Role.ToString()) + ")";
+                                bool selected = currentUser != null && currentUser.Id == u.Id;
+                                <option value="@u.Id" @(selected ? "selected=\"selected\"" : "")>@label</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-sb-primary">
+                            @(isVi ? "Đổi tài khoản" : "Switch")
+                        </button>
+                    }
+                    @if (currentUser != null)
+                    {
+                        <span class="badge text-bg-light border">
+                            @(currentUser.CustomerType.HasValue ? currentUser.CustomerType.Value.ToString() : currentUser.Role.ToString())
+                        </span>
+                    }
                     <a class="btn btn-sm btn-outline-secondary"
                        href="@Url.Action("SetLanguage", "Home", new { lang = toggleLang, returnUrl = currentUrl })">
                         @(isVi ? "EN" : "VI")

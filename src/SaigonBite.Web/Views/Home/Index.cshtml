@@ -2,6 +2,15 @@
 @{
     bool isVi = Model.Lang == "vi";
     ViewBag.Title = isVi ? "Trang chủ" : "Home";
+    string authNotice = TempData["AuthNotice"] as string;
+}
+
+@if (!string.IsNullOrEmpty(authNotice))
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @authNotice
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
 
 <section class="sb-hero p-4 p-md-5 mb-5">
@@ -18,12 +27,17 @@
                     ? "Chọn một bếp đám mây gần bạn, gom nhiều thương hiệu trong một đơn với giá minh bạch."
                     : "Pick a nearby cloud-kitchen hub and order across multiple Saigon brands in one checkout.")
             </p>
-            @if (Model.IsHeavyRainOn)
-            {
-                <div class="alert alert-warning d-inline-block py-1 px-3 mb-0 small fw-semibold">
-                    @(isVi ? "Phụ thu mưa lớn đang bật (+10.000 đ)" : "Heavy rain surcharge is active (+10,000 VND)")
-                </div>
-            }
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <a class="btn btn-sb-primary px-4" href="@Url.Action("Create", "Orders")">
+                    @(isVi ? "Đặt món ngay" : "Order Now")
+                </a>
+                @if (Model.IsHeavyRainOn)
+                {
+                    <span class="badge text-bg-warning py-2 px-3">
+                        @(isVi ? "Phụ thu mưa lớn đang bật (+10.000 đ)" : "Heavy rain surcharge is active (+10,000 VND)")
+                    </span>
+                }
+            </div>
         </div>
         <div class="col-lg-5 text-center">
             <img src="@Url.Content("~/Content/images/hero.jpg")"
@@ -39,7 +53,7 @@
         <div>
             <h2 class="h4 fw-bold mb-1">@(isVi ? "Các bếp đang hoạt động" : "Active Kitchen Hubs")</h2>
             <p class="text-muted small mb-0">
-                @(isVi ? "Dữ liệu đọc trực tiếp từ SQL Server (SaigonBiteDb)." : "Loaded directly from SQL Server (SaigonBiteDb).")
+                @(isVi ? "Chọn bếp gần bạn để đặt món từ các thương hiệu bên trong." : "Choose a nearby hub to browse and order its brands.")
             </p>
         </div>
         <span class="badge text-bg-success">@Model.Hubs.Count @(isVi ? "bếp" : "hubs")</span>
@@ -50,14 +64,19 @@
         {
             <div class="col-md-4">
                 <div class="card h-100 sb-card shadow-sm">
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h3 class="h6 fw-bold mb-0">@hub.Name</h3>
                             <span class="badge text-bg-light border">@hub.District</span>
                         </div>
-                        <p class="text-muted small mb-2">@hub.Address</p>
-                        <div class="small fw-semibold text-success">
-                            @(isVi ? "Công suất tối đa:" : "Max capacity:") @hub.MaxCapacity @(isVi ? "đơn" : "orders")
+                        <p class="text-muted small mb-2 flex-grow-1">@hub.Address</p>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="small fw-semibold text-success">
+                                @(isVi ? "Công suất:" : "Capacity:") @hub.MaxCapacity
+                            </span>
+                            <a class="btn btn-sm btn-outline-danger" href="@Url.Action("Create", "Orders", new { hubId = hub.Id })">
+                                @(isVi ? "Đặt tại bếp này" : "Order here")
+                            </a>
                         </div>
                     </div>
                 </div>

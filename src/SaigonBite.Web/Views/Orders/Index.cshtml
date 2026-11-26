@@ -1,0 +1,90 @@
+@using SaigonBite.Domain
+@model SaigonBite.Web.Models.OrderListViewModel
+@{
+    bool isVi = Model.Lang == "vi";
+    ViewBag.Title = isVi ? "Danh sách đơn hàng" : "My Orders";
+    string authNotice = TempData["AuthNotice"] as string;
+}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">@(isVi ? "Theo dõi đơn hàng" : "Order Tracking")</h1>
+        <p class="text-muted small mb-0">
+            @(isVi ? "Đang xem với tài khoản:" : "Signed in as:") <strong>@Model.CurrentUser.FullName</strong> (@Model.CurrentUser.Role)
+        </p>
+    </div>
+    @if (Model.CurrentUser.Role == ActorRole.Customer)
+    {
+        <a class="btn btn-sb-primary" href="@Url.Action("Create", "Orders")">
+            @(isVi ? "+ Đặt đơn mới" : "+ New Order")
+        </a>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(authNotice))
+{
+    <div class="alert alert-warning">@authNotice</div>
+}
+
+@if (Model.Orders == null || Model.Orders.Count == 0)
+{
+    <div class="card sb-card shadow-sm">
+        <div class="card-body text-center py-5">
+            <h2 class="h5 fw-bold mb-2">@(isVi ? "Chưa có đơn hàng nào" : "No orders found")</h2>
+            <p class="text-muted mb-3">
+                @(isVi
+                    ? "Hãy chọn món từ một Bếp đám mây để tạo đơn đầu tiên."
+                    : "Choose items from a cloud-kitchen hub to place your first order.")
+            </p>
+            @if (Model.CurrentUser.Role == ActorRole.Customer)
+            {
+                <a class="btn btn-sb-primary" href="@Url.Action("Create", "Orders")">
+                    @(isVi ? "Đặt món ngay" : "Place an Order")
+                </a>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="card sb-card shadow-sm overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>@(isVi ? "Mã đơn" : "Order Code")</th>
+                        <th>@(isVi ? "Bếp phục vụ" : "Kitchen Hub")</th>
+                        <th>@(isVi ? "Thời điểm đặt" : "Placed At")</th>
+                        <th>@(isVi ? "Thanh toán" : "Payment")</th>
+                        <th>@(isVi ? "Trạng thái" : "Status")</th>
+                        <th class="text-end">@(isVi ? "Tổng tiền" : "Payable")</th>
+                        <th class="text-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model.Orders)
+                    {
+                        string badgeClass = o.Status == OrderStatus.Delivered
+                            ? "text-bg-success"
+                            : (o.Status == OrderStatus.Cancelled || o.Status == OrderStatus.Failed)
+                                ? "text-bg-danger"
+                                : "text-bg-warning";
+                        <tr>
+                            <td class="fw-bold">@o.OrderCode</td>
+                            <td>@(o.Hub != null ? o.Hub.Name : "-")</td>
+                            <td class="small text-muted">@o.PlacedAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="small">@o.PaymentMethod (@o.PaymentStatus)</td>
+                            <td><span class="badge @badgeClass">@o.Status</span></td>
+                            <td class="text-end fw-bold">@string.Format("{0:N0} đ", o.PayableTotal)</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-dark" href="@Url.Action("Details", "Orders", new { id = o.Id })">
+                                    @(isVi ? "Chi tiết" : "Details")
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
