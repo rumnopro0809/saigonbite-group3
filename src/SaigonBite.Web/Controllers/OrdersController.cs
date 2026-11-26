@@ -65,11 +65,7 @@ namespace SaigonBite.Web.Controllers
                 model.RequestKey = Guid.NewGuid().ToString("N");
             }
 
-            Dictionary<int, int> postedQuantities = (model.Items ?? new List<MenuSelectionRowViewModel>())
-                .Where(i => i != null && i.Quantity > 0)
-                .GroupBy(i => i.MenuItemId)
-                .ToDictionary(g => g.Key, g => g.Sum(x => x.Quantity));
-
+            Dictionary<int, int> postedQuantities = ExtractQuantities(model.Items);
             PopulateCreateViewModel(model, model.HubId, postedQuantities);
 
             var orderRequest = new CreateOrderRequest
@@ -126,6 +122,163 @@ namespace SaigonBite.Web.Controllers
         }
 
         [HttpGet]
+        public ActionResult Edit(int id)
+        {
+            ActionResult guard = RequireCustomerAccount();
+            if (guard != null) return guard;
+
+            try
+            {
+                var service = new OrderService(Db);
+                Order order = service.GetOrderDetails(id, CurrentUser.Id);
+                if (order.CustomerId != CurrentUser.Id || order.Status != OrderStatus.Placed)
+                {
+                    TempData["OrderError"] = CurrentLang == "vi"
+                        ? "[BR17] Chỉ được chỉnh sửa đơn hàng khi còn ở trạng thái Placed."
+                        : "[BR17] Only orders in Placed status can be edited.";
+                    return RedirectToAction("Details", new { id = id });
+                }
+
+                Dictionary<int, int> currentQuantities = order.Lines
+                    .ToDictionary(l => l.MenuItemId, l => l.Quantity);
+
+                EditOrderViewModel model = BuildEditViewModel(
+                    order,
+                    currentQuantities,
+                    keepVoucher: order.VoucherId.HasValue,
+                    notes: order.Notes);
+
+                return View(model);
+            }
+            catch (BusinessRuleException)
+            {
+                TempData["AuthNotice"] = CurrentLang == "vi"
+                    ? "Không tìm thấy đơn hàng hoặc bạn không có quyền chỉnh sửa."
+                    : "Order was not found or you do not have permission to edit it.";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(EditOrderViewModel model, string submitAction)
+        {
+            ActionResult guard = RequireCustomerAccount();
+            if (guard != null) return guard;
+
+            if (model == null) return RedirectToAction("Index");
+
+            Order order;
+            var service = new OrderService(Db);
+            try
+            {
+                order = service.GetOrderDetails(model.OrderId, CurrentUser.Id);
+            }
+            catch (BusinessRuleException)
+            {
+                TempData["AuthNotice"] = CurrentLang == "vi"
+                    ? "Không tìm thấy đơn hàng hoặc bạn không có quyền chỉnh sửa."
+                    : "Order was not found or you do not have permission to edit it.";
+                return RedirectToAction("Index");
+            }
+
+            if (order.CustomerId != CurrentUser.Id || order.Status != OrderStatus.Placed)
+            {
+                TempData["OrderError"] = CurrentLang == "vi"
+                    ? "[BR17] Đơn hàng không còn ở trạng thái Placed nên không thể chỉnh sửa."
+                    : "[BR17] Order is no longer in Placed status and cannot be edited.";
+                return RedirectToAction("Details", new { id = order.Id });
+            }
+
+            Dictionary<int, int> postedQuantities = ExtractQuantities(model.Items);
+            EditOrderViewModel viewModel = BuildEditViewModel(
+                order,
+                postedQuantities,
+                keepVoucher: model.KeepVoucher,
+                notes: model.Notes,
+                overrideRowVersionBase64: model.RowVersionBase64);
+
+            var editRequest = new EditOrderRequest
+            {
+                OrderId = order.Id,
+                CustomerId = CurrentUser.Id,
+                ExpectedRowVersion = DecodeRowVersion(model.RowVersionBase64),
+                KeepVoucher = model.KeepVoucher,
+                Notes = model.Notes,
+                Items = postedQuantities
+                    .Select(kv => new OrderItemRequest { MenuItemId = kv.Key, Quantity = kv.Value })
+                    .ToList()
+            };
+
+            try
+            {
+                if (string.Equals(submitAction, "save", StringComparison.OrdinalIgnoreCase))
+                {
+                    Order updated = service.EditOrder(editRequest);
+                    TempData["OrderSuccess"] = CurrentLang == "vi"
+                        ? "Đã cập nhật món cho đơn " + updated.OrderCode + " (trạng thái vẫn giữ Placed theo BR17)."
+                        : "Order " + updated.OrderCode + " updated successfully (status remains Placed per BR17).";
+                    return RedirectToAction("Details", new { id = updated.Id });
+                }
+
+                viewModel.Quote = service.QuoteEdit(editRequest);
+            }
+            catch (BusinessRuleException ex)
+            {
+                viewModel.ErrorRule = ex.Rule;
+                viewModel.ErrorMessage = ex.Message;
+
+                if (ex.Rule == "CONCURRENCY" && order.RowVersion != null)
+                {
+                    viewModel.RowVersionBase64 = Convert.ToBase64String(order.RowVersion);
+                }
+            }
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Cancel(int orderId, string reason, string rowVersionBase64)
+        {
+            if (CurrentUser == null)
+            {
+                TempData["AuthNotice"] = CurrentLang == "vi"
+                    ? "Vui lòng chọn tài khoản demo để hủy đơn."
+                    : "Please select a demo account to cancel an order.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                var transitionService = new OrderTransitionService(Db);
+                Order cancelled = transitionService.Transition(new TransitionOrderRequest
+                {
+                    OrderId = orderId,
+                    ActorId = CurrentUser.Id,
+                    TargetStatus = OrderStatus.Cancelled,
+                    Reason = string.IsNullOrWhiteSpace(reason) ? "Customer cancelled from web UI" : reason.Trim(),
+                    ExpectedRowVersion = DecodeRowVersion(rowVersionBase64)
+                });
+
+                bool isRefunded = string.Equals(cancelled.PaymentStatus, "Refunded", StringComparison.OrdinalIgnoreCase);
+                TempData["OrderSuccess"] = CurrentLang == "vi"
+                    ? (isRefunded
+                        ? "Đã hủy đơn " + cancelled.OrderCode + " và hoàn tiền online mô phỏng 100% (BR16)."
+                        : "Đã hủy đơn COD " + cancelled.OrderCode + " (không phát sinh hoàn tiền online).")
+                    : (isRefunded
+                        ? "Cancelled order " + cancelled.OrderCode + " with full simulated online refund (BR16)."
+                        : "Cancelled COD order " + cancelled.OrderCode + " (no online refund needed).");
+            }
+            catch (BusinessRuleException ex)
+            {
+                TempData["OrderError"] = "[" + ex.Rule + "] " + ex.Message;
+            }
+
+            return RedirectToAction("Details", new { id = orderId });
+        }
+
+        [HttpGet]
         public ActionResult Details(int id)
         {
             if (CurrentUser == null)
@@ -152,8 +305,10 @@ namespace SaigonBite.Web.Controllers
                     CurrentUser = CurrentUser,
                     CanEdit = canEdit,
                     CanCancel = canCancel,
+                    RowVersionBase64 = order.RowVersion != null ? Convert.ToBase64String(order.RowVersion) : "",
                     Lang = CurrentLang,
-                    NoticeMessage = TempData["OrderSuccess"] as string
+                    NoticeMessage = TempData["OrderSuccess"] as string,
+                    ErrorMessage = TempData["OrderError"] as string
                 });
             }
             catch (BusinessRuleException)
@@ -173,9 +328,68 @@ namespace SaigonBite.Web.Controllers
             }
 
             TempData["AuthNotice"] = CurrentLang == "vi"
-                ? "Vui lòng chuyển sang tài khoản Khách hàng (Local hoặc Tourist) trên thanh điều hướng để đặt đơn."
-                : "Please switch to a Customer demo account (Local or Tourist) from the top bar to place an order.";
+                ? "Vui lòng chuyển sang tài khoản Khách hàng (Local hoặc Tourist) trên thanh điều hướng để đặt hoặc sửa đơn."
+                : "Please switch to a Customer demo account (Local or Tourist) from the top bar to place or edit orders.";
             return RedirectToAction("Index", "Home");
+        }
+
+        private EditOrderViewModel BuildEditViewModel(
+            Order order,
+            Dictionary<int, int> quantities,
+            bool keepVoucher,
+            string notes,
+            string overrideRowVersionBase64 = null)
+        {
+            List<int> brandIds = Db.HubBrands
+                .Where(hb => hb.HubId == order.HubId)
+                .Select(hb => hb.BrandId)
+                .ToList();
+
+            List<MenuItem> menuItems = Db.MenuItems
+                .Include(m => m.Brand)
+                .Where(m => !m.IsDeleted && m.IsAvailable && m.Brand != null && !m.Brand.IsDeleted && m.Brand.IsActive && brandIds.Contains(m.BrandId))
+                .OrderBy(m => m.BrandId)
+                .ThenBy(m => m.Id)
+                .ToList();
+
+            Dictionary<int, decimal> frozenLinePrices = order.Lines
+                .ToDictionary(l => l.MenuItemId, l => l.UnitPriceSnapshot);
+
+            List<MenuSelectionRowViewModel> rows = menuItems.Select(m => new MenuSelectionRowViewModel
+            {
+                MenuItemId = m.Id,
+                ItemName = m.Name,
+                BrandName = m.Brand != null ? m.Brand.Name : "SaigonBite",
+                Category = m.Brand != null ? m.Brand.Category : "",
+                Description = m.Description,
+                Price = frozenLinePrices.ContainsKey(m.Id) ? frozenLinePrices[m.Id] : m.Price,
+                ImageUrl = m.ImageUrl,
+                Quantity = (quantities != null && quantities.ContainsKey(m.Id)) ? quantities[m.Id] : 0
+            }).ToList();
+
+            return new EditOrderViewModel
+            {
+                OrderId = order.Id,
+                OrderCode = order.OrderCode,
+                HubName = order.Hub != null ? order.Hub.Name : "",
+                DeliveryAddress = order.DeliveryAddress,
+                DistanceKm = order.DistanceKm,
+                OriginalPlacedAt = order.PlacedAt,
+                OriginalHubLoad = order.HubLoadSnapshot,
+                OriginalHeavyRain = order.HeavyRainSnapshot,
+                PaymentMethod = order.PaymentMethod,
+                PaymentStatus = order.PaymentStatus,
+                OriginalPayableTotal = order.PayableTotal,
+                HasVoucher = order.Voucher != null,
+                VoucherCode = order.Voucher != null ? order.Voucher.Code : null,
+                KeepVoucher = keepVoucher,
+                Notes = notes,
+                RowVersionBase64 = !string.IsNullOrEmpty(overrideRowVersionBase64)
+                    ? overrideRowVersionBase64
+                    : (order.RowVersion != null ? Convert.ToBase64String(order.RowVersion) : ""),
+                Lang = CurrentLang,
+                Items = rows
+            };
         }
 
         private void PopulateCreateViewModel(
@@ -232,6 +446,27 @@ namespace SaigonBite.Web.Controllers
                     ? preservedQuantities[m.Id]
                     : 0
             }).ToList();
+        }
+
+        private static Dictionary<int, int> ExtractQuantities(List<MenuSelectionRowViewModel> items)
+        {
+            return (items ?? new List<MenuSelectionRowViewModel>())
+                .Where(i => i != null && i.Quantity > 0)
+                .GroupBy(i => i.MenuItemId)
+                .ToDictionary(g => g.Key, g => g.Sum(x => x.Quantity));
+        }
+
+        private static byte[] DecodeRowVersion(string rowVersionBase64)
+        {
+            if (string.IsNullOrWhiteSpace(rowVersionBase64)) return null;
+            try
+            {
+                return Convert.FromBase64String(rowVersionBase64);
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
         }
     }
 }

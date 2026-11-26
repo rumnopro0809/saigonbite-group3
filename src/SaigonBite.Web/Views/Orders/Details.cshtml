@@ -10,11 +10,18 @@
         : (o.Status == OrderStatus.Cancelled || o.Status == OrderStatus.Failed)
             ? "text-bg-danger"
             : "text-bg-warning";
+    bool isOnlinePaid = o.PaymentMethod != PaymentMethod.Cod &&
+        string.Equals(o.PaymentStatus, "Paid", System.StringComparison.OrdinalIgnoreCase);
 }
 
 @if (!string.IsNullOrEmpty(Model.NoticeMessage))
 {
     <div class="alert alert-success">@Model.NoticeMessage</div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
 }
 
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
@@ -29,20 +36,75 @@
     <div class="d-flex gap-2">
         @if (Model.CanEdit)
         {
-            <button type="button" class="btn btn-outline-primary btn-sm" disabled="disabled"
-                    title="@(isVi ? "Chức năng sửa đơn được hoàn thiện ở bước tiếp theo" : "Order Edit action coming in next step")">
-                @(isVi ? "Sửa món (Placed)" : "Edit Items (Placed)")
-            </button>
+            <a class="btn btn-outline-primary btn-sm fw-semibold"
+               href="@Url.Action("Edit", "Orders", new { id = o.Id })">
+                @(isVi ? "Sửa món (Placed - BR17)" : "Edit Items (Placed)")
+            </a>
         }
         @if (Model.CanCancel)
         {
-            <button type="button" class="btn btn-outline-danger btn-sm" disabled="disabled"
-                    title="@(isVi ? "Chức năng hủy đơn được hoàn thiện ở bước tiếp theo" : "Order Cancel action coming in next step")">
+            <button type="button" class="btn btn-outline-danger btn-sm fw-semibold"
+                    data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                 @(isVi ? "Hủy đơn (BR16)" : "Cancel Order (BR16)")
             </button>
         }
     </div>
 </div>
+
+@if (Model.CanCancel)
+{
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                @using (Html.BeginForm("Cancel", "Orders", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="orderId" value="@o.Id" />
+                    <input type="hidden" name="rowVersionBase64" value="@Model.RowVersionBase64" />
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold" id="cancelOrderLabel">
+                            @(isVi ? "Xác nhận hủy đơn " : "Confirm Cancellation ") @o.OrderCode
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (isOnlinePaid)
+                        {
+                            <div class="alert alert-info small">
+                                @(isVi
+                                    ? "Đơn đã thanh toán online qua " + o.PaymentMethod + ". Khi hủy, hệ thống sẽ mô phỏng hoàn 100% số tiền " + string.Format("{0:N0} đ", o.PayableTotal) + " (BR16)."
+                                    : "This order was paid online via " + o.PaymentMethod + ". Cancelling triggers a full 100% simulated refund of " + string.Format("{0:N0} VND", o.PayableTotal) + " (BR16).")
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-light border small">
+                                @(isVi
+                                    ? "Đơn COD chưa thu tiền, hủy đơn không phát sinh hoàn tiền online."
+                                    : "COD order has not collected cash yet; no online refund is needed.")
+                            </div>
+                        }
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold small" for="cancelReason">
+                                @(isVi ? "Lý do hủy đơn (tùy chọn)" : "Cancellation reason (optional)")
+                            </label>
+                            <input type="text" id="cancelReason" name="reason" class="form-control"
+                                   placeholder="@(isVi ? "Ví dụ: Đổi kế hoạch ăn uống" : "e.g. Changed dining plans")" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                            @(isVi ? "Đóng" : "Keep Order")
+                        </button>
+                        <button type="submit" class="btn btn-danger btn-sm fw-semibold">
+                            @(isVi ? "Xác nhận hủy đơn" : "Confirm Cancel")
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
 
 <div class="row g-4">
     <div class="col-lg-7">
