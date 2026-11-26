@@ -36,7 +36,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Orders\CreateOrderRequest.cs" />
+    <Compile Include="Orders\IOrderService.cs" />
     <Compile Include="Orders\IOrderTransitionService.cs" />
+    <Compile Include="Orders\OrderItemRequest.cs" />
+    <Compile Include="Orders\OrderQuoteResult.cs" />
     <Compile Include="Orders\TransitionOrderRequest.cs" />
     <Compile Include="Payments\ApplePayStrategy.cs" />
     <Compile Include="Payments\CodStrategy.cs" />
