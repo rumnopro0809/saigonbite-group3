@@ -258,6 +258,181 @@ namespace SaigonBite.Tests
             }
         }
 
+        [TestMethod]
+        public void CalculateHubLoad_CountsOnlyConfirmedAndPreparingOrders_MatchesBR8()
+        {
+            using (var db = new SaigonBiteDbContext())
+            {
+                User local = db.Users.Single(u => u.Identifier == "local@saigonbite.vn");
+                MenuItem comTam = db.MenuItems.Single(m => m.Name == "Com Tam Calmette");
+
+                var tempHub = new Hub
+                {
+                    Name = "Temp Load Test Hub " + Guid.NewGuid().ToString("N").Substring(0, 6),
+                    Address = "1 Test Street",
+                    District = "District 1",
+                    MaxCapacity = 10,
+                    IsActive = true,
+                    IsDeleted = false
+                };
+                db.Hubs.Add(tempHub);
+                db.SaveChanges();
+
+                var createdOrderIds = new List<int>();
+                try
+                {
+                    OrderStatus[] statuses =
+                    {
+                        OrderStatus.Placed,
+                        OrderStatus.Confirmed,
+                        OrderStatus.Preparing,
+                        OrderStatus.Ready,
+                        OrderStatus.Delivered,
+                        OrderStatus.Cancelled
+                    };
+
+                    foreach (OrderStatus status in statuses)
+                    {
+                        var order = new Order
+                        {
+                            OrderCode = "SB-LD-" + Guid.NewGuid().ToString("N").Substring(0, 8),
+                            CustomerId = local.Id,
+                            HubId = tempHub.Id,
+                            Status = status,
+                            DeliveryAddress = "24 Nguyen Hue, District 1, HCMC",
+                            DistanceKm = 1.5m,
+                            PlacedAt = OffPeakTime,
+                            HubLoadSnapshot = 0m,
+                            HeavyRainSnapshot = false,
+                            Subtotal = comTam.Price,
+                            QuietDiscount = 0m,
+                            VoucherDiscount = 0m,
+                            FoodTotal = comTam.Price,
+                            DeliveryFee = 15000m,
+                            RushFee = 0m,
+                            RainFee = 0m,
+                            RawTotal = comTam.Price + 15000m,
+                            PayableTotal = comTam.Price + 15000m,
+                            PaymentMethod = PaymentMethod.Cod,
+                            PaymentStatus = "PendingCash"
+                        };
+                        db.Orders.Add(order);
+                        db.SaveChanges();
+                        createdOrderIds.Add(order.Id);
+                    }
+
+                    var service = new OrderService(db);
+                    decimal load = service.CalculateHubLoad(tempHub.Id, tempHub.MaxCapacity);
+
+                    // BR8: only Confirmed (1) + Preparing (1) = 2 of 10 -> 0.20 (Placed and Ready excluded).
+                    Assert.AreEqual(0.20m, load);
+                }
+                finally
+                {
+                    foreach (int orderId in createdOrderIds)
+                    {
+                        DeleteTestOrder(db, orderId);
+                    }
+                    Hub toRemove = db.Hubs.FirstOrDefault(h => h.Id == tempHub.Id);
+                    if (toRemove != null)
+                    {
+                        db.Hubs.Remove(toRemove);
+                        db.SaveChanges();
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Quote_WhenHubLoadReaches90Percent_ThrowsBR8AndSuggestsAlternativeHubs()
+        {
+            using (var db = new SaigonBiteDbContext())
+            {
+                User local = db.Users.Single(u => u.Identifier == "local@saigonbite.vn");
+                MenuItem comTam = db.MenuItems.Single(m => m.Name == "Com Tam Calmette");
+
+                var overloadedHub = new Hub
+                {
+                    Name = "Temp Overloaded Hub " + Guid.NewGuid().ToString("N").Substring(0, 6),
+                    Address = "99 Busy Road",
+                    District = "District 1",
+                    MaxCapacity = 2,
+                    IsActive = true,
+                    IsDeleted = false
+                };
+                db.Hubs.Add(overloadedHub);
+                db.SaveChanges();
+
+                db.HubBrands.Add(new HubBrand { HubId = overloadedHub.Id, BrandId = comTam.BrandId });
+                db.SaveChanges();
+
+                var createdOrderIds = new List<int>();
+                try
+                {
+                    // 2 Confirmed/Preparing orders on capacity 2 -> 100% load (>= 90%).
+                    foreach (OrderStatus status in new[] { OrderStatus.Confirmed, OrderStatus.Preparing })
+                    {
+                        var order = new Order
+                        {
+                            OrderCode = "SB-OV-" + Guid.NewGuid().ToString("N").Substring(0, 8),
+                            CustomerId = local.Id,
+                            HubId = overloadedHub.Id,
+                            Status = status,
+                            DeliveryAddress = "24 Nguyen Hue, District 1, HCMC",
+                            DistanceKm = 1.5m,
+                            PlacedAt = OffPeakTime,
+                            HubLoadSnapshot = 0.5m,
+                            HeavyRainSnapshot = false,
+                            Subtotal = comTam.Price,
+                            QuietDiscount = 0m,
+                            VoucherDiscount = 0m,
+                            FoodTotal = comTam.Price,
+                            DeliveryFee = 15000m,
+                            RushFee = 0m,
+                            RainFee = 0m,
+                            RawTotal = comTam.Price + 15000m,
+                            PayableTotal = comTam.Price + 15000m,
+                            PaymentMethod = PaymentMethod.Cod,
+                            PaymentStatus = "PendingCash"
+                        };
+                        db.Orders.Add(order);
+                        db.SaveChanges();
+                        createdOrderIds.Add(order.Id);
+                    }
+
+                    var service = new OrderService(db);
+                    var ex = Assert.ThrowsException<BusinessRuleException>(() =>
+                        service.Quote(new CreateOrderRequest
+                        {
+                            CustomerId = local.Id,
+                            HubId = overloadedHub.Id,
+                            DeliveryAddress = "24 Nguyen Hue, District 1, HCMC",
+                            DistanceKm = 1.5m,
+                            PlacedAtOverride = OffPeakTime,
+                            Items = new List<OrderItemRequest>
+                            {
+                                new OrderItemRequest { MenuItemId = comTam.Id, Quantity = 1 }
+                            }
+                        }));
+
+                    Assert.AreEqual("BR8", ex.Rule);
+                    StringAssert.Contains(ex.Message, "Please choose another hub:");
+                    StringAssert.Contains(ex.Message, "District 1");
+                }
+                finally
+                {
+                    foreach (int orderId in createdOrderIds)
+                    {
+                        DeleteTestOrder(db, orderId);
+                    }
+                    db.HubBrands.RemoveRange(db.HubBrands.Where(hb => hb.HubId == overloadedHub.Id));
+                    Hub toRemove = db.Hubs.FirstOrDefault(h => h.Id == overloadedHub.Id);
+                    if (toRemove != null) db.Hubs.Remove(toRemove);
+                    db.SaveChanges();
+                }
+            }
+        }
+
         private static void DeleteTestOrder(SaigonBiteDbContext db, int orderId)
         {
             db.OrderStatusHistories.RemoveRange(db.OrderStatusHistories.Where(h => h.OrderId == orderId));

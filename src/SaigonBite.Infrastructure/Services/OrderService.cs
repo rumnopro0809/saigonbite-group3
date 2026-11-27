@@ -35,12 +35,11 @@ namespace SaigonBite.Infrastructure.Services
         {
             if (maxCapacity <= 0) return 1m;
 
+            // BR8: hub load counts only orders currently in Confirmed or Preparing.
             int activeOrders = _db.Orders.Count(o =>
                 o.HubId == hubId &&
-                (o.Status == OrderStatus.Placed ||
-                 o.Status == OrderStatus.Confirmed ||
-                 o.Status == OrderStatus.Preparing ||
-                 o.Status == OrderStatus.Ready));
+                (o.Status == OrderStatus.Confirmed ||
+                 o.Status == OrderStatus.Preparing));
 
             return (decimal)activeOrders / maxCapacity;
         }
@@ -83,17 +82,37 @@ namespace SaigonBite.Infrastructure.Services
                 voucherInput = ToVoucherInput(voucher);
             }
 
-            PriceBreakdown breakdown = _pricingService.Calculate(new PricingInput
+            PriceBreakdown breakdown;
+            try
             {
-                Subtotal = subtotal,
-                DistanceKm = request.DistanceKm,
-                HubLoad = hubLoad,
-                Quantities = quantities,
-                PlacedAt = placedAt,
-                HeavyRain = heavyRain,
-                AllItemsAvailableAtHub = true,
-                Voucher = voucherInput
-            });
+                breakdown = _pricingService.Calculate(new PricingInput
+                {
+                    Subtotal = subtotal,
+                    DistanceKm = request.DistanceKm,
+                    HubLoad = hubLoad,
+                    Quantities = quantities,
+                    PlacedAt = placedAt,
+                    HeavyRain = heavyRain,
+                    AllItemsAvailableAtHub = true,
+                    Voucher = voucherInput
+                });
+            }
+            catch (BusinessRuleException ex)
+            {
+                if (ex.Rule == "BR8")
+                {
+                    List<string> alternatives = FindAlternativeHubNames(hub.Id);
+                    string suggestion = alternatives.Count > 0
+                        ? " Please choose another hub: " + string.Join(", ", alternatives) + "."
+                        : " Please choose another available kitchen hub.";
+
+                    throw new BusinessRuleException(
+                        "BR8",
+                        hub.Name + " is overloaded (" + Math.Round(hubLoad * 100m, 0) + "% capacity)." + suggestion);
+                }
+
+                throw;
+            }
 
             return new OrderQuoteResult
             {
@@ -596,6 +615,25 @@ namespace SaigonBite.Infrastructure.Services
             if (actor.Role == ActorRole.Shipper)
                 return order.ShipperId.HasValue && order.ShipperId.Value == actor.Id;
             return false;
+        }
+
+        private List<string> FindAlternativeHubNames(int excludedHubId)
+        {
+            List<Hub> candidates = _db.Hubs
+                .Where(h => h.Id != excludedHubId && !h.IsDeleted && h.IsActive && h.MaxCapacity > 0)
+                .OrderBy(h => h.Id)
+                .ToList();
+
+            var available = new List<string>();
+            foreach (Hub candidate in candidates)
+            {
+                if (CalculateHubLoad(candidate.Id, candidate.MaxCapacity) < 0.9m)
+                {
+                    available.Add(candidate.Name);
+                }
+            }
+
+            return available;
         }
 
         private static List<OrderItemRequest> NormalizeItems(List<OrderItemRequest> items)
