@@ -8,7 +8,7 @@ Software Engineering final project, Sem01_2627. Cloud-kitchen food delivery for 
 | UC02 Manage Menu and Brands | Dương Phạm Thái | 524H0189 |
 | UC03 Manage Hubs and Capacity | Lê Quang Tấn | 524H0188 |
 
-Tier 3: **ASP.NET MVC 5, Entity Framework 6 Code First, SQL Server, Bootstrap**. Target .NET Framework 4.8. Payments/refunds/OTP/email codes are simulated. Payment Strategy and all mandatory business rules still apply. This implementation choice follows the named MVC stack in the specification; no instructor approval or grading result is claimed.
+Tier 3: **ASP.NET MVC 5, Entity Framework 6 Code First, SQL Server, Bootstrap**. Target .NET Framework 4.7.2. Payments/refunds/OTP/email codes are simulated. Payment Strategy and all mandatory business rules still apply. This implementation choice follows the named MVC stack in the specification; no instructor approval or grading result is claimed.
 
 ## Part 2 submission (20/11/2026)
 
@@ -36,11 +36,54 @@ Design, architecture and UI/UX package. Everything below is the version submitte
 - [Design sources](docs/part2/diagrams)
 - [Requirement traceability](docs/part2/traceability.csv)
 
-## Development environment
+## Running the Part 3 application
 
-Use Visual Studio with ASP.NET and web development, the .NET Framework 4.8 targeting pack, SQL Server Developer/Express or LocalDB, and Git. MSBuild/MVC targets were discovered at `D:\Visual Studio`, and SQL Server Express is running. The 4.8 targeting pack still needs verification; existing reference packs include 4.7.2. A .NET runtime alone does not establish whether MVC 5 build tools are available.
+### Requirements
 
-The initial delivery includes a design baseline plus pure C# pricing and lifecycle guards. Run `scripts/check-domain.ps1` with the installed compiler; the first run passed 53 executable checks. The full MVC application, EF migration and final unit/integration test report are not yet implemented. See `docs/project-status.md` before the next task.
+- Windows 10/11.
+- Visual Studio 2022 with the **ASP.NET and web development** workload, or Build Tools for Visual Studio 2022 with the web build tools and the .NET Framework 4.7.2 targeting pack. The projects are classic ASP.NET MVC 5 projects, so `dotnet build` does **not** work (it fails with MSB4019, `WebApplication.targets` not found).
+- SQL Server Express running as the named instance `.\SQLEXPRESS`. If you only have LocalDB, change `Data Source=.\SQLEXPRESS` to `Data Source=(localdb)\MSSQLLocalDB` in both `src/SaigonBite.Web/Web.config` and `tests/SaigonBite.Tests/App.config`.
+
+### Build and run
+
+1. Clone the repository and open `SaigonBite.sln` in Visual Studio. NuGet packages restore automatically.
+2. Set `SaigonBite.Web` as the startup project and press **F5** (IIS Express).
+
+From a terminal you can instead run `powershell -ExecutionPolicy Bypass -File scripts\run-local.ps1`, which builds with MSBuild and starts IIS Express on http://localhost:5099/.
+
+There is no manual `Update-Database` step. On the first request the app creates the `SaigonBiteDb` database, applies every EF6 migration and loads the sample data. The first page can take about 15 seconds.
+
+### Sample accounts
+
+All seeded accounts use the password `Saigon123!`. Sign in at `/Account/Login`; the demo account switcher in the navigation bar can also change user.
+
+| Role | Account | Main pages |
+|---|---|---|
+| System Admin | `admin@saigonbite.vn` | Menu, Brands, Vouchers, R1 revenue, Users, UC03 hubs and rain flag (`/Hubs`), R2 hub utilization (`/HubReports/HubUtilization`), shipper dispatch (`/Dispatch`) |
+| Kitchen Staff (District 1 hub) | `kitchen.d1@saigonbite.vn` | Kitchen order board (`/Kitchen`) |
+| Shipper | `shipper1@saigonbite.vn` | Assigned deliveries (`/Shipper`) |
+| Local Customer | `local@saigonbite.vn` | Hub menu, place, edit, cancel and track orders |
+| Foreign Tourist | `tourist@saigonbite.vn` | Same as Local Customer, with tourist payment methods |
+
+### Tests
+
+Run all tests from Visual Studio **Test Explorer**, or after a build:
+
+```
+"%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" tests\SaigonBite.Tests\bin\Debug\SaigonBite.Tests.dll
+```
+
+The tests use their own database, `SaigonBiteTests`, which is created, migrated and seeded on the first run. Data you enter in the web app (`SaigonBiteDb`) therefore never affects the tests. The suite currently has 170 MSTest tests covering UC01, UC02, UC03, HT01, HT02 and HT03.
+
+`scripts/check-domain.ps1` still runs the 53 pure pricing and lifecycle checks; pass your compiler path with `-Compiler`, for example `-Compiler C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe`.
+
+### Deployment
+
+The app targets .NET Framework 4.7.2 and needs **Windows hosting with IIS and SQL Server**. Linux-only platforms such as Railway, Render or Heroku cannot run .NET Framework 4.x. Suitable options are Azure App Service (Windows plan) with Azure SQL Database, or a shared Windows host for ASP.NET such as MonsterASP.NET or SmarterASP.NET.
+
+1. In Visual Studio, right-click `SaigonBite.Web`, choose **Publish**, and publish to the host (or to a folder and upload it).
+2. Set the `SaigonBiteDb` connection string on the host to the production SQL Server database. On Azure, add it under **Configuration > Connection strings** with type `SQLServer`, so it overrides `Web.config` without committing secrets.
+3. Open the site once. The database is created and seeded automatically, the same as locally.
 
 ## Version control
 
