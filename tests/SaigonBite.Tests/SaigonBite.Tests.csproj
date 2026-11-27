@@ -45,6 +45,7 @@
     <Compile Include="MenuServiceTests.cs" />
     <Compile Include="PricingSmokeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VoucherServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
