@@ -77,13 +77,6 @@ The tests use their own database, `SaigonBiteTests`, which is created, migrated 
 
 `scripts/check-domain.ps1` still runs the 53 pure pricing and lifecycle checks; pass your compiler path with `-Compiler`, for example `-Compiler C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe`.
 
-### Deployment
-
-The app targets .NET Framework 4.7.2 and needs **Windows hosting with IIS and SQL Server**. Linux-only platforms such as Railway, Render or Heroku cannot run .NET Framework 4.x. Suitable options are Azure App Service (Windows plan) with Azure SQL Database, or a shared Windows host for ASP.NET such as MonsterASP.NET or SmarterASP.NET.
-
-1. In Visual Studio, right-click `SaigonBite.Web`, choose **Publish**, and publish to the host (or to a folder and upload it).
-2. Set the `SaigonBiteDb` connection string on the host to the production SQL Server database. On Azure, add it under **Configuration > Connection strings** with type `SQLServer`, so it overrides `Web.config` without committing secrets.
-3. Open the site once. The database is created and seeded automatically, the same as locally.
 
 ## Version control
 
