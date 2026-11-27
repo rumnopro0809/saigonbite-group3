@@ -21,7 +21,10 @@
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(m => m.Id)
-            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger small" })
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger small" })
+            }
 
             <div class="row g-3">
                 <div class="col-md-6">

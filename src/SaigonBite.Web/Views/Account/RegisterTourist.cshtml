@@ -16,7 +16,10 @@
                 @using (Html.BeginForm("RegisterTourist", "Account", FormMethod.Post))
                 {
                     @Html.AntiForgeryToken()
-                    @Html.ValidationSummary(false, "", new { @class = "alert alert-danger small" })
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        @Html.ValidationSummary(false, "", new { @class = "alert alert-danger small" })
+                    }
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">@(isVi ? "Họ và tên *" : "Full Name *")</label>

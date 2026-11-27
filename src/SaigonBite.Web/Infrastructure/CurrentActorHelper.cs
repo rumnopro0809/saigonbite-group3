@@ -1,7 +1,10 @@
 using System;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
 using SaigonBite.Domain;
 using SaigonBite.Domain.Entities;
 using SaigonBite.Infrastructure.Data;
@@ -15,7 +18,7 @@ namespace SaigonBite.Web.Infrastructure
         public const string UserIdSessionKey = "CurrentUserId";
         public const string RoleSessionKey = "SaigonBite.ActorRole";
 
-        public static ActorRole ResolveRole(HttpContextBase httpContext, SaigonBiteDbContext db)
+        public static ActorRole? TryResolveRole(HttpContextBase httpContext, SaigonBiteDbContext db)
         {
             if (httpContext != null && httpContext.Session != null)
             {
@@ -24,7 +27,7 @@ namespace SaigonBite.Web.Infrastructure
                 {
                     int userId = (int)rawUserId;
                     User user = db.Users.FirstOrDefault(u => u.Id == userId && !u.IsDeleted && u.IsActive);
-                    return user != null ? user.Role : ActorRole.Customer;
+                    return user != null ? (ActorRole?)user.Role : null;
                 }
 
                 object rawRole = httpContext.Session[RoleSessionKey];
@@ -46,7 +49,35 @@ namespace SaigonBite.Web.Infrastructure
                 return ActorRole.Admin;
             }
 
-            return ActorRole.Customer;
+            return null;
+        }
+
+        public static ActorRole ResolveRole(HttpContextBase httpContext, SaigonBiteDbContext db)
+        {
+            return TryResolveRole(httpContext, db) ?? ActorRole.Customer;
+        }
+
+        // Unauthenticated users are redirected to /Account/Login; signed-in non-Admins receive 403 (FR13 / NFR04).
+        public static ActionResult RequireAdmin(Controller controller, SaigonBiteDbContext db, out ActorRole role)
+        {
+            ActorRole? resolved = TryResolveRole(controller != null ? controller.HttpContext : null, db);
+            if (!resolved.HasValue)
+            {
+                role = ActorRole.Customer;
+                return new RedirectToRouteResult(new RouteValueDictionary(new
+                {
+                    controller = "Account",
+                    action = "Login"
+                }));
+            }
+
+            role = resolved.Value;
+            if (role != ActorRole.Admin)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
+            }
+
+            return null;
         }
 
         public static string ResolveLanguage(HttpRequestBase request)
