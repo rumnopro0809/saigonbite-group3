@@ -1,0 +1,99 @@
+@model IList<SaigonBite.Infrastructure.Services.ShipperOrderCard>
+@using SaigonBite.Application.Hubs
+@using SaigonBite.Web.ViewModels
+@using SaigonBite.Domain
+@using SaigonBite.Infrastructure.Services
+@{
+    bool en = HubText.IsEnglish(Request);
+    ViewBag.Title = en ? "My deliveries" : "Đơn giao của tôi";
+    string ok = TempData["ShipperOk"] as string;
+    string error = TempData["ShipperError"] as string;
+}
+<link href="@Url.Content("~/Content/uc03.css")" rel="stylesheet" />
+<div class="sb-eyebrow">@(en ? "SAIGONBITE / DELIVERY" : "SAIGONBITE / GIAO HÀNG")</div>
+<h1 class="sb-h1">@(en ? "My deliveries" : "Đơn giao của tôi")</h1>
+<p class="sb-sub">@(en ? "Orders assigned to you by the admin." : "Các đơn Admin đã gán cho bạn.")</p>
+
+@if (ok != null) { <div class="alert alert-success py-2" role="status">@ok</div> }
+@if (error != null) { <div class="alert alert-danger py-2" role="alert">@error</div> }
+
+@if (Model.Count == 0)
+{
+    <div class="sb-card">@(en ? "No order is assigned to you right now." : "Hiện chưa có đơn nào được gán cho bạn.")</div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var order in Model)
+        {
+            bool cod = order.PaymentMethod == PaymentMethod.Cod;
+            <div class="col-12 col-lg-6">
+                <div class="sb-card h-100" data-order="@order.OrderCode">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <strong>@order.OrderCode</strong>
+                            <div class="small text-muted">@order.HubName</div>
+                        </div>
+                        <span class="sb-badge badge">@(order.Status == OrderStatus.Ready ? (en ? "Ready for pickup" : "Chờ lấy hàng") : (en ? "Out for delivery" : "Đang giao"))</span>
+                    </div>
+                    <div class="mb-2">@order.DeliveryAddress</div>
+                    <ul class="mb-2 ps-3">
+                        @foreach (var line in order.Lines)
+                        {
+                            <li>@line.Quantity × @line.Name</li>
+                        }
+                    </ul>
+                    @if (!string.IsNullOrWhiteSpace(order.Notes))
+                    {
+                        <div class="small mb-1"><strong>@(en ? "Note" : "Ghi chú"):</strong> @order.Notes</div>
+                    }
+                    <div class="small text-muted mb-3">
+                        @order.PaymentMethod · @order.PaymentStatus · @order.PayableTotal.ToString("N0") ₫
+                        @if (cod) { <strong class="text-danger"> @(en ? "· Collect cash" : "· Thu tiền mặt")</strong> }
+                    </div>
+
+                    @if (order.Status == OrderStatus.Ready)
+                    {
+                        using (Html.BeginForm("Act", "Shipper", FormMethod.Post, new { @class = "m-0" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="orderId" value="@order.OrderId" />
+                            <input type="hidden" name="action" value="@ShipperAction.PickUp" />
+                            <input type="hidden" name="rowVersion" value="@order.RowVersion" />
+                            <button type="submit" class="btn btn-sm sb-btn-primary">@(en ? "Pick up and start delivery" : "Lấy hàng và bắt đầu giao")</button>
+                        }
+                    }
+                    else
+                    {
+                        using (Html.BeginForm("Act", "Shipper", FormMethod.Post, new { @class = "m-0 mb-2" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="orderId" value="@order.OrderId" />
+                            <input type="hidden" name="action" value="@ShipperAction.Deliver" />
+                            <input type="hidden" name="rowVersion" value="@order.RowVersion" />
+                            if (cod)
+                            {
+                                <label class="d-block small mb-2">
+                                    <input type="checkbox" name="cashCollected" value="true" />
+                                    <input type="hidden" name="cashCollected" value="false" />
+                                    @(en ? "I collected the cash" : "Đã thu tiền mặt") (@order.PayableTotal.ToString("N0") ₫)
+                                </label>
+                            }
+                            <button type="submit" class="btn btn-sm sb-btn-primary">@(en ? "Delivered" : "Giao thành công")</button>
+                        }
+                        using (Html.BeginForm("Act", "Shipper", FormMethod.Post, new { @class = "m-0 d-flex gap-2" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="orderId" value="@order.OrderId" />
+                            <input type="hidden" name="action" value="@ShipperAction.Fail" />
+                            <input type="hidden" name="rowVersion" value="@order.RowVersion" />
+                            <input type="text" name="reason" maxlength="300" required class="form-control form-control-sm"
+                                   placeholder="@(en ? "Reason, e.g. customer unreachable" : "Lý do, ví dụ khách không liên lạc được")" />
+                            <button type="submit" class="btn btn-sm sb-btn-outline">@(en ? "Failed" : "Thất bại")</button>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}

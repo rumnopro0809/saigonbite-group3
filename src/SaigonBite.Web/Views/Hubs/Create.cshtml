@@ -1,0 +1,22 @@
+@model HubFormVm
+@using SaigonBite.Application.Hubs
+@using SaigonBite.Web.ViewModels
+@{
+    bool en = HubText.IsEnglish(Request);
+    ViewBag.Title = en ? "Add hub" : "Thêm bếp";
+    ViewBag.ActiveTab = "hubs";
+}
+<link href="@Url.Content("~/Content/uc03.css")" rel="stylesheet" />
+
+<div class="sb-eyebrow"><a href="@Url.Action("Index", "Hubs")">← @(en ? "Hub list" : "Danh sách bếp")</a></div>
+<h1 class="sb-h1">@(en ? "Add hub" : "Thêm bếp")</h1>
+
+<div class="sb-card sb-form">
+    @using (Html.BeginForm("Create", "Hubs", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Partial("_Form", Model)
+        <button type="submit" class="btn sb-btn-primary">@(en ? "Save hub" : "Lưu bếp")</button>
+        <a class="btn sb-btn-outline" href="@Url.Action("Index", "Hubs")">@(en ? "Cancel" : "Hủy")</a>
+    }
+</div>

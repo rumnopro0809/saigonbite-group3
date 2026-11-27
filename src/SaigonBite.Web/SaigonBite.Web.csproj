@@ -57,6 +57,12 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\DispatchController.cs" />
+    <Compile Include="Controllers\HubReportsController.cs" />
+    <Compile Include="Controllers\HubsController.cs" />
+    <Compile Include="Controllers\KitchenController.cs" />
+    <Compile Include="Controllers\ShipperController.cs" />
+    <Compile Include="Controllers\Uc03Controller.cs" />
     <Compile Include="Controllers\BrandsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
@@ -74,6 +80,10 @@
     <Compile Include="Models\OrderViewModels.cs" />
     <Compile Include="Models\VoucherViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\RoleOnlyAttribute.cs" />
+    <Compile Include="ViewModels\DispatchViewModel.cs" />
+    <Compile Include="ViewModels\HubViewModels.cs" />
+    <Compile Include="ViewModels\KitchenButtonModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\images\banhmi.jpg" />
@@ -112,6 +122,18 @@
     <Content Include="Views\Vouchers\Create.cshtml" />
     <Content Include="Views\Vouchers\Edit.cshtml" />
     <Content Include="Views\Vouchers\Index.cshtml" />
+    <Content Include="Content\uc03.css" />
+    <Content Include="Scripts\uc03.js" />
+    <Content Include="Views\Hubs\Create.cshtml" />
+    <Content Include="Views\Hubs\Details.cshtml" />
+    <Content Include="Views\Hubs\Edit.cshtml" />
+    <Content Include="Views\Hubs\Index.cshtml" />
+    <Content Include="Views\Hubs\_Form.cshtml" />
+    <Content Include="Views\HubReports\HubUtilization.cshtml" />
+    <Content Include="Views\Kitchen\Index.cshtml" />
+    <Content Include="Views\Kitchen\_KitchenButton.cshtml" />
+    <Content Include="Views\Shipper\Index.cshtml" />
+    <Content Include="Views\Dispatch\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SaigonBite.Domain\SaigonBite.Domain.csproj">
