@@ -36,14 +36,14 @@
     <div class="d-flex gap-2">
         @if (Model.CanEdit)
         {
-            <a class="btn btn-outline-primary btn-sm fw-semibold"
+            <a class="btn btn-primary btn-sm fw-semibold"
                href="@Url.Action("Edit", "Orders", new { id = o.Id })">
                 @(isVi ? "Sửa món (Placed - BR17)" : "Edit Items (Placed)")
             </a>
         }
         @if (Model.CanCancel)
         {
-            <button type="button" class="btn btn-outline-danger btn-sm fw-semibold"
+            <button type="button" class="btn btn-danger btn-sm fw-semibold"
                     data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
                 @(isVi ? "Hủy đơn (BR16)" : "Cancel Order (BR16)")
             </button>
@@ -93,7 +93,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
                             @(isVi ? "Đóng" : "Keep Order")
                         </button>
                         <button type="submit" class="btn btn-danger btn-sm fw-semibold">

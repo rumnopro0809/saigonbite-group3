@@ -23,7 +23,7 @@
 }
 
 <div class="mb-3">
-    <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Index", "Vouchers", new { includeDeleted = !Model.IncludeDeleted })">
+    <a class="btn btn-secondary sb-act" href="@Url.Action("Index", "Vouchers", new { includeDeleted = !Model.IncludeDeleted })">
         @(Model.IncludeDeleted ? (isVi ? "Ẩn voucher đã xóa mềm" : "Hide soft-deleted") : (isVi ? "Hiện cả voucher đã xóa mềm" : "Show soft-deleted"))
     </a>
 </div>
@@ -75,11 +75,11 @@
                             <div class="sb-actions">
                                 @if (!v.IsDeleted)
                                 {
-                                    <a class="btn btn-outline-primary sb-act" href="@Url.Action("Edit", "Vouchers", new { id = v.Id })">@(isVi ? "Sửa" : "Edit")</a>
+                                    <a class="btn btn-primary sb-act" href="@Url.Action("Edit", "Vouchers", new { id = v.Id })">@(isVi ? "Sửa" : "Edit")</a>
                                     using (Html.BeginForm("SoftDelete", "Vouchers", new { id = v.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Ngưng hiệu lực (soft-delete) voucher này?');" : "return confirm('Soft-delete this voucher?');" }))
                                     {
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-outline-danger sb-act">@(isVi ? "Xóa mềm" : "Soft-delete")</button>
+                                        <button type="submit" class="btn btn-danger sb-act">@(isVi ? "Xóa mềm" : "Soft-delete")</button>
                                     }
                                 }
                             </div>

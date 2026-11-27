@@ -7,5 +7,5 @@
     <input type="hidden" name="orderId" value="@Model.Order.OrderId" />
     <input type="hidden" name="action" value="@Model.Action" />
     <input type="hidden" name="rowVersion" value="@Model.Order.RowVersion" />
-    <button type="submit" class="btn sb-act @(Model.Primary ? "btn-sb-primary" : "btn-outline-secondary")">@Model.Label</button>
+    <button type="submit" class="btn sb-act @(Model.Primary ? "btn-sb-primary" : "btn-secondary")">@Model.Label</button>
 }

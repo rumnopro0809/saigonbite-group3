@@ -13,7 +13,7 @@
         </p>
     </div>
     <div class="d-flex gap-2">
-        <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Browse", "Menu")">
+        <a class="btn btn-secondary sb-act" href="@Url.Action("Browse", "Menu")">
             @(isVi ? "Xem thực đơn theo Bếp" : "Customer Hub Menu")
         </a>
         <a class="btn btn-sb-primary sb-act" href="@Url.Action("Create", "Menu")">
@@ -136,25 +136,25 @@
                             </td>
                             <td class="text-end sb-col-actions">
                                 <div class="sb-actions">
-                                    <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Details", "Menu", new { id = item.Id })">
+                                    <a class="btn btn-secondary sb-act" href="@Url.Action("Details", "Menu", new { id = item.Id })">
                                         @(isVi ? "Chi tiết" : "Details")
                                     </a>
                                     @if (!item.IsDeleted)
                                     {
-                                        <a class="btn btn-outline-primary sb-act" href="@Url.Action("Edit", "Menu", new { id = item.Id })">
+                                        <a class="btn btn-primary sb-act" href="@Url.Action("Edit", "Menu", new { id = item.Id })">
                                             @(isVi ? "Sửa" : "Edit")
                                         </a>
                                         using (Html.BeginForm("ToggleAvailability", "Menu", new { id = item.Id, isAvailable = !item.IsAvailable }, FormMethod.Post, new { @class = "d-inline" }))
                                         {
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn sb-act @(item.IsAvailable ? "btn-outline-warning" : "btn-outline-success")">
+                                            <button type="submit" class="btn sb-act @(item.IsAvailable ? "btn-warning" : "btn-success")">
                                                 @(item.IsAvailable ? (isVi ? "Tạm ngưng" : "Pause") : (isVi ? "Mở bán" : "Enable"))
                                             </button>
                                         }
                                         using (Html.BeginForm("SoftDelete", "Menu", new { id = item.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Xác nhận ngừng bán (soft-delete) món này? Lịch sử đơn hàng và báo cáo R1 vẫn được giữ nguyên.');" : "return confirm('Confirm soft-delete? Historical orders and R1 revenue remain preserved.');" }))
                                         {
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-outline-danger sb-act">
+                                            <button type="submit" class="btn btn-danger sb-act">
                                                 @(isVi ? "Xóa mềm" : "Soft-delete")
                                             </button>
                                         }

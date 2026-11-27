@@ -124,7 +124,7 @@
                     }
                 </ul>
                 <div class="d-flex align-items-center flex-wrap flex-xl-nowrap gap-2">
-                    <a class="btn btn-sm btn-outline-danger text-nowrap" href="@Url.Action("Login", "Account")">
+                    <a class="btn btn-sm btn-danger text-nowrap" href="@Url.Action("Login", "Account")">
                         @(isVi ? "Đăng nhập" : "Sign In")
                     </a>
                     @using (Html.BeginForm("SwitchDemoUser", "Home", FormMethod.Post, new { @class = "d-flex align-items-center gap-2" }))
@@ -150,7 +150,7 @@
                             @(currentUser.CustomerType.HasValue ? currentUser.CustomerType.Value.ToString() : currentUser.Role.ToString())
                         </span>
                     }
-                    <a class="btn btn-sm btn-outline-secondary"
+                    <a class="btn btn-sm btn-secondary"
                        href="@Url.Action("SetLanguage", "Home", new { lang = toggleLang, returnUrl = currentUrl })">
                         @(isVi ? "EN" : "VI")
                     </a>

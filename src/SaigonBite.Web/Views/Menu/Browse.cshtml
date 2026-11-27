@@ -18,7 +18,7 @@
     @foreach (var hub in Model.Hubs)
     {
         bool active = hub.Id == Model.SelectedHubId;
-        <a class="btn btn-sm @(active ? "btn-sb-primary" : "btn-outline-secondary bg-white")"
+        <a class="btn btn-sm @(active ? "btn-sb-primary" : "btn-secondary")"
            href="@Url.Action("Browse", "Menu", new { hubId = hub.Id })">
             @hub.Name (@hub.District)
         </a>

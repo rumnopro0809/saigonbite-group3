@@ -34,13 +34,13 @@
 <div class="mb-3">
     @if (Model.IncludeDeleted)
     {
-        <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Index", "Brands", new { includeDeleted = false })">
+        <a class="btn btn-secondary sb-act" href="@Url.Action("Index", "Brands", new { includeDeleted = false })">
             @(isVi ? "Ẩn thương hiệu đã xóa mềm" : "Hide soft-deleted brands")
         </a>
     }
     else
     {
-        <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Index", "Brands", new { includeDeleted = true })">
+        <a class="btn btn-secondary sb-act" href="@Url.Action("Index", "Brands", new { includeDeleted = true })">
             @(isVi ? "Hiển thị cả thương hiệu đã xóa mềm" : "Show soft-deleted brands")
         </a>
     }
@@ -85,18 +85,18 @@
                         </td>
                         <td class="text-end sb-col-actions">
                             <div class="sb-actions">
-                                <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Details", "Brands", new { id = brand.Id })">
+                                <a class="btn btn-secondary sb-act" href="@Url.Action("Details", "Brands", new { id = brand.Id })">
                                     @(isVi ? "Chi tiết" : "Details")
                                 </a>
                                 @if (!brand.IsDeleted)
                                 {
-                                    <a class="btn btn-outline-primary sb-act" href="@Url.Action("Edit", "Brands", new { id = brand.Id })">
+                                    <a class="btn btn-primary sb-act" href="@Url.Action("Edit", "Brands", new { id = brand.Id })">
                                         @(isVi ? "Sửa" : "Edit")
                                     </a>
                                     using (Html.BeginForm("SoftDelete", "Brands", new { id = brand.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Xác nhận ngừng hoạt động (soft-delete) thương hiệu này? Các món thuộc thương hiệu sẽ không đặt mới được, nhưng lịch sử đơn và báo cáo R1 vẫn giữ nguyên.');" : "return confirm('Confirm soft-delete for this brand? Items become ineligible for new orders while history and R1 stay intact.');" }))
                                     {
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-outline-danger sb-act">@(isVi ? "Xóa mềm" : "Soft-delete")</button>
+                                        <button type="submit" class="btn btn-danger sb-act">@(isVi ? "Xóa mềm" : "Soft-delete")</button>
                                     }
                                 }
                             </div>

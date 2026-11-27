@@ -15,7 +15,7 @@
 <div class="sb-presets">
     @foreach (var p in Model.Presets)
     {
-        <a class="btn sb-act @(p.From == Model.From && p.To == Model.To ? "btn-sb-primary" : "btn-outline-secondary")"
+        <a class="btn sb-act @(p.From == Model.From && p.To == Model.To ? "btn-sb-primary" : "btn-secondary")"
            href="@Url.Action("HubUtilization", "HubReports", new { from = p.From, to = p.To })">@p.Label</a>
     }
     @* Chọn khoảng ngày tùy ý. Ngày kết thúc được tính trọn ngày, theo giờ Việt Nam. *@
