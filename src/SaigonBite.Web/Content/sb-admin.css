@@ -1,0 +1,51 @@
+/*
+ * Shared button convention for the admin and staff pages (Users, Brands, Menu, Vouchers, Hubs, R1, R2,
+ * Dispatch, Kitchen, Shipper). One size and one colour per meaning, so every table looks the same:
+ *
+ *   Page action (Add, Save, Filter, Apply) ......... btn btn-sb-primary  sb-act
+ *   Secondary page action (Show deleted, Back) ..... btn btn-outline-secondary sb-act
+ *   Row: view details .............................. btn btn-outline-secondary sb-act
+ *   Row: edit ...................................... btn btn-outline-primary   sb-act
+ *   Row: pause / lock / stop accepting orders ...... btn btn-outline-warning   sb-act
+ *   Row: resume / unlock / enable .................. btn btn-outline-success   sb-act
+ *   Row: soft-delete / deactivate .................. btn btn-outline-danger    sb-act
+ *
+ * Row buttons always appear in that order (Details, Edit, Pause/Resume, Soft-delete) inside
+ * <div class="sb-actions">, which wraps onto a second line instead of pushing the table off-screen.
+ */
+.sb-act {
+    --bs-btn-padding-y: .25rem;
+    --bs-btn-padding-x: .7rem;
+    --bs-btn-font-size: .8125rem;
+    --bs-btn-border-radius: .5rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: .375rem;
+}
+
+.sb-actions form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.sb-actions-left {
+    justify-content: flex-start;
+}
+
+/* The actions column takes the room it needs but may wrap; it never forces a horizontal page scroll. */
+.sb-col-actions {
+    min-width: 9rem;
+}
+
+.sb-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}

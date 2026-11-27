@@ -126,6 +126,7 @@
     <Content Include="Views\Vouchers\Edit.cshtml" />
     <Content Include="Views\Vouchers\Index.cshtml" />
     <Content Include="Content\uc03.css" />
+    <Content Include="Content\sb-admin.css" />
     <Content Include="Scripts\uc03.js" />
     <Content Include="Views\Hubs\Create.cshtml" />
     <Content Include="Views\Hubs\Details.cshtml" />
