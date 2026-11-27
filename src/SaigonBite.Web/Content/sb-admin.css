@@ -51,7 +51,8 @@
 }
 
 /*
- * Solid buttons keep the exact colours of the former outline buttons (Bootstrap 5.3 palette) and follow the
+ * Solid buttons keep the colours of the former outline buttons (Bootstrap 5.3 palette, except red, which uses the
+ * SaigonBite brand red of the Filter and Order now buttons) and follow the
  * Filter button (btn-sb-primary): filled background, white bold text, darker shade on hover.
  */
 .btn-primary,
@@ -70,6 +71,6 @@
 .btn-primary   { --bs-btn-bg: #0d6efd; --bs-btn-border-color: #0d6efd; --bs-btn-hover-bg: #0a58ca; --bs-btn-hover-border-color: #0a58ca; --bs-btn-active-bg: #0a58ca; --bs-btn-active-border-color: #0a58ca; }
 .btn-secondary { --bs-btn-bg: #6c757d; --bs-btn-border-color: #6c757d; --bs-btn-hover-bg: #565e64; --bs-btn-hover-border-color: #565e64; --bs-btn-active-bg: #565e64; --bs-btn-active-border-color: #565e64; }
 .btn-success   { --bs-btn-bg: #198754; --bs-btn-border-color: #198754; --bs-btn-hover-bg: #146c43; --bs-btn-hover-border-color: #146c43; --bs-btn-active-bg: #146c43; --bs-btn-active-border-color: #146c43; }
-.btn-danger    { --bs-btn-bg: #dc3545; --bs-btn-border-color: #dc3545; --bs-btn-hover-bg: #b02a37; --bs-btn-hover-border-color: #b02a37; --bs-btn-active-bg: #b02a37; --bs-btn-active-border-color: #b02a37; }
+.btn-danger    { --bs-btn-bg: #AC291D; --bs-btn-border-color: #AC291D; --bs-btn-hover-bg: #861B14; --bs-btn-hover-border-color: #861B14; --bs-btn-active-bg: #861B14; --bs-btn-active-border-color: #861B14; }
 .btn-warning   { --bs-btn-bg: #ffc107; --bs-btn-border-color: #ffc107; --bs-btn-hover-bg: #cc9a06; --bs-btn-hover-border-color: #cc9a06; --bs-btn-active-bg: #cc9a06; --bs-btn-active-border-color: #cc9a06; }
 .btn-dark      { --bs-btn-bg: #212529; --bs-btn-border-color: #212529; --bs-btn-hover-bg: #424649; --bs-btn-hover-border-color: #424649; --bs-btn-active-bg: #424649; --bs-btn-active-border-color: #424649; }
