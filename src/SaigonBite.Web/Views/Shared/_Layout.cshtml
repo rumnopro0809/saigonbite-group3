@@ -82,8 +82,17 @@
                     <li class="nav-item">
                         <a class="nav-link fw-semibold" href="@Url.Action("Index", "Vouchers")">@(isVi ? "Voucher" : "Vouchers")</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="@Url.Action("Revenue", "Reports")">@(isVi ? "R1 · Doanh thu" : "R1 · Revenue")</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="@Url.Action("Users", "Account")">@(isVi ? "Tài khoản" : "Users")</a>
+                    </li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-sm btn-outline-danger" href="@Url.Action("Login", "Account")">
+                        @(isVi ? "Đăng nhập" : "Sign In")
+                    </a>
                     <a class="btn btn-sm btn-outline-secondary"
                        href="@Url.Action("SetLanguage", "Home", new { lang = toggleLang, returnUrl = currentUrl })">
                         @(isVi ? "EN" : "VI")

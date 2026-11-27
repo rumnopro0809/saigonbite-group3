@@ -36,10 +36,13 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth\AuthService.cs" />
+    <Compile Include="Auth\IUserRepository.cs" />
     <Compile Include="Menu\IMenuRepository.cs" />
     <Compile Include="Menu\MenuDtos.cs" />
     <Compile Include="Menu\MenuService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reports\RevenueReportService.cs" />
     <Compile Include="Vouchers\IVoucherRepository.cs" />
     <Compile Include="Vouchers\VoucherService.cs" />
   </ItemGroup>

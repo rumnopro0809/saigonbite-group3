@@ -1,0 +1,143 @@
+@model SaigonBite.Application.Reports.RevenueReportResult
+@{
+    bool isVi = (ViewData["Lang"] as string) != "en";
+    ViewBag.Title = isVi ? "R1 · Báo cáo doanh thu" : "R1 · Revenue Report";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / HT04 · FR18</div>
+        <h1 class="h3 fw-bold mb-1">@(isVi ? "R1 · Báo cáo doanh thu" : "R1 · Revenue Report")</h1>
+        <p class="text-muted small mb-0">
+            @(isVi
+                ? "Doanh thu ghi nhận từ snapshot đơn hàng (AMB04). Đơn Cancelled và Failed luôn bị loại trừ."
+                : "Revenue computed from stored order snapshots (AMB04). Cancelled and Failed orders are always excluded.")
+        </p>
+    </div>
+</div>
+
+<form method="get" action="@Url.Action("Revenue", "Reports")" class="card sb-card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">@(isVi ? "Từ ngày (UTC+7)" : "From Date (UTC+7)")</label>
+                <input type="date" name="fromDate" value="@Model.FromDate.ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">@(isVi ? "Đến ngày (UTC+7)" : "To Date (UTC+7)")</label>
+                <input type="date" name="toDate" value="@Model.ToDate.ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-4">
+                <div class="form-check small">
+                    <input class="form-check-input" type="checkbox" id="deliveredOnly" name="deliveredOnly" value="true" @(Model.DeliveredOnly ? "checked" : "") />
+                    <input type="hidden" name="deliveredOnly" value="false" />
+                    <label class="form-check-label" for="deliveredOnly">
+                        @(isVi ? "Chỉ tính đơn đã giao thành công — Delivered (AMB04)" : "Delivered orders only (AMB04)")
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-sb-primary btn-sm w-100">@(isVi ? "Xem báo cáo" : "Apply")</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card sb-card shadow-sm h-100">
+            <div class="card-body">
+                <div class="small text-muted">@(isVi ? "Tổng doanh thu" : "Total Revenue")</div>
+                <div class="h3 fw-bold text-danger mb-1">@string.Format("{0:N0} đ", Model.TotalRevenue)</div>
+                <div class="small text-muted">@Model.IncludedOrderCount @(isVi ? "đơn hợp lệ" : "included orders")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card sb-card shadow-sm h-100">
+            <div class="card-body">
+                <div class="small text-muted">@(isVi ? "Doanh thu món (sau giảm giá)" : "Net Food Revenue")</div>
+                <div class="h3 fw-bold mb-1">@string.Format("{0:N0} đ", Model.FoodRevenue)</div>
+                <div class="small text-muted">@(isVi ? "Tổng FoodTotal = S - Q - V" : "Sum of FoodTotal = S - Q - V")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card sb-card shadow-sm h-100">
+            <div class="card-body">
+                <div class="small text-muted">@(isVi ? "Phí giao, phụ thu & làm tròn" : "Fees, Surcharges & Rounding")</div>
+                <div class="h3 fw-bold mb-1">@string.Format("{0:N0} đ", Model.FeesAndRounding)</div>
+                <div class="small text-muted">@(isVi ? "Loại trừ:" : "Excluded:") @Model.ExcludedCancelledOrFailedCount Cancelled/Failed</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-3">
+    <div class="col-lg-6">
+        <div class="card sb-card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold">@(isVi ? "Theo danh mục món (Brand Category)" : "Revenue by Brand Category")</div>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>@(isVi ? "Danh mục" : "Category")</th>
+                            <th class="text-center">@(isVi ? "Số lượng" : "Qty")</th>
+                            <th class="text-end">@(isVi ? "Doanh thu món" : "Food Revenue")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ByCategory.Count == 0)
+                        {
+                            <tr><td colspan="3" class="text-center text-muted py-3">@(isVi ? "Không có đơn hợp lệ trong khoảng ngày này." : "No matching orders in this date range.")</td></tr>
+                        }
+                        else
+                        {
+                            foreach (var row in Model.ByCategory)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@row.Category</td>
+                                    <td class="text-center">@row.ItemQuantity</td>
+                                    <td class="text-end fw-semibold">@string.Format("{0:N0} đ", row.Revenue)</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card sb-card shadow-sm h-100">
+            <div class="card-header bg-white fw-bold">@(isVi ? "Theo 5 phương thức thanh toán (BR13)" : "Revenue by 5 Payment Methods (BR13)")</div>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>@(isVi ? "Phương thức" : "Method")</th>
+                            <th class="text-center">@(isVi ? "Số đơn" : "Orders")</th>
+                            <th class="text-end">@(isVi ? "Tổng thanh toán" : "Payable Total")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in Model.ByPaymentMethod)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@row.Method</td>
+                                <td class="text-center">@row.OrderCount</td>
+                                <td class="text-end fw-semibold">@string.Format("{0:N0} đ", row.Revenue)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert @(Model.IsReconciled ? "alert-success" : "alert-danger") py-2 px-3 small">
+    @(isVi
+        ? "Đối soát: Doanh thu món + Phí & làm tròn = Tổng theo 5 phương thức thanh toán."
+        : "Reconciliation: Net Food Revenue + Fees & Rounding = Sum across all 5 payment methods.")
+</div>
