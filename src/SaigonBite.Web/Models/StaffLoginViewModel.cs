@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SaigonBite.Web.Models
 {
-    public sealed class AdminLoginViewModel
+    public sealed class StaffLoginViewModel
     {
         [Required(ErrorMessage = "Nhập tên đăng nhập.")]
         public string Identifier { get; set; }

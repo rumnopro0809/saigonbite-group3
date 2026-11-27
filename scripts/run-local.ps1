@@ -29,6 +29,7 @@ if (-not $iis) {
 }
 
 Write-Host "Customer site : http://localhost:$Port/"
-Write-Host "Admin sign-in : http://localhost:$Port/Admin/Login   (admin123 / sgbite123 - sample account, dev only)"
+Write-Host "Kitchen       : http://localhost:$Port/Kitchen/Login"
+Write-Host "Shipper       : http://localhost:$Port/Shipper/Login"
 Write-Host 'Press Ctrl+C to stop.'
 & $iis "/path:$web" "/port:$Port" '/systray:false'

@@ -22,11 +22,11 @@ namespace SaigonBite.Web.Controllers
         public ActionResult Login(string returnUrl)
         {
             if (StaffSession.KitchenUserId(User).HasValue) return Redirect(SafeTarget(returnUrl));
-            return View(new AdminLoginViewModel { ReturnUrl = SafeTarget(returnUrl) });
+            return View(new StaffLoginViewModel { ReturnUrl = SafeTarget(returnUrl) });
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public ActionResult Login(AdminLoginViewModel model)
+        public ActionResult Login(StaffLoginViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
             bool en = HubText.IsEnglish(Request);

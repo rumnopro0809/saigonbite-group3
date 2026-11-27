@@ -13,7 +13,7 @@ Người phụ trách: **Lê Quang Tấn — 524H0188 — Group 3**. Cập nhậ
 | FR02 / BR8 Từ chối đơn mới khi tải ≥ 90% | `CustomerOrderService` dùng cùng định nghĩa tải | Báo giá bị từ chối ở 90%, được nhận ở 80% | Đạt |
 | FR16 / BR5 / BR17 Cờ mưa | `RainSettingService`, `PUT /api/rain-flag` | TC16: bật/tắt có rowversion, đơn cũ giữ `HeavyRainSnapshot`, báo giá mới dùng cờ mới; cờ toàn cục được khôi phục sau mỗi test | Đạt |
 | FR19 / R2, AMB06 | `HubReportService`, `/Reports/HubUtilization` | TC19: khoảng ngày theo giờ UTC+7 (bắt đầu bao gồm, kết thúc là đầu ngày sau), "đã xử lý" = từng Confirmed, thời gian chuẩn bị chỉ dùng đơn có cả Confirmed và Ready, không có mẫu thì `null` (không phải 0), lượt Quiet lấy từ snapshot kể cả đơn hủy sau đó, tải hiện tại khớp `HubService` | Đạt |
-| NFR04 Quyền | `[AdminOnly]`, `[AdminOnlyApi]`, vé Forms vai trò Admin | `AdminAccountServiceTests` cho xác thực; kiểm tra trình duyệt: chưa đăng nhập thì chuyển về `/Admin/Login`, API trả 401 | Đạt (đăng nhập bếp/shipper chưa có) |
+| NFR04 Quyền | `[AdminOnly]`, `[AdminOnlyApi]` cho trang UC03; `[KitchenOnly]`, `[ShipperOnly]` và `StaffSession` cho HT03 | `StaffAccountServiceTests`, `ShipperAccountTests` cho đăng nhập bếp/shipper | Bếp/shipper: Đạt. Đăng nhập Admin thuộc HT01 (Thái), UC03 sẽ dùng lại khi gộp |
 | NFR03 Song ngữ | `HubText`, `sb_lang`, `uc03.js` | Xem trên trình duyệt (VI/EN, 375 px); không có test tự động cho giao diện | Đạt trong phạm vi đã xem |
 
 Chạy `dotnet test SaigonBite.sln`: 151 test đạt, trong đó 31 test UC03, 29 test bếp và 40 test shipper/gán shipper (HT03). Các test dùng database SQL Express riêng `SaigonBiteIntegrationTests`, tự tạo dữ liệu có hậu tố GUID và chỉ xóa dữ liệu của chính test.
@@ -22,7 +22,7 @@ Chạy `dotnet test SaigonBite.sln`: 151 test đạt, trong đó 31 test UC03, 2
 
 | Bước trong sơ đồ | Thực hiện |
 |---|---|
-| Xác thực và phân quyền Admin | Đăng nhập `/Admin/Login`, kiểm tra vai trò ở server |
+| Xác thực và phân quyền Admin | Kiểm tra vai trò ở server bằng `[AdminOnly]`; trang đăng nhập dùng của HT01 (Thái) |
 | Đọc: đếm Confirmed/Preparing, suy ra tải, hiển thị cùng R2 | `HubLoadService`, trang `/Hubs`, `/Reports/HubUtilization` |
 | Tạo: vị trí, công suất nguyên dương, brand; lưu `Hub` và `HubBrand` nguyên tử; lỗi thì không ghi dở | Một lần `SaveChanges`; test không để lại hub khi có lỗi |
 | Sửa: kiểm tra rowversion, giữ đơn và snapshot | `HubService.Update`; trả Conflict và tải lại khi dữ liệu cũ |
