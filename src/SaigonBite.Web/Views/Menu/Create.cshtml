@@ -6,7 +6,7 @@
 
 <div class="mb-3">
     <a class="text-decoration-none small" href="@Url.Action("Index", "Menu")">&larr; @(isVi ? "Quay lại danh sách món" : "Back to menu list")</a>
-    <h1 class="h3 fw-bold mt-1">@(isVi ? "Thêm món ăn mới (FR08)" : "Create Menu Item (FR08)")</h1>
+    <h1 class="h3 fw-bold mt-1">@(isVi ? "Thêm món ăn mới" : "Create Menu Item")</h1>
 </div>
 
 <div class="card sb-card shadow-sm">
@@ -55,7 +55,7 @@
                     <div class="form-check">
                         @Html.CheckBoxFor(m => m.IsAvailable, new { @class = "form-check-input" })
                         <label class="form-check-label fw-semibold" for="IsAvailable">
-                            @(isVi ? "Đang mở bán (Available — BR12)" : "Available for new orders (BR12)")
+                            @(isVi ? "Đang mở bán" : "Available for new orders")
                         </label>
                     </div>
                 </div>

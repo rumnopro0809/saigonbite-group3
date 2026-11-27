@@ -67,16 +67,16 @@ namespace SaigonBite.Application.Auth
 
             if (!VnPhoneRegex.IsMatch(phone))
             {
-                errors["Phone"] = "Vietnamese mobile number must be 10 digits starting with 03, 05, 07, 08, or 09 (BR18).";
+                errors["Phone"] = "Vietnamese mobile number must be 10 digits starting with 03, 05, 07, 08, or 09.";
             }
             else if (_users.GetByIdentifier(phone) != null || _users.GetByLocalPhone(phone) != null)
             {
-                errors["Phone"] = "This mobile number is already registered (BR18).";
+                errors["Phone"] = "This mobile number is already registered.";
             }
 
             if (password.Length < 8)
             {
-                errors["Password"] = "Password must be at least 8 characters (BR18).";
+                errors["Password"] = "Password must be at least 8 characters.";
             }
 
             if (!string.Equals(otp, SimulatedOtpCode, StringComparison.Ordinal))
@@ -126,28 +126,28 @@ namespace SaigonBite.Application.Auth
 
             if (!PassportRegex.IsMatch(passport))
             {
-                errors["PassportNumber"] = "Passport number must be 6 to 9 letters or digits (BR18).";
+                errors["PassportNumber"] = "Passport number must be 6 to 9 letters or digits.";
             }
             else if (_users.GetByTouristPassport(passport) != null)
             {
-                errors["PassportNumber"] = "This passport number is already registered (BR18).";
+                errors["PassportNumber"] = "This passport number is already registered.";
             }
 
-            if (nationality.Length == 0) errors["Nationality"] = "Nationality is required (BR18).";
+            if (nationality.Length == 0) errors["Nationality"] = "Nationality is required.";
             else if (nationality.Length > 80) errors["Nationality"] = "Nationality must be at most 80 characters.";
 
             if (!EmailRegex.IsMatch(email) || email.Length > 120)
             {
-                errors["Email"] = "A valid email address is required (BR18).";
+                errors["Email"] = "A valid email address is required.";
             }
             else if (_users.GetByIdentifier(email) != null || _users.GetByTouristEmail(email) != null)
             {
-                errors["Email"] = "This email address is already registered (BR18).";
+                errors["Email"] = "This email address is already registered.";
             }
 
             if (password.Length < 8)
             {
-                errors["Password"] = "Password must be at least 8 characters (BR18).";
+                errors["Password"] = "Password must be at least 8 characters.";
             }
 
             if (!string.Equals(code, SimulatedEmailCode, StringComparison.Ordinal))

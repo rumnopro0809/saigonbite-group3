@@ -100,8 +100,8 @@ namespace SaigonBite.Web.Controllers
                 Session["SaigonBite.UserName"] = result.Data.FullName;
 
                 TempData["StatusMessage"] = model.Lang == "vi"
-                    ? "Đăng ký tài khoản Khách nội địa thành công (BR18)."
-                    : "Local Customer account created successfully (BR18).";
+                    ? "Đăng ký tài khoản Khách nội địa thành công."
+                    : "Local Customer account created successfully.";
                 return RedirectToAction("Browse", "Menu");
             }
         }
@@ -148,8 +148,8 @@ namespace SaigonBite.Web.Controllers
                 Session["SaigonBite.UserName"] = result.Data.FullName;
 
                 TempData["StatusMessage"] = model.Lang == "vi"
-                    ? "Đăng ký tài khoản Khách du lịch thành công (BR18)."
-                    : "Foreign Tourist account created successfully (BR18).";
+                    ? "Đăng ký tài khoản Khách du lịch thành công."
+                    : "Foreign Tourist account created successfully.";
                 return RedirectToAction("Browse", "Menu");
             }
         }

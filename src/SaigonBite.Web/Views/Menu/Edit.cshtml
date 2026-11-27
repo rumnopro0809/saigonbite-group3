@@ -6,13 +6,13 @@
 
 <div class="mb-3">
     <a class="text-decoration-none small" href="@Url.Action("Index", "Menu")">&larr; @(isVi ? "Quay lại danh sách món" : "Back to menu list")</a>
-    <h1 class="h3 fw-bold mt-1">@(isVi ? "Chỉnh sửa món ăn (FR10)" : "Edit Menu Item (FR10)")</h1>
+    <h1 class="h3 fw-bold mt-1">@(isVi ? "Chỉnh sửa món ăn" : "Edit Menu Item")</h1>
 </div>
 
 <div class="alert alert-warning py-2 px-3 small mb-3">
     @(isVi
-        ? "Lưu ý BR17: Thay đổi đơn giá và trạng thái mở bán chỉ áp dụng cho các đơn đặt mới; các OrderLine đã lưu trước đó giữ nguyên giá snapshot."
-        : "BR17 Notice: Price and availability updates apply only to future orders; existing OrderLine price snapshots remain unchanged.")
+        ? "Lưu ý: thay đổi đơn giá và trạng thái mở bán chỉ áp dụng cho các đơn đặt mới; đơn đã đặt trước đó giữ nguyên giá."
+        : "Note: price and availability updates apply only to new orders; existing orders keep their original prices.")
 </div>
 
 <div class="card sb-card shadow-sm">
@@ -61,7 +61,7 @@
                     <div class="form-check">
                         @Html.CheckBoxFor(m => m.IsAvailable, new { @class = "form-check-input" })
                         <label class="form-check-label fw-semibold" for="IsAvailable">
-                            @(isVi ? "Đang mở bán (Available — BR12)" : "Available for new orders (BR12)")
+                            @(isVi ? "Đang mở bán" : "Available for new orders")
                         </label>
                     </div>
                 </div>

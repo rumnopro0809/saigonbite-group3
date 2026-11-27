@@ -251,8 +251,8 @@ namespace SaigonBite.Web.Controllers
                 if (!result.Succeeded) return HttpNotFound();
 
                 TempData["StatusMessage"] = lang == "vi"
-                    ? (isAvailable ? "Đã mở bán lại món ăn." : "Đã tạm ngưng phục vụ món ăn (BR12).")
-                    : (isAvailable ? "Menu item marked Available." : "Menu item marked Unavailable (BR12).");
+                    ? (isAvailable ? "Đã mở bán lại món ăn." : "Đã tạm ngưng phục vụ món ăn.")
+                    : (isAvailable ? "Menu item marked Available." : "Menu item marked Unavailable.");
                 return RedirectToAction("Index");
             }
         }

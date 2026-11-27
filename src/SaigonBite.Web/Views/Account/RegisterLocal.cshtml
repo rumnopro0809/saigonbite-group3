@@ -8,9 +8,9 @@
     <div class="col-md-7 col-lg-6">
         <div class="card sb-card shadow-sm">
             <div class="card-body p-4">
-                <h1 class="h4 fw-bold mb-1">@(isVi ? "Đăng ký Khách nội địa (BR18)" : "Local Customer Registration (BR18)")</h1>
+                <h1 class="h4 fw-bold mb-1">@(isVi ? "Đăng ký Khách nội địa" : "Local Customer Registration")</h1>
                 <p class="text-muted small mb-3">
-                    @(isVi ? "SĐT Việt Nam 10 số (đầu 03, 05, 07, 08, 09) + OTP mô phỏng (123456). Thanh toán: MoMo, VNPay hoặc COD." : "10-digit Vietnamese phone (03/05/07/08/09) + simulated OTP (123456). Payments: MoMo, VNPay or COD.")
+                    @(isVi ? "Đăng ký bằng số điện thoại Việt Nam 10 số và mã OTP. Thanh toán bằng MoMo, VNPay hoặc tiền mặt khi nhận hàng." : "Sign up with a 10-digit Vietnamese phone number and an OTP code. Pay with MoMo, VNPay or cash on delivery.")
                 </p>
 
                 @using (Html.BeginForm("RegisterLocal", "Account", FormMethod.Post))
@@ -34,7 +34,7 @@
                         @Html.PasswordFor(m => m.Password, new { @class = "form-control", minlength = 8, required = "required" })
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">@(isVi ? "Mã OTP mô phỏng (nhập 123456) *" : "Simulated OTP Code (enter 123456) *")</label>
+                        <label class="form-label fw-semibold">@(isVi ? "Mã OTP *" : "OTP Code *")</label>
                         @Html.TextBoxFor(m => m.OtpCode, new { @class = "form-control", required = "required" })
                     </div>
                     <button type="submit" class="btn btn-sb-primary w-100">@(isVi ? "Tạo tài khoản" : "Create Account")</button>

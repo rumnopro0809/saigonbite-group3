@@ -1,7 +1,7 @@
 @model SaigonBite.Web.Models.CreateOrderViewModel
 @{
     bool isVi = Model.Lang == "vi";
-    ViewBag.Title = isVi ? "Đặt đơn mới (UC01)" : "Place Order (UC01)";
+    ViewBag.Title = isVi ? "Đặt đơn mới" : "Place Order";
 }
 
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
@@ -9,8 +9,8 @@
         <h1 class="h3 fw-bold mb-1">@(isVi ? "Đặt món từ Bếp đám mây" : "Place New Order")</h1>
         <p class="text-muted small mb-0">
             @(isVi
-                ? "Tính giá minh bạch theo BR1–BR14 trên server. Đổi tài khoản Local/Tourist trên thanh menu để kiểm tra phương thức thanh toán."
-                : "Authoritative server pricing (BR1-BR14). Switch between Local and Tourist demo accounts to verify allowed payment methods.")
+                ? "Chọn bếp, chọn món và xem giá rõ ràng từng khoản trước khi đặt."
+                : "Choose a hub and dishes, then see every price line before you order.")
         </p>
     </div>
     <span class="badge text-bg-warning">
@@ -21,7 +21,7 @@
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
     <div class="alert alert-danger" role="alert">
-        <strong>[@Model.ErrorRule]</strong> @Model.ErrorMessage
+        @Model.ErrorMessage
     </div>
 }
 
@@ -107,7 +107,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">@(isVi ? "Phương thức thanh toán (BR13)" : "Payment Method (BR13)")</label>
+                        <label class="form-label fw-semibold">@(isVi ? "Phương thức thanh toán" : "Payment Method")</label>
                         <div class="d-flex flex-wrap gap-2">
                             @foreach (var method in Model.AvailablePaymentMethods)
                             {
@@ -122,8 +122,8 @@
                         </div>
                         <div class="form-text">
                             @(isVi
-                                ? "COD tối đa 1.000.000 đ (BR14). Thanh toán online là mô phỏng (Tier 3)."
-                                : "COD capped at 1,000,000 VND (BR14). Online payments are simulated (Tier 3).")
+                                ? "Thanh toán khi nhận hàng (COD) áp dụng cho đơn tối đa 1.000.000 đ."
+                                : "Cash on delivery (COD) is available for orders up to 1,000,000 VND.")
                         </div>
                     </div>
 
@@ -149,7 +149,7 @@
                 <div class="card sb-card shadow-sm border-danger">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h3 class="h6 fw-bold mb-0">@(isVi ? "Chi tiết tính giá (BR10–BR11)" : "Price Breakdown (BR10-BR11)")</h3>
+                            <h3 class="h6 fw-bold mb-0">@(isVi ? "Chi tiết tính giá" : "Price Breakdown")</h3>
                             <span class="badge text-bg-light border">
                                 @(isVi ? "Tải bếp:" : "Hub load:") @string.Format("{0:P0}", Model.Quote.HubLoad)
                             </span>

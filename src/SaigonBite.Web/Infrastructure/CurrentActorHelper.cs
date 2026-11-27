@@ -74,7 +74,7 @@ namespace SaigonBite.Web.Infrastructure
             role = resolved.Value;
             if (role != ActorRole.Admin)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required.");
             }
 
             return null;

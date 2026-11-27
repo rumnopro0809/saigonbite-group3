@@ -134,8 +134,8 @@ namespace SaigonBite.Web.Controllers
                 if (order.CustomerId != CurrentUser.Id || order.Status != OrderStatus.Placed)
                 {
                     TempData["OrderError"] = CurrentLang == "vi"
-                        ? "[BR17] Chỉ được chỉnh sửa đơn hàng khi còn ở trạng thái Placed."
-                        : "[BR17] Only orders in Placed status can be edited.";
+                        ? "Chỉ được chỉnh sửa đơn hàng khi đơn chưa được bếp xác nhận."
+                        : "Orders can only be edited before the kitchen confirms them.";
                     return RedirectToAction("Details", new { id = id });
                 }
 
@@ -185,8 +185,8 @@ namespace SaigonBite.Web.Controllers
             if (order.CustomerId != CurrentUser.Id || order.Status != OrderStatus.Placed)
             {
                 TempData["OrderError"] = CurrentLang == "vi"
-                    ? "[BR17] Đơn hàng không còn ở trạng thái Placed nên không thể chỉnh sửa."
-                    : "[BR17] Order is no longer in Placed status and cannot be edited.";
+                    ? "Bếp đã xác nhận đơn hàng nên không thể chỉnh sửa nữa."
+                    : "The kitchen has already confirmed this order, so it can no longer be edited.";
                 return RedirectToAction("Details", new { id = order.Id });
             }
 
@@ -216,8 +216,8 @@ namespace SaigonBite.Web.Controllers
                 {
                     Order updated = service.EditOrder(editRequest);
                     TempData["OrderSuccess"] = CurrentLang == "vi"
-                        ? "Đã cập nhật món cho đơn " + updated.OrderCode + " (trạng thái vẫn giữ Placed theo BR17)."
-                        : "Order " + updated.OrderCode + " updated successfully (status remains Placed per BR17).";
+                        ? "Đã cập nhật món cho đơn " + updated.OrderCode + "."
+                        : "Order " + updated.OrderCode + " updated successfully.";
                     return RedirectToAction("Details", new { id = updated.Id });
                 }
 
@@ -264,15 +264,15 @@ namespace SaigonBite.Web.Controllers
                 bool isRefunded = string.Equals(cancelled.PaymentStatus, "Refunded", StringComparison.OrdinalIgnoreCase);
                 TempData["OrderSuccess"] = CurrentLang == "vi"
                     ? (isRefunded
-                        ? "Đã hủy đơn " + cancelled.OrderCode + " và hoàn tiền online mô phỏng 100% (BR16)."
+                        ? "Đã hủy đơn " + cancelled.OrderCode + " và hoàn lại 100% số tiền đã thanh toán online."
                         : "Đã hủy đơn COD " + cancelled.OrderCode + " (không phát sinh hoàn tiền online).")
                     : (isRefunded
-                        ? "Cancelled order " + cancelled.OrderCode + " with full simulated online refund (BR16)."
+                        ? "Cancelled order " + cancelled.OrderCode + " and refunded the full online payment."
                         : "Cancelled COD order " + cancelled.OrderCode + " (no online refund needed).");
             }
             catch (BusinessRuleException ex)
             {
-                TempData["OrderError"] = "[" + ex.Rule + "] " + ex.Message;
+                TempData["OrderError"] = ex.Message;
             }
 
             return RedirectToAction("Details", new { id = orderId });

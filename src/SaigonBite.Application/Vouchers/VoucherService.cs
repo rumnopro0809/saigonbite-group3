@@ -154,23 +154,23 @@ namespace SaigonBite.Application.Vouchers
             {
                 if (input.Value <= 0m || input.Value > 100m)
                 {
-                    errors["Value"] = "Percent voucher value must be greater than 0 and at most 100 (BR9).";
+                    errors["Value"] = "Percent voucher value must be greater than 0 and at most 100.";
                 }
                 if (input.Cap < 0m)
                 {
-                    errors["Cap"] = "Maximum discount cap cannot be negative (BR9).";
+                    errors["Cap"] = "Maximum discount cap cannot be negative.";
                 }
             }
             else if (input.Type == VoucherType.Fixed)
             {
                 if (input.Value <= 0m)
                 {
-                    errors["Value"] = "Fixed voucher amount must be greater than 0 (BR9).";
+                    errors["Value"] = "Fixed voucher amount must be greater than 0.";
                 }
             }
             else
             {
-                errors["Type"] = "Unsupported voucher type (BR9).";
+                errors["Type"] = "Unsupported voucher type.";
             }
 
             if (input.MinimumSubtotal < 0m)

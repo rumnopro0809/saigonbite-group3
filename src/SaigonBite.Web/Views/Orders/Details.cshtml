@@ -38,14 +38,14 @@
         {
             <a class="btn btn-primary btn-sm fw-semibold"
                href="@Url.Action("Edit", "Orders", new { id = o.Id })">
-                @(isVi ? "Sửa món (Placed - BR17)" : "Edit Items (Placed)")
+                @(isVi ? "Sửa món" : "Edit Items")
             </a>
         }
         @if (Model.CanCancel)
         {
             <button type="button" class="btn btn-danger btn-sm fw-semibold"
                     data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
-                @(isVi ? "Hủy đơn (BR16)" : "Cancel Order (BR16)")
+                @(isVi ? "Hủy đơn" : "Cancel Order")
             </button>
         }
     </div>
@@ -72,8 +72,8 @@
                         {
                             <div class="alert alert-info small">
                                 @(isVi
-                                    ? "Đơn đã thanh toán online qua " + o.PaymentMethod + ". Khi hủy, hệ thống sẽ mô phỏng hoàn 100% số tiền " + string.Format("{0:N0} đ", o.PayableTotal) + " (BR16)."
-                                    : "This order was paid online via " + o.PaymentMethod + ". Cancelling triggers a full 100% simulated refund of " + string.Format("{0:N0} VND", o.PayableTotal) + " (BR16).")
+                                    ? "Đơn đã thanh toán online qua " + o.PaymentMethod + ". Khi hủy, SaigonBite hoàn lại 100% số tiền " + string.Format("{0:N0} đ", o.PayableTotal) + "."
+                                    : "This order was paid online via " + o.PaymentMethod + ". If you cancel, SaigonBite refunds the full " + string.Format("{0:N0} VND", o.PayableTotal) + ".")
                             </div>
                         }
                         else
@@ -110,14 +110,14 @@
     <div class="col-lg-7">
         <div class="card sb-card shadow-sm mb-4">
             <div class="card-body">
-                <h2 class="h6 fw-bold mb-3">@(isVi ? "Thông tin đơn hàng & ảnh chụp ngữ cảnh" : "Order & Placement Snapshot")</h2>
+                <h2 class="h6 fw-bold mb-3">@(isVi ? "Thông tin đơn hàng" : "Order Information")</h2>
                 <div class="row g-2 small">
                     <div class="col-sm-6"><strong>@(isVi ? "Bếp:" : "Hub:")</strong> @(o.Hub != null ? o.Hub.Name : "-")</div>
                     <div class="col-sm-6"><strong>@(isVi ? "Thời điểm đặt:" : "Placed at:")</strong> @o.PlacedAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm:ss")</div>
                     <div class="col-sm-6"><strong>@(isVi ? "Địa chỉ:" : "Address:")</strong> @o.DeliveryAddress</div>
                     <div class="col-sm-6"><strong>@(isVi ? "Khoảng cách:" : "Distance:")</strong> @o.DistanceKm.ToString("0.0") km</div>
-                    <div class="col-sm-6"><strong>@(isVi ? "Tải bếp lúc đặt:" : "Hub load snapshot:")</strong> @string.Format("{0:P0}", o.HubLoadSnapshot)</div>
-                    <div class="col-sm-6"><strong>@(isVi ? "Mưa lớn lúc đặt:" : "Heavy rain snapshot:")</strong> @(o.HeavyRainSnapshot ? (isVi ? "Có (+10.000 đ)" : "Yes (+10,000)") : (isVi ? "Không" : "No"))</div>
+                    <div class="col-sm-6"><strong>@(isVi ? "Tải bếp lúc đặt:" : "Hub load at order time:")</strong> @string.Format("{0:P0}", o.HubLoadSnapshot)</div>
+                    <div class="col-sm-6"><strong>@(isVi ? "Mưa lớn lúc đặt:" : "Heavy rain at order time:")</strong> @(o.HeavyRainSnapshot ? (isVi ? "Có (+10.000 đ)" : "Yes (+10,000)") : (isVi ? "Không" : "No"))</div>
                     <div class="col-sm-6"><strong>@(isVi ? "Thanh toán:" : "Payment:")</strong> @o.PaymentMethod (@o.PaymentStatus)</div>
                     @if (!string.IsNullOrEmpty(o.Notes))
                     {
@@ -214,7 +214,7 @@
     <div class="col-lg-5">
         <div class="card sb-card shadow-sm border-danger">
             <div class="card-body">
-                <h2 class="h6 fw-bold mb-3">@(isVi ? "Tổng kết hóa đơn (BR10–BR11)" : "Stored Price Breakdown")</h2>
+                <h2 class="h6 fw-bold mb-3">@(isVi ? "Tổng kết hóa đơn" : "Price Breakdown")</h2>
                 <table class="table table-sm mb-0">
                     <tbody>
                         <tr>
