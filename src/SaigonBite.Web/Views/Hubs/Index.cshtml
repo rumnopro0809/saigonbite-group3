@@ -15,13 +15,13 @@
 <div class="sb-toolbar">
     @* Nút cờ mưa gửi POST /Hubs/SetRain (xem Scripts/uc03.js). *@
     @Html.AntiForgeryToken()
-    <button type="button" id="rain-toggle" class="btn sb-btn-outline"
+    <button type="button" id="rain-toggle" class="btn btn-outline-secondary sb-act"
             data-url="@Url.Action("SetRain", "Hubs")"
             data-on="@(Model.Rain.IsHeavyRainOn ? "true" : "false")"
             data-rowversion="@Model.Rain.RowVersion">
         @(en ? "Heavy rain" : "Có mưa lớn") · <span id="rain-state">@(Model.Rain.IsHeavyRainOn ? (en ? "On" : "Đang bật") : (en ? "Off" : "Đang tắt"))</span>
     </button>
-    <a class="btn sb-btn-primary" href="@Url.Action("Create", "Hubs")">@(en ? "Add hub +" : "Thêm bếp +")</a>
+    <a class="btn btn-sb-primary sb-act" href="@Url.Action("Create", "Hubs")">+ @(en ? "Add hub" : "Thêm bếp")</a>
 </div>
 
 <div class="sb-note">@(en ? "Hub load = Confirmed and Preparing orders ÷ capacity. A hub at 90% load or more pauses new orders." : "Tải bếp = đơn Confirmed và Preparing ÷ công suất. Bếp từ 90% tải trở lên tạm ngừng nhận đơn mới.")</div>
@@ -36,7 +36,7 @@
                 <th>@(en ? "Capacity" : "Công suất")</th>
                 <th>@(en ? "Current load" : "Tải hiện tại")</th>
                 <th>@(en ? "Status" : "Trạng thái")</th>
-                <th>@(en ? "Actions" : "Thao tác")</th>
+                <th class="text-end">@(en ? "Actions" : "Thao tác")</th>
             </tr>
         </thead>
         <tbody>
@@ -48,7 +48,7 @@
                     <td>@hub.Capacity @(en ? "orders" : "đơn")</td>
                     <td>@hub.LoadPercent%</td>
                     <td><span class="@HubDisplay.StatusCss(hub)">@HubDisplay.StatusText(hub, en)</span></td>
-                    <td><a class="btn sb-btn-outline btn-sm" href="@Url.Action("Details", "Hubs", new { id = hub.Id })">@(en ? "View details" : "Xem chi tiết")</a></td>
+                    <td class="text-end sb-col-actions"><div class="sb-actions"><a class="btn btn-outline-secondary sb-act" href="@Url.Action("Details", "Hubs", new { id = hub.Id })">@(en ? "Details" : "Chi tiết")</a></div></td>
                 </tr>
             }
             @if (Model.Hubs.Count == 0)

@@ -15,7 +15,7 @@
 <div class="sb-presets">
     @foreach (var p in Model.Presets)
     {
-        <a class="btn @(p.From == Model.From && p.To == Model.To ? "sb-btn-primary" : "sb-btn-outline")"
+        <a class="btn sb-act @(p.From == Model.From && p.To == Model.To ? "btn-sb-primary" : "btn-outline-secondary")"
            href="@Url.Action("HubUtilization", "HubReports", new { from = p.From, to = p.To })">@p.Label</a>
     }
     @* Chọn khoảng ngày tùy ý. Ngày kết thúc được tính trọn ngày, theo giờ Việt Nam. *@
@@ -25,7 +25,7 @@
         <span>–</span>
         <label for="to" class="visually-hidden">@(en ? "To" : "Đến ngày")</label>
         <input type="date" id="to" name="to" value="@Model.To" class="form-control form-control-sm" />
-        <button type="submit" class="btn sb-btn-outline btn-sm">@(en ? "Apply range" : "Chọn khoảng ngày")</button>
+        <button type="submit" class="btn btn-sb-primary sb-act">@(en ? "Apply range" : "Chọn khoảng ngày")</button>
     </form>
 </div>
 

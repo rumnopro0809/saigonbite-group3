@@ -16,7 +16,7 @@
     {
         @Html.AntiForgeryToken()
         @Html.Partial("_Form", Model)
-        <button type="submit" class="btn sb-btn-primary">@(en ? "Save hub" : "Lưu bếp")</button>
-        <a class="btn sb-btn-outline" href="@Url.Action("Index", "Hubs")">@(en ? "Cancel" : "Hủy")</a>
+        <button type="submit" class="btn btn-sb-primary sb-act">@(en ? "Save hub" : "Lưu bếp")</button>
+        <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Index", "Hubs")">@(en ? "Cancel" : "Hủy")</a>
     }
 </div>

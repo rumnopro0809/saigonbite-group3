@@ -60,7 +60,7 @@ else
                             <input type="hidden" name="orderId" value="@order.OrderId" />
                             <input type="hidden" name="action" value="@ShipperAction.PickUp" />
                             <input type="hidden" name="rowVersion" value="@order.RowVersion" />
-                            <button type="submit" class="btn btn-sm sb-btn-primary">@(en ? "Pick up and start delivery" : "Lấy hàng và bắt đầu giao")</button>
+                            <button type="submit" class="btn btn-sb-primary sb-act">@(en ? "Pick up and start delivery" : "Lấy hàng và bắt đầu giao")</button>
                         }
                     }
                     else
@@ -79,7 +79,7 @@ else
                                     @(en ? "I collected the cash" : "Đã thu tiền mặt") (@order.PayableTotal.ToString("N0") ₫)
                                 </label>
                             }
-                            <button type="submit" class="btn btn-sm sb-btn-primary">@(en ? "Delivered" : "Giao thành công")</button>
+                            <button type="submit" class="btn btn-outline-success sb-act">@(en ? "Delivered" : "Giao thành công")</button>
                         }
                         using (Html.BeginForm("Act", "Shipper", FormMethod.Post, new { @class = "m-0 d-flex gap-2" }))
                         {
@@ -89,7 +89,7 @@ else
                             <input type="hidden" name="rowVersion" value="@order.RowVersion" />
                             <input type="text" name="reason" maxlength="300" required class="form-control form-control-sm"
                                    placeholder="@(en ? "Reason, e.g. customer unreachable" : "Lý do, ví dụ khách không liên lạc được")" />
-                            <button type="submit" class="btn btn-sm sb-btn-outline">@(en ? "Failed" : "Thất bại")</button>
+                            <button type="submit" class="btn btn-outline-danger sb-act">@(en ? "Failed" : "Thất bại")</button>
                         }
                     }
                 </div>

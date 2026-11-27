@@ -21,10 +21,6 @@
 .sb-presets { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
 .sb-range { display: flex; align-items: center; gap: 8px; margin-left: 8px; }
 
-.sb-btn-primary { background: var(--sb-red); color: #fff; border: 1px solid var(--sb-red); font-weight: 600; }
-.sb-btn-primary:hover { background: var(--sb-red-dark); color: #fff; }
-.sb-btn-outline { background: #fff; color: var(--sb-red); border: 1px solid var(--sb-line); font-weight: 600; }
-.sb-btn-outline:hover { background: var(--sb-head); color: var(--sb-red); }
 .btn:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #1b6ef3; outline-offset: 2px; }
 
 .sb-note { background: var(--sb-ok-bg); color: var(--sb-ok); border: 1px solid #cfe3c8; border-radius: 8px; padding: 10px 14px; font-size: .8rem; font-weight: 600; margin-bottom: 16px; }

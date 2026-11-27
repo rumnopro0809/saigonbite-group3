@@ -57,7 +57,7 @@ else
                                         <option value="@shipper.UserId" selected="@(order.ShipperId == shipper.UserId)">@shipper.FullName (@shipper.Identifier)</option>
                                     }
                                 </select>
-                                <button type="submit" class="btn btn-sm sb-btn-primary">@(order.ShipperId.HasValue ? (en ? "Reassign" : "Đổi") : (en ? "Assign" : "Gán"))</button>
+                                <button type="submit" class="btn btn-sb-primary sb-act">@(order.ShipperId.HasValue ? (en ? "Reassign" : "Đổi") : (en ? "Assign" : "Gán"))</button>
                             }
                         </td>
                     </tr>

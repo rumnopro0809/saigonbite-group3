@@ -59,11 +59,11 @@
 </div>
 
 <div class="sb-actions-row">
-    <a class="btn sb-btn-primary" href="@Url.Action("Edit", "Hubs", new { id = Model.Id })">@(en ? "Edit hub" : "Sửa thông tin")</a>
+    <a class="btn btn-outline-primary sb-act" href="@Url.Action("Edit", "Hubs", new { id = Model.Id })">@(en ? "Edit hub" : "Sửa thông tin")</a>
     @* Hai nút dưới gửi POST (có token chống giả mạo) tới HubsController, xem Scripts/uc03.js. *@
     @Html.AntiForgeryToken()
-    <button type="button" class="btn sb-btn-outline" data-hub-action="toggle-active">@(Model.IsActive ? (en ? "Stop accepting new orders" : "Ngừng nhận đơn mới") : (en ? "Resume accepting orders" : "Nhận đơn trở lại"))</button>
-    <button type="button" class="btn btn-outline-danger" data-hub-action="delete">@(en ? "Delete hub" : "Xóa bếp")</button>
+    <button type="button" class="btn sb-act @(Model.IsActive ? "btn-outline-warning" : "btn-outline-success")" data-hub-action="toggle-active">@(Model.IsActive ? (en ? "Stop accepting new orders" : "Ngừng nhận đơn mới") : (en ? "Resume accepting orders" : "Nhận đơn trở lại"))</button>
+    <button type="button" class="btn btn-outline-danger sb-act" data-hub-action="delete">@(en ? "Soft-delete" : "Xóa mềm")</button>
 </div>
 
 @section scripts {
