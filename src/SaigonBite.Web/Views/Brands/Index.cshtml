@@ -1,15 +1,15 @@
 @model SaigonBite.Web.Models.BrandIndexViewModel
 @{
     bool isVi = Model.Lang == "vi";
-    ViewBag.Title = isVi ? "UC02 · Quản lý thương hiệu" : "UC02 · Manage Brands";
+    ViewBag.Title = isVi ? "Quản lý thương hiệu" : "Manage Brands";
 }
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
-        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / @(isVi ? "VẬN HÀNH · UC02" : "OPERATIONS · UC02")</div>
+        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / @(isVi ? "VẬN HÀNH" : "OPERATIONS")</div>
         <h1 class="h3 fw-bold mb-1">@(isVi ? "Quản lý thương hiệu ảo" : "Virtual Brand Management")</h1>
         <p class="text-muted small mb-0">
-            @(isVi ? "Quản lý thương hiệu, danh mục phục vụ báo cáo R1 và liên kết bếp (HubBrands)." : "Manage virtual brands, R1 reporting categories, and serving hub links (HubBrands).")
+            @(isVi ? "Quản lý thương hiệu, danh mục món và các bếp vận hành từng thương hiệu." : "Manage virtual brands, their categories and the hubs that serve them.")
         </p>
     </div>
     <a class="btn btn-sb-primary sb-act" href="@Url.Action("Create", "Brands")">
@@ -34,13 +34,13 @@
 <div class="mb-3">
     @if (Model.IncludeDeleted)
     {
-        <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Index", "Brands", new { includeDeleted = false })">
+        <a class="btn btn-secondary sb-act" href="@Url.Action("Index", "Brands", new { includeDeleted = false })">
             @(isVi ? "Ẩn thương hiệu đã xóa mềm" : "Hide soft-deleted brands")
         </a>
     }
     else
     {
-        <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Index", "Brands", new { includeDeleted = true })">
+        <a class="btn btn-secondary sb-act" href="@Url.Action("Index", "Brands", new { includeDeleted = true })">
             @(isVi ? "Hiển thị cả thương hiệu đã xóa mềm" : "Show soft-deleted brands")
         </a>
     }
@@ -52,7 +52,7 @@
             <thead class="table-light">
                 <tr>
                     <th>@(isVi ? "Thương hiệu" : "Brand")</th>
-                    <th>@(isVi ? "Danh mục (R1)" : "Category (R1)")</th>
+                    <th>@(isVi ? "Danh mục" : "Category")</th>
                     <th class="text-center">@(isVi ? "Số bếp liên kết" : "Linked Hubs")</th>
                     <th class="text-center">@(isVi ? "Số món" : "Items")</th>
                     <th>@(isVi ? "Trạng thái" : "Status")</th>
@@ -85,18 +85,18 @@
                         </td>
                         <td class="text-end sb-col-actions">
                             <div class="sb-actions">
-                                <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Details", "Brands", new { id = brand.Id })">
+                                <a class="btn btn-secondary sb-act" href="@Url.Action("Details", "Brands", new { id = brand.Id })">
                                     @(isVi ? "Chi tiết" : "Details")
                                 </a>
                                 @if (!brand.IsDeleted)
                                 {
-                                    <a class="btn btn-outline-primary sb-act" href="@Url.Action("Edit", "Brands", new { id = brand.Id })">
+                                    <a class="btn btn-primary sb-act" href="@Url.Action("Edit", "Brands", new { id = brand.Id })">
                                         @(isVi ? "Sửa" : "Edit")
                                     </a>
                                     using (Html.BeginForm("SoftDelete", "Brands", new { id = brand.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Xác nhận ngừng hoạt động (soft-delete) thương hiệu này? Các món thuộc thương hiệu sẽ không đặt mới được, nhưng lịch sử đơn và báo cáo R1 vẫn giữ nguyên.');" : "return confirm('Confirm soft-delete for this brand? Items become ineligible for new orders while history and R1 stay intact.');" }))
                                     {
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-outline-danger sb-act">@(isVi ? "Xóa mềm" : "Soft-delete")</button>
+                                        <button type="submit" class="btn btn-danger sb-act">@(isVi ? "Xóa mềm" : "Soft-delete")</button>
                                     }
                                 }
                             </div>

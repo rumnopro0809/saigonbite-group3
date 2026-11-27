@@ -3,19 +3,19 @@
 @using SaigonBite.Web.ViewModels
 @{
     bool en = HubText.IsEnglish(Request);
-    ViewBag.Title = en ? "R2 · Hub performance report" : "R2 · Báo cáo hiệu suất bếp";
+    ViewBag.Title = en ? "Hub performance report" : "Báo cáo hiệu suất bếp";
     ViewBag.ActiveTab = "r2";
 }
 <link href="@Url.Content("~/Content/uc03.css")" rel="stylesheet" />
 
 <div class="sb-eyebrow">@(en ? "SAIGONBITE / OPERATIONS" : "SAIGONBITE / VẬN HÀNH")</div>
-<h1 class="sb-h1">@(en ? "R2 · Hub performance report" : "R2 · Báo cáo hiệu suất bếp")</h1>
+<h1 class="sb-h1">@(en ? "Hub performance report" : "Báo cáo hiệu suất bếp")</h1>
 <p class="sb-sub">@(en ? "Track handled orders, preparation time, current load and Quiet Kitchen discounts per hub." : "Theo dõi số đơn xử lý, thời gian chuẩn bị, tải hiện tại và số lượt ưu đãi theo bếp.")</p>
 
 <div class="sb-presets">
     @foreach (var p in Model.Presets)
     {
-        <a class="btn sb-act @(p.From == Model.From && p.To == Model.To ? "btn-sb-primary" : "btn-outline-secondary")"
+        <a class="btn sb-act @(p.From == Model.From && p.To == Model.To ? "btn-sb-primary" : "btn-secondary")"
            href="@Url.Action("HubUtilization", "HubReports", new { from = p.From, to = p.To })">@p.Label</a>
     }
     @* Chọn khoảng ngày tùy ý. Ngày kết thúc được tính trọn ngày, theo giờ Việt Nam. *@
@@ -84,5 +84,5 @@ else
             </tbody>
         </table>
     </div>
-    <p class="sb-muted mt-3">@(en ? "Preparation time runs from Confirmed to Ready and uses only orders with both timestamps. Current load is taken when you view the page (BR8); the other columns cover the selected period. Discounts include orders cancelled later." : "Thời gian chuẩn bị tính từ Confirmed đến Ready và chỉ dùng đơn có đủ hai mốc. Tải hiện tại lấy tại thời điểm xem trang (BR8); các cột còn lại tính theo kỳ đã chọn. Lượt ưu đãi gồm cả đơn bị hủy sau đó.")</p>
+    <p class="sb-muted mt-3">@(en ? "Preparation time runs from Confirmed to Ready and uses only orders with both timestamps. Current load is taken when you view the page; the other columns cover the selected period. Discounts include orders cancelled later." : "Thời gian chuẩn bị tính từ Confirmed đến Ready và chỉ dùng đơn có đủ hai mốc. Tải hiện tại lấy tại thời điểm xem trang; các cột còn lại tính theo kỳ đã chọn. Lượt ưu đãi gồm cả đơn bị hủy sau đó.")</p>
 }

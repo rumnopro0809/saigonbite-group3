@@ -1,19 +1,19 @@
 @model SaigonBite.Web.Models.MenuIndexViewModel
 @{
     bool isVi = Model.Lang == "vi";
-    ViewBag.Title = isVi ? "UC02 · Quản lý thực đơn" : "UC02 · Manage Menu";
+    ViewBag.Title = isVi ? "Quản lý thực đơn" : "Manage Menu";
 }
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
-        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / @(isVi ? "VẬN HÀNH · UC02" : "OPERATIONS · UC02")</div>
+        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / @(isVi ? "VẬN HÀNH" : "OPERATIONS")</div>
         <h1 class="h3 fw-bold mb-1">@(isVi ? "Quản lý món" : "Menu Management")</h1>
         <p class="text-muted small mb-0">
-            @(isVi ? "Thực đơn theo thương hiệu và trạng thái mở bán (FR08–FR11, BR12)." : "Menu items by virtual brand and availability status (FR08–FR11, BR12).")
+            @(isVi ? "Thực đơn theo thương hiệu và trạng thái mở bán." : "Menu items by virtual brand and availability status.")
         </p>
     </div>
     <div class="d-flex gap-2">
-        <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Browse", "Menu")">
+        <a class="btn btn-secondary sb-act" href="@Url.Action("Browse", "Menu")">
             @(isVi ? "Xem thực đơn theo Bếp" : "Customer Hub Menu")
         </a>
         <a class="btn btn-sb-primary sb-act" href="@Url.Action("Create", "Menu")">
@@ -33,8 +33,8 @@
 
 <div class="alert alert-success py-2 px-3 small mb-3">
     @(isVi
-        ? "Giá và tình trạng mở bán áp dụng cho đơn tạo sau khi cập nhật. Xóa mềm (soft-delete) giữ nguyên lịch sử đơn hàng và báo cáo R1."
-        : "Price and availability changes apply to future orders only. Soft-delete preserves historical OrderLines and R1 revenue reports.")
+        ? "Giá và tình trạng mở bán áp dụng cho đơn tạo sau khi cập nhật. Món đã xóa mềm vẫn giữ nguyên trong lịch sử đơn hàng và báo cáo doanh thu."
+        : "Price and availability changes apply to new orders only. Soft-deleted items stay in order history and revenue reports.")
 </div>
 
 @if (TempData["StatusMessage"] != null)
@@ -61,7 +61,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label class="form-label small fw-semibold">@(isVi ? "Danh mục (R1)" : "Category (R1)")</label>
+                <label class="form-label small fw-semibold">@(isVi ? "Danh mục" : "Category")</label>
                 <select name="category" class="form-select form-select-sm">
                     <option value="">@(isVi ? "Tất cả" : "All")</option>
                     @foreach (var c in Model.Categories)
@@ -136,25 +136,25 @@
                             </td>
                             <td class="text-end sb-col-actions">
                                 <div class="sb-actions">
-                                    <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Details", "Menu", new { id = item.Id })">
+                                    <a class="btn btn-secondary sb-act" href="@Url.Action("Details", "Menu", new { id = item.Id })">
                                         @(isVi ? "Chi tiết" : "Details")
                                     </a>
                                     @if (!item.IsDeleted)
                                     {
-                                        <a class="btn btn-outline-primary sb-act" href="@Url.Action("Edit", "Menu", new { id = item.Id })">
+                                        <a class="btn btn-primary sb-act" href="@Url.Action("Edit", "Menu", new { id = item.Id })">
                                             @(isVi ? "Sửa" : "Edit")
                                         </a>
                                         using (Html.BeginForm("ToggleAvailability", "Menu", new { id = item.Id, isAvailable = !item.IsAvailable }, FormMethod.Post, new { @class = "d-inline" }))
                                         {
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn sb-act @(item.IsAvailable ? "btn-outline-warning" : "btn-outline-success")">
+                                            <button type="submit" class="btn sb-act @(item.IsAvailable ? "btn-warning" : "btn-success")">
                                                 @(item.IsAvailable ? (isVi ? "Tạm ngưng" : "Pause") : (isVi ? "Mở bán" : "Enable"))
                                             </button>
                                         }
                                         using (Html.BeginForm("SoftDelete", "Menu", new { id = item.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Xác nhận ngừng bán (soft-delete) món này? Lịch sử đơn hàng và báo cáo R1 vẫn được giữ nguyên.');" : "return confirm('Confirm soft-delete? Historical orders and R1 revenue remain preserved.');" }))
                                         {
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-outline-danger sb-act">
+                                            <button type="submit" class="btn btn-danger sb-act">
                                                 @(isVi ? "Xóa mềm" : "Soft-delete")
                                             </button>
                                         }

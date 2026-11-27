@@ -1,17 +1,17 @@
 @model SaigonBite.Application.Reports.RevenueReportResult
 @{
     bool isVi = (ViewData["Lang"] as string) != "en";
-    ViewBag.Title = isVi ? "R1 · Báo cáo doanh thu" : "R1 · Revenue Report";
+    ViewBag.Title = isVi ? "Báo cáo doanh thu" : "Revenue Report";
 }
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
-        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / HT04 · FR18</div>
-        <h1 class="h3 fw-bold mb-1">@(isVi ? "R1 · Báo cáo doanh thu" : "R1 · Revenue Report")</h1>
+        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / @(isVi ? "BÁO CÁO" : "REPORTS")</div>
+        <h1 class="h3 fw-bold mb-1">@(isVi ? "Báo cáo doanh thu" : "Revenue Report")</h1>
         <p class="text-muted small mb-0">
             @(isVi
-                ? "Doanh thu ghi nhận từ snapshot đơn hàng (AMB04). Đơn Cancelled và Failed luôn bị loại trừ."
-                : "Revenue computed from stored order snapshots (AMB04). Cancelled and Failed orders are always excluded.")
+                ? "Doanh thu tính theo giá tại thời điểm đặt đơn. Không tính đơn đã hủy hoặc giao thất bại."
+                : "Revenue uses the prices at order time. Cancelled and failed orders are excluded.")
         </p>
     </div>
 </div>
@@ -32,7 +32,7 @@
                     <input class="form-check-input" type="checkbox" id="deliveredOnly" name="deliveredOnly" value="true" @(Model.DeliveredOnly ? "checked" : "") />
                     <input type="hidden" name="deliveredOnly" value="false" />
                     <label class="form-check-label" for="deliveredOnly">
-                        @(isVi ? "Chỉ tính đơn đã giao thành công — Delivered (AMB04)" : "Delivered orders only (AMB04)")
+                        @(isVi ? "Chỉ tính đơn đã giao thành công" : "Delivered orders only")
                     </label>
                 </div>
             </div>
@@ -110,7 +110,7 @@
 
     <div class="col-lg-6">
         <div class="card sb-card shadow-sm h-100">
-            <div class="card-header bg-white fw-bold">@(isVi ? "Theo 5 phương thức thanh toán (BR13)" : "Revenue by 5 Payment Methods (BR13)")</div>
+            <div class="card-header bg-white fw-bold">@(isVi ? "Theo phương thức thanh toán" : "Revenue by Payment Method")</div>
             <div class="table-responsive">
                 <table class="table table-sm align-middle mb-0">
                     <thead class="table-light">

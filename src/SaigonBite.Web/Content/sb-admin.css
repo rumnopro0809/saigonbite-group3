@@ -1,14 +1,14 @@
 /*
  * Shared button convention for the admin and staff pages (Users, Brands, Menu, Vouchers, Hubs, R1, R2,
- * Dispatch, Kitchen, Shipper). One size and one colour per meaning, so every table looks the same:
+ * Dispatch, Kitchen, Shipper). One size and one solid colour per meaning, so every table looks the same:
  *
- *   Page action (Add, Save, Filter, Apply) ......... btn btn-sb-primary  sb-act
- *   Secondary page action (Show deleted, Back) ..... btn btn-outline-secondary sb-act
- *   Row: view details .............................. btn btn-outline-secondary sb-act
- *   Row: edit ...................................... btn btn-outline-primary   sb-act
- *   Row: pause / lock / stop accepting orders ...... btn btn-outline-warning   sb-act
- *   Row: resume / unlock / enable .................. btn btn-outline-success   sb-act
- *   Row: soft-delete / deactivate .................. btn btn-outline-danger    sb-act
+ *   Page action (Add, Save, Filter, Apply) ......... btn btn-sb-primary        sb-act
+ *   Secondary page action (Show deleted, Back) ..... btn btn-secondary         sb-act
+ *   Row: view details .............................. btn btn-secondary         sb-act
+ *   Row: edit ...................................... btn btn-primary           sb-act
+ *   Row: pause / lock / stop accepting orders ...... btn btn-warning           sb-act
+ *   Row: resume / unlock / enable .................. btn btn-success           sb-act
+ *   Row: soft-delete / deactivate .................. btn btn-danger            sb-act
  *
  * Row buttons always appear in that order (Details, Edit, Pause/Resume, Soft-delete) inside
  * <div class="sb-actions">, which wraps onto a second line instead of pushing the table off-screen.
@@ -49,3 +49,28 @@
     align-items: center;
     gap: .5rem;
 }
+
+/*
+ * Solid buttons keep the colours of the former outline buttons (Bootstrap 5.3 palette, except red, which uses the
+ * SaigonBite brand red of the Filter and Order now buttons) and follow the
+ * Filter button (btn-sb-primary): filled background, white bold text, darker shade on hover.
+ */
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-danger,
+.btn-warning,
+.btn-dark {
+    --bs-btn-color: #fff;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-active-color: #fff;
+    --bs-btn-disabled-color: #fff;
+    font-weight: 600;
+}
+
+.btn-primary   { --bs-btn-bg: #0d6efd; --bs-btn-border-color: #0d6efd; --bs-btn-hover-bg: #0a58ca; --bs-btn-hover-border-color: #0a58ca; --bs-btn-active-bg: #0a58ca; --bs-btn-active-border-color: #0a58ca; }
+.btn-secondary { --bs-btn-bg: #6c757d; --bs-btn-border-color: #6c757d; --bs-btn-hover-bg: #565e64; --bs-btn-hover-border-color: #565e64; --bs-btn-active-bg: #565e64; --bs-btn-active-border-color: #565e64; }
+.btn-success   { --bs-btn-bg: #198754; --bs-btn-border-color: #198754; --bs-btn-hover-bg: #146c43; --bs-btn-hover-border-color: #146c43; --bs-btn-active-bg: #146c43; --bs-btn-active-border-color: #146c43; }
+.btn-danger    { --bs-btn-bg: #AC291D; --bs-btn-border-color: #AC291D; --bs-btn-hover-bg: #861B14; --bs-btn-hover-border-color: #861B14; --bs-btn-active-bg: #861B14; --bs-btn-active-border-color: #861B14; }
+.btn-warning   { --bs-btn-bg: #ffc107; --bs-btn-border-color: #ffc107; --bs-btn-hover-bg: #cc9a06; --bs-btn-hover-border-color: #cc9a06; --bs-btn-active-bg: #cc9a06; --bs-btn-active-border-color: #cc9a06; }
+.btn-dark      { --bs-btn-bg: #212529; --bs-btn-border-color: #212529; --bs-btn-hover-bg: #424649; --bs-btn-hover-border-color: #424649; --bs-btn-active-bg: #424649; --bs-btn-active-border-color: #424649; }

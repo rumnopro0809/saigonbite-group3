@@ -1,4 +1,3 @@
-using System.Net;
 using System.Web.Mvc;
 using SaigonBite.Application.Auth;
 using SaigonBite.Domain;
@@ -12,7 +11,7 @@ namespace SaigonBite.Web.Controllers
 {
     // HT01 Registration (Local/Tourist BR18), Login/Logout and Admin User management (FR12, FR13).
     // Author: 524H0189.
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         public ActionResult Login()
         {
@@ -41,7 +40,6 @@ namespace SaigonBite.Web.Controllers
 
                 User user = result.Data;
                 Session[CurrentActorHelper.UserIdSessionKey] = user.Id;
-                Session[CurrentActorHelper.RoleSessionKey] = user.Role;
                 Session["SaigonBite.UserName"] = user.FullName;
 
                 TempData["StatusMessage"] = model.Lang == "vi"
@@ -99,12 +97,11 @@ namespace SaigonBite.Web.Controllers
                 }
 
                 Session[CurrentActorHelper.UserIdSessionKey] = result.Data.Id;
-                Session[CurrentActorHelper.RoleSessionKey] = result.Data.Role;
                 Session["SaigonBite.UserName"] = result.Data.FullName;
 
                 TempData["StatusMessage"] = model.Lang == "vi"
-                    ? "Đăng ký tài khoản Khách nội địa thành công (BR18)."
-                    : "Local Customer account created successfully (BR18).";
+                    ? "Đăng ký tài khoản Khách nội địa thành công."
+                    : "Local Customer account created successfully.";
                 return RedirectToAction("Browse", "Menu");
             }
         }
@@ -148,12 +145,11 @@ namespace SaigonBite.Web.Controllers
                 }
 
                 Session[CurrentActorHelper.UserIdSessionKey] = result.Data.Id;
-                Session[CurrentActorHelper.RoleSessionKey] = result.Data.Role;
                 Session["SaigonBite.UserName"] = result.Data.FullName;
 
                 TempData["StatusMessage"] = model.Lang == "vi"
-                    ? "Đăng ký tài khoản Khách du lịch thành công (BR18)."
-                    : "Foreign Tourist account created successfully (BR18).";
+                    ? "Đăng ký tài khoản Khách du lịch thành công."
+                    : "Foreign Tourist account created successfully.";
                 return RedirectToAction("Browse", "Menu");
             }
         }
@@ -163,11 +159,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var service = new AuthService(new EfUserRepository(db), new Sha256PasswordHasher());
                 var model = new AdminUsersViewModel
@@ -186,11 +180,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var service = new AuthService(new EfUserRepository(db), new Sha256PasswordHasher());
                 var result = service.SetUserActive(role, id, isActive);

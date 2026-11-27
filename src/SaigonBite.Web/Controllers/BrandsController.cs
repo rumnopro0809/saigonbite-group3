@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using SaigonBite.Application.Menu;
 using SaigonBite.Domain;
@@ -13,17 +12,15 @@ using SaigonBite.Web.Models;
 namespace SaigonBite.Web.Controllers
 {
     // UC02 Manage Menu and Brands — Brand CRUD (FR08-FR11, FR13). Author: 524H0189.
-    public class BrandsController : Controller
+    public class BrandsController : BaseController
     {
         public ActionResult Index(bool includeDeleted = false)
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var service = new MenuService(new EfMenuRepository(db));
                 var model = new BrandIndexViewModel
@@ -41,11 +38,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var service = new MenuService(new EfMenuRepository(db));
                 Brand brand = service.GetBrandDetails(role, id);
@@ -61,11 +56,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var service = new MenuService(new EfMenuRepository(db));
                 IList<Hub> hubs = service.GetActiveHubs();
@@ -86,11 +79,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var service = new MenuService(new EfMenuRepository(db));
                 model.Lang = CurrentActorHelper.ResolveLanguage(Request);
@@ -130,11 +121,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var service = new MenuService(new EfMenuRepository(db));
                 Brand brand = service.GetBrandDetails(role, id);
@@ -163,11 +152,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var service = new MenuService(new EfMenuRepository(db));
                 model.Lang = CurrentActorHelper.ResolveLanguage(Request);
@@ -209,11 +196,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 string lang = CurrentActorHelper.ResolveLanguage(Request);
                 var service = new MenuService(new EfMenuRepository(db));

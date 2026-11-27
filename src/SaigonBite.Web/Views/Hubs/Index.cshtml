@@ -15,7 +15,7 @@
 <div class="sb-toolbar">
     @* Nút cờ mưa gửi POST /Hubs/SetRain (xem Scripts/uc03.js). *@
     @Html.AntiForgeryToken()
-    <button type="button" id="rain-toggle" class="btn btn-outline-secondary sb-act"
+    <button type="button" id="rain-toggle" class="btn btn-secondary sb-act"
             data-url="@Url.Action("SetRain", "Hubs")"
             data-on="@(Model.Rain.IsHeavyRainOn ? "true" : "false")"
             data-rowversion="@Model.Rain.RowVersion">
@@ -48,7 +48,7 @@
                     <td>@hub.Capacity @(en ? "orders" : "đơn")</td>
                     <td>@hub.LoadPercent%</td>
                     <td><span class="@HubDisplay.StatusCss(hub)">@HubDisplay.StatusText(hub, en)</span></td>
-                    <td class="text-end sb-col-actions"><div class="sb-actions"><a class="btn btn-outline-secondary sb-act" href="@Url.Action("Details", "Hubs", new { id = hub.Id })">@(en ? "Details" : "Chi tiết")</a></div></td>
+                    <td class="text-end sb-col-actions"><div class="sb-actions"><a class="btn btn-secondary sb-act" href="@Url.Action("Details", "Hubs", new { id = hub.Id })">@(en ? "Details" : "Chi tiết")</a></div></td>
                 </tr>
             }
             @if (Model.Hubs.Count == 0)

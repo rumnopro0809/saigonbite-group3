@@ -1,18 +1,18 @@
 @model SaigonBite.Web.Models.AdminUsersViewModel
 @{
     bool isVi = Model.Lang == "vi";
-    ViewBag.Title = isVi ? "Quản lý tài khoản (FR12)" : "User Accounts (FR12)";
+    ViewBag.Title = isVi ? "Quản lý tài khoản" : "User Accounts";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / HT01 · BR18</div>
+        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / @(isVi ? "QUẢN TRỊ" : "ADMIN")</div>
         <h1 class="h3 fw-bold mb-1">@(isVi ? "Quản lý tài khoản người dùng" : "User Account Management")</h1>
         <p class="text-muted small mb-0">
-            @(isVi ? "Local Customer và Foreign Tourist dùng chung bảng Users (single schema, soft-delete)." : "Local Customers and Foreign Tourists share one Users schema with separate profile tables.")
+            @(isVi ? "Tài khoản khách nội địa và khách du lịch của SaigonBite." : "SaigonBite local customer and tourist accounts.")
         </p>
     </div>
-    <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Users", "Account", new { includeDeleted = !Model.IncludeDeleted })">
+    <a class="btn btn-secondary sb-act" href="@Url.Action("Users", "Account", new { includeDeleted = !Model.IncludeDeleted })">
         @(Model.IncludeDeleted ? (isVi ? "Ẩn đã xóa mềm" : "Hide soft-deleted") : (isVi ? "Hiện đã xóa mềm" : "Show soft-deleted"))
     </a>
 </div>
@@ -25,7 +25,7 @@
                     <th>@(isVi ? "Định danh" : "Identifier")</th>
                     <th>@(isVi ? "Họ tên" : "Full Name")</th>
                     <th>@(isVi ? "Vai trò" : "Role")</th>
-                    <th>@(isVi ? "Hồ sơ (BR18)" : "Profile (BR18)")</th>
+                    <th>@(isVi ? "Hồ sơ" : "Profile")</th>
                     <th>@(isVi ? "Trạng thái" : "Status")</th>
                     <th class="text-end">@(isVi ? "Thao tác" : "Action")</th>
                 </tr>
@@ -64,7 +64,7 @@
                                     using (Html.BeginForm("ToggleUserActive", "Account", new { id = u.Id, isActive = !u.IsActive }, FormMethod.Post, new { @class = "d-inline" }))
                                     {
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn sb-act @(u.IsActive ? "btn-outline-warning" : "btn-outline-success")">
+                                        <button type="submit" class="btn sb-act @(u.IsActive ? "btn-warning" : "btn-success")">
                                             @(u.IsActive ? (isVi ? "Khóa" : "Lock") : (isVi ? "Mở khóa" : "Unlock"))
                                         </button>
                                     }

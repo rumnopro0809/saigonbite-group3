@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Web.Mvc;
 using SaigonBite.Application.Vouchers;
 using SaigonBite.Domain;
@@ -12,7 +11,7 @@ using SaigonBite.Web.Models;
 namespace SaigonBite.Web.Controllers
 {
     // HT02 Admin Voucher CRUD controller (FR15, FR13, BR9). Author: 524H0189.
-    public class VouchersController : Controller
+    public class VouchersController : BaseController
     {
         private static readonly TimeSpan VietnamOffset = TimeSpan.FromHours(7);
 
@@ -20,11 +19,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var service = new VoucherService(new EfVoucherRepository(db));
                 var model = new VoucherIndexViewModel
@@ -41,11 +38,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var model = new VoucherEditViewModel
                 {
@@ -68,11 +63,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 model.Lang = CurrentActorHelper.ResolveLanguage(Request);
                 if (!ModelState.IsValid)
@@ -102,11 +95,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 var service = new VoucherService(new EfVoucherRepository(db));
                 Voucher v = service.GetById(role, id);
@@ -135,11 +126,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 model.Lang = CurrentActorHelper.ResolveLanguage(Request);
                 if (!ModelState.IsValid)
@@ -171,11 +160,9 @@ namespace SaigonBite.Web.Controllers
         {
             using (var db = new SaigonBiteDbContext())
             {
-                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
-                if (role != ActorRole.Admin)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-                }
+                ActorRole role;
+                ActionResult denied = CurrentActorHelper.RequireAdmin(this, db, out role);
+                if (denied != null) return denied;
 
                 string lang = CurrentActorHelper.ResolveLanguage(Request);
                 var service = new VoucherService(new EfVoucherRepository(db));

@@ -13,21 +13,21 @@
             @(isVi ? "Sửa món trong đơn " : "Edit Items for ") @Model.OrderCode
         </h1>
     </div>
-    <span class="badge text-bg-warning">Placed (BR17)</span>
+    <span class="badge text-bg-warning">Placed</span>
 </div>
 
 <div class="alert alert-info small mb-4">
-    <strong>BR17 — @(isVi ? "Giữ nguyên ngữ cảnh đặt đơn gốc:" : "Frozen Placement Snapshot:")</strong>
-    @(isVi ? "Thời điểm:" : "PlacedAt:") @Model.OriginalPlacedAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm") &middot;
-    @(isVi ? "Tải bếp:" : "HubLoad:") @string.Format("{0:P0}", Model.OriginalHubLoad) &middot;
-    @(isVi ? "Mưa lớn:" : "HeavyRain:") @(Model.OriginalHeavyRain ? (isVi ? "Có" : "Yes") : (isVi ? "Không" : "No")) &middot;
+    <strong>@(isVi ? "Thông tin lúc đặt đơn (giữ nguyên khi sửa món):" : "Original order details (kept when editing items):")</strong>
+    @(isVi ? "Thời điểm:" : "Placed at:") @Model.OriginalPlacedAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm") &middot;
+    @(isVi ? "Tải bếp:" : "Hub load:") @string.Format("{0:P0}", Model.OriginalHubLoad) &middot;
+    @(isVi ? "Mưa lớn:" : "Heavy rain:") @(Model.OriginalHeavyRain ? (isVi ? "Có" : "Yes") : (isVi ? "Không" : "No")) &middot;
     @(isVi ? "Khoảng cách:" : "Distance:") @Model.DistanceKm.ToString("0.0") km (@Model.DeliveryAddress)
 </div>
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
     <div class="alert alert-danger" role="alert">
-        <strong>[@Model.ErrorRule]</strong> @Model.ErrorMessage
+        @Model.ErrorMessage
     </div>
 }
 
@@ -97,7 +97,7 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button type="submit" name="submitAction" value="quote" class="btn btn-outline-danger fw-semibold">
+                        <button type="submit" name="submitAction" value="quote" class="btn btn-danger fw-semibold">
                             @(isVi ? "Xem báo giá sau sửa" : "Preview Updated Quote")
                         </button>
                         <button type="submit" name="submitAction" value="save" class="btn btn-sb-primary">
@@ -128,7 +128,7 @@
                                     <td class="text-end">@string.Format("{0:N0} đ", b.DeliveryFee + b.RushFee + b.RainFee)</td>
                                 </tr>
                                 <tr class="fw-bold">
-                                    <td>@(isVi ? "Tổng mới (BR11)" : "New Payable Total")</td>
+                                    <td>@(isVi ? "Tổng mới" : "New Payable Total")</td>
                                     <td class="text-end text-danger">@string.Format("{0:N0} đ", b.PayableTotal)</td>
                                 </tr>
                                 <tr>
@@ -153,7 +153,7 @@
                         @if (Model.Quote.HasOnlineAdjustment)
                         {
                             <div class="alert alert-light border small mb-0">
-                                @(isVi ? "Điều chỉnh thanh toán online mô phỏng (AMB05):" : "Simulated online adjustment (AMB05):")
+                                @(isVi ? "Điều chỉnh thanh toán online:" : "Online payment adjustment:")
                                 <strong>@Model.Quote.AdjustmentType</strong>
                             </div>
                         }
