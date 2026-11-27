@@ -1,30 +1,40 @@
 using System;
 using System.Configuration;
+using System.Linq;
 using System.Web;
 using SaigonBite.Domain;
+using SaigonBite.Domain.Entities;
+using SaigonBite.Infrastructure.Data;
 
 namespace SaigonBite.Web.Infrastructure
 {
-    /// <summary>
-    /// Resolves the authenticated actor role from server Session (FR13 / NFR04).
-    /// Supports an explicit Web.config dev fallback flag until HT01 LoginController merges.
-    /// </summary>
+    // Resolves the current user role from Session (FR13 / NFR04).
+    // Supports both CurrentUserId (shared with UC01 demo switcher) and direct role key.
     public static class CurrentActorHelper
     {
+        public const string UserIdSessionKey = "CurrentUserId";
         public const string RoleSessionKey = "SaigonBite.ActorRole";
 
-        public static ActorRole ResolveRole(HttpContextBase httpContext)
+        public static ActorRole ResolveRole(HttpContextBase httpContext, SaigonBiteDbContext db)
         {
             if (httpContext != null && httpContext.Session != null)
             {
-                object raw = httpContext.Session[RoleSessionKey];
-                if (raw is ActorRole)
+                object rawUserId = httpContext.Session[UserIdSessionKey];
+                if (rawUserId is int && db != null)
                 {
-                    return (ActorRole)raw;
+                    int userId = (int)rawUserId;
+                    User user = db.Users.FirstOrDefault(u => u.Id == userId && !u.IsDeleted && u.IsActive);
+                    return user != null ? user.Role : ActorRole.Customer;
+                }
+
+                object rawRole = httpContext.Session[RoleSessionKey];
+                if (rawRole is ActorRole)
+                {
+                    return (ActorRole)rawRole;
                 }
 
                 ActorRole parsed;
-                if (raw is string && Enum.TryParse((string)raw, true, out parsed))
+                if (rawRole is string && Enum.TryParse((string)rawRole, true, out parsed))
                 {
                     return parsed;
                 }

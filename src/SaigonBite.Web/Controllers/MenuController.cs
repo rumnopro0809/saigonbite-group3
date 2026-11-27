@@ -12,23 +12,20 @@ using SaigonBite.Web.Models;
 
 namespace SaigonBite.Web.Controllers
 {
-    /// <summary>
-    /// UC02 Manage Menu and Brands — MenuItem CRUD and Hub-scoped Customer browse controller
-    /// (FR08-FR11, FR13, BR12, BR17, NFR02-NFR04). Author: Duong Pham Thai (524H0189).
-    /// </summary>
+    // UC02 Manage Menu and Brands — Menu CRUD and Hub-scoped Customer browse (FR08-FR11, FR13, BR12).
+    // Author: 524H0189.
     public class MenuController : Controller
     {
-        // GET: /Menu (Admin catalog management)
         public ActionResult Index(string search, int? brandId, string category, bool? isAvailable, bool includeDeleted = false)
         {
-            ActorRole role = CurrentActorHelper.ResolveRole(HttpContext);
-            if (role != ActorRole.Admin)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-            }
-
             using (var db = new SaigonBiteDbContext())
             {
+                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
+                if (role != ActorRole.Admin)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
+                }
+
                 var service = new MenuService(new EfMenuRepository(db));
                 IList<Brand> brands = service.GetAdminBrands(role, includeDeleted: true);
                 var filter = new MenuFilter
@@ -62,7 +59,7 @@ namespace SaigonBite.Web.Controllers
             }
         }
 
-        // GET: /Menu/Browse?hubId=1 (Customer read flow scoped by HubBrand and BR12)
+        // Customer read flow scoped by HubBrand and BR12 (open to all roles).
         public ActionResult Browse(int? hubId)
         {
             using (var db = new SaigonBiteDbContext())
@@ -86,17 +83,16 @@ namespace SaigonBite.Web.Controllers
             }
         }
 
-        // GET: /Menu/Details/5
         public ActionResult Details(int id)
         {
-            ActorRole role = CurrentActorHelper.ResolveRole(HttpContext);
-            if (role != ActorRole.Admin)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-            }
-
             using (var db = new SaigonBiteDbContext())
             {
+                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
+                if (role != ActorRole.Admin)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
+                }
+
                 var service = new MenuService(new EfMenuRepository(db));
                 MenuItem item = service.GetMenuItemDetails(role, id);
                 if (item == null) return HttpNotFound();
@@ -106,17 +102,16 @@ namespace SaigonBite.Web.Controllers
             }
         }
 
-        // GET: /Menu/Create
         public ActionResult Create()
         {
-            ActorRole role = CurrentActorHelper.ResolveRole(HttpContext);
-            if (role != ActorRole.Admin)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-            }
-
             using (var db = new SaigonBiteDbContext())
             {
+                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
+                if (role != ActorRole.Admin)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
+                }
+
                 var service = new MenuService(new EfMenuRepository(db));
                 var model = new MenuItemFormViewModel
                 {
@@ -129,19 +124,18 @@ namespace SaigonBite.Web.Controllers
             }
         }
 
-        // POST: /Menu/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(MenuItemFormViewModel model)
         {
-            ActorRole role = CurrentActorHelper.ResolveRole(HttpContext);
-            if (role != ActorRole.Admin)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-            }
-
             using (var db = new SaigonBiteDbContext())
             {
+                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
+                if (role != ActorRole.Admin)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
+                }
+
                 var service = new MenuService(new EfMenuRepository(db));
                 model.Lang = CurrentActorHelper.ResolveLanguage(Request);
                 model.Brands = service.GetAdminBrands(role, includeDeleted: false);
@@ -177,17 +171,16 @@ namespace SaigonBite.Web.Controllers
             }
         }
 
-        // GET: /Menu/Edit/5
         public ActionResult Edit(int id)
         {
-            ActorRole role = CurrentActorHelper.ResolveRole(HttpContext);
-            if (role != ActorRole.Admin)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-            }
-
             using (var db = new SaigonBiteDbContext())
             {
+                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
+                if (role != ActorRole.Admin)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
+                }
+
                 var service = new MenuService(new EfMenuRepository(db));
                 MenuItem item = service.GetMenuItemDetails(role, id);
                 if (item == null || item.IsDeleted) return HttpNotFound();
@@ -208,19 +201,18 @@ namespace SaigonBite.Web.Controllers
             }
         }
 
-        // POST: /Menu/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(MenuItemFormViewModel model)
         {
-            ActorRole role = CurrentActorHelper.ResolveRole(HttpContext);
-            if (role != ActorRole.Admin)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-            }
-
             using (var db = new SaigonBiteDbContext())
             {
+                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
+                if (role != ActorRole.Admin)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
+                }
+
                 var service = new MenuService(new EfMenuRepository(db));
                 model.Lang = CurrentActorHelper.ResolveLanguage(Request);
                 model.Brands = service.GetAdminBrands(role, includeDeleted: false);
@@ -256,20 +248,19 @@ namespace SaigonBite.Web.Controllers
             }
         }
 
-        // POST: /Menu/ToggleAvailability/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ToggleAvailability(int id, bool isAvailable)
         {
-            ActorRole role = CurrentActorHelper.ResolveRole(HttpContext);
-            if (role != ActorRole.Admin)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-            }
-
-            string lang = CurrentActorHelper.ResolveLanguage(Request);
             using (var db = new SaigonBiteDbContext())
             {
+                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
+                if (role != ActorRole.Admin)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
+                }
+
+                string lang = CurrentActorHelper.ResolveLanguage(Request);
                 var service = new MenuService(new EfMenuRepository(db));
                 var result = service.SetMenuItemAvailability(role, id, isAvailable);
                 if (!result.Succeeded) return HttpNotFound();
@@ -281,20 +272,19 @@ namespace SaigonBite.Web.Controllers
             }
         }
 
-        // POST: /Menu/SoftDelete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult SoftDelete(int id)
         {
-            ActorRole role = CurrentActorHelper.ResolveRole(HttpContext);
-            if (role != ActorRole.Admin)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
-            }
-
-            string lang = CurrentActorHelper.ResolveLanguage(Request);
             using (var db = new SaigonBiteDbContext())
             {
+                ActorRole role = CurrentActorHelper.ResolveRole(HttpContext, db);
+                if (role != ActorRole.Admin)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden, "Admin role required (FR13).");
+                }
+
+                string lang = CurrentActorHelper.ResolveLanguage(Request);
                 var service = new MenuService(new EfMenuRepository(db));
                 var result = service.SoftDeleteMenuItem(role, id);
                 if (!result.Succeeded) return HttpNotFound();

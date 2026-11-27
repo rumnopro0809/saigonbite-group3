@@ -270,6 +270,61 @@ namespace SaigonBite.Tests
             _service.EnsureItemOrderableAtHub(2, 2);
         }
 
+        [TestMethod]
+        public void TC08_CreateBrand_LengthBoundaries_EnforcesMaxName120AndCategory80()
+        {
+            var validBoundary = _service.CreateBrand(ActorRole.Admin, new BrandInput
+            {
+                Name = new string('A', 120),
+                Category = new string('C', 80),
+                IsActive = true
+            });
+            Assert.IsTrue(validBoundary.Succeeded);
+
+            var overBoundary = _service.CreateBrand(ActorRole.Admin, new BrandInput
+            {
+                Name = new string('A', 121),
+                Category = new string('C', 81),
+                IsActive = true
+            });
+            Assert.IsFalse(overBoundary.Succeeded);
+            Assert.IsTrue(overBoundary.FieldErrors.ContainsKey("Name"));
+            Assert.IsTrue(overBoundary.FieldErrors.ContainsKey("Category"));
+        }
+
+        [TestMethod]
+        public void TC10_UpdateSoftDeletedItem_ReturnsNotFoundError()
+        {
+            _service.SoftDeleteMenuItem(ActorRole.Admin, 1);
+
+            var update = _service.UpdateMenuItem(ActorRole.Admin, 1, new MenuItemInput
+            {
+                BrandId = 1,
+                Name = "Cannot Revive By Edit",
+                Price = 80000m,
+                IsAvailable = true
+            });
+
+            Assert.IsFalse(update.Succeeded);
+            Assert.AreEqual("NOT_FOUND", update.ErrorCode);
+        }
+
+        [TestMethod]
+        public void TC10_UpdateBrand_UpdatesHubMembershipAndReflectsInCustomerBrowse()
+        {
+            // Initially Brand 2 is only linked to Hub 2; add Hub 1 as well.
+            var update = _service.UpdateBrand(ActorRole.Admin, 2, new BrandInput
+            {
+                Name = "Banh Mi Pho Co",
+                Category = "Banh Mi",
+                IsActive = true,
+                HubIds = new List<int> { 1, 2 }
+            });
+
+            Assert.IsTrue(update.Succeeded);
+            Assert.IsTrue(_service.IsItemOrderableAtHub(1, 2));
+        }
+
         /// <summary>
         /// In-memory fake implementation of IMenuRepository for deterministic unit tests.
         /// </summary>
