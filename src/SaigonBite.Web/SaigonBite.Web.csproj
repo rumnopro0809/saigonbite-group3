@@ -57,12 +57,14 @@
     <Compile Include="Controllers\BrandsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\VouchersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\CurrentActorHelper.cs" />
     <Compile Include="Models\HomeViewModel.cs" />
     <Compile Include="Models\MenuViewModels.cs" />
+    <Compile Include="Models\VoucherViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +92,9 @@
     <Content Include="Views\Menu\Details.cshtml" />
     <Content Include="Views\Menu\Edit.cshtml" />
     <Content Include="Views\Menu\Index.cshtml" />
+    <Content Include="Views\Vouchers\Create.cshtml" />
+    <Content Include="Views\Vouchers\Edit.cshtml" />
+    <Content Include="Views\Vouchers\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SaigonBite.Domain\SaigonBite.Domain.csproj">

@@ -1,0 +1,70 @@
+@model SaigonBite.Web.Models.VoucherEditViewModel
+@{
+    bool isVi = Model.Lang == "vi";
+    ViewBag.Title = isVi ? "Chỉnh sửa Voucher" : "Edit Voucher";
+}
+
+<div class="mb-3">
+    <a class="text-decoration-none small" href="@Url.Action("Index", "Vouchers")">&larr; @(isVi ? "Quay lại danh sách voucher" : "Back to vouchers")</a>
+    <h1 class="h3 fw-bold mt-1">@(isVi ? "Chỉnh sửa voucher (FR15, BR9)" : "Edit Voucher (FR15, BR9)")</h1>
+</div>
+
+<div class="card sb-card shadow-sm">
+    <div class="card-body">
+        @using (Html.BeginForm("Edit", "Vouchers", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger small" })
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">@(isVi ? "Mã voucher *" : "Code *")</label>
+                    @Html.TextBoxFor(m => m.Code, new { @class = "form-control text-uppercase", maxlength = 40, required = "required" })
+                    @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">@(isVi ? "Loại *" : "Type *")</label>
+                    <select name="Type" class="form-select">
+                        <option value="Percent" @(Model.Type == SaigonBite.Domain.VoucherType.Percent ? "selected" : "")>Percent (%)</option>
+                        <option value="Fixed" @(Model.Type == SaigonBite.Domain.VoucherType.Fixed ? "selected" : "")>Fixed (VND)</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">@(isVi ? "Giá trị (% hoặc VND) *" : "Value (% or VND) *")</label>
+                    @Html.TextBoxFor(m => m.Value, new { @class = "form-control", type = "number", step = "any", min = "0.01", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Value, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">@(isVi ? "Giảm tối đa (Cap, VND)" : "Max Cap (VND)")</label>
+                    @Html.TextBoxFor(m => m.Cap, new { @class = "form-control", type = "number", step = "1000", min = "0" })
+                    @Html.ValidationMessageFor(m => m.Cap, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">@(isVi ? "Tổng món tối thiểu S (VND)" : "Minimum Subtotal S (VND)")</label>
+                    @Html.TextBoxFor(m => m.MinimumSubtotal, new { @class = "form-control", type = "number", step = "1000", min = "0" })
+                    @Html.ValidationMessageFor(m => m.MinimumSubtotal, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">@(isVi ? "Từ ngày *" : "Valid From *")</label>
+                    <input type="date" name="ValidFromDate" value="@Model.ValidFromDate.ToString("yyyy-MM-dd")" class="form-control" required />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">@(isVi ? "Đến ngày *" : "Valid To *")</label>
+                    <input type="date" name="ValidToDate" value="@Model.ValidToDate.ToString("yyyy-MM-dd")" class="form-control" required />
+                </div>
+                <div class="col-12">
+                    <div class="form-check">
+                        @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                        <label class="form-check-label fw-semibold" for="IsActive">@(isVi ? "Đang hoạt động" : "Active")</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-sb-primary">@(isVi ? "Lưu thay đổi" : "Save Changes")</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("Index", "Vouchers")">@(isVi ? "Hủy" : "Cancel")</a>
+            </div>
+        }
+    </div>
+</div>
