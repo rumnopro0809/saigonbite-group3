@@ -1,0 +1,165 @@
+@model SaigonBite.Web.Models.EditOrderViewModel
+@{
+    bool isVi = Model.Lang == "vi";
+    ViewBag.Title = (isVi ? "Chỉnh sửa đơn " : "Edit Order ") + Model.OrderCode;
+}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+        <a class="small text-decoration-none text-muted" href="@Url.Action("Details", "Orders", new { id = Model.OrderId })">
+            &larr; @(isVi ? "Quay lại chi tiết đơn" : "Back to Order Details")
+        </a>
+        <h1 class="h3 fw-bold mt-1 mb-0">
+            @(isVi ? "Sửa món trong đơn " : "Edit Items for ") @Model.OrderCode
+        </h1>
+    </div>
+    <span class="badge text-bg-warning">Placed (BR17)</span>
+</div>
+
+<div class="alert alert-info small mb-4">
+    <strong>BR17 — @(isVi ? "Giữ nguyên ngữ cảnh đặt đơn gốc:" : "Frozen Placement Snapshot:")</strong>
+    @(isVi ? "Thời điểm:" : "PlacedAt:") @Model.OriginalPlacedAt.ToOffset(TimeSpan.FromHours(7)).ToString("dd/MM/yyyy HH:mm") &middot;
+    @(isVi ? "Tải bếp:" : "HubLoad:") @string.Format("{0:P0}", Model.OriginalHubLoad) &middot;
+    @(isVi ? "Mưa lớn:" : "HeavyRain:") @(Model.OriginalHeavyRain ? (isVi ? "Có" : "Yes") : (isVi ? "Không" : "No")) &middot;
+    @(isVi ? "Khoảng cách:" : "Distance:") @Model.DistanceKm.ToString("0.0") km (@Model.DeliveryAddress)
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>[@Model.ErrorRule]</strong> @Model.ErrorMessage
+    </div>
+}
+
+@using (Html.BeginForm("Edit", "Orders", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.OrderId)
+    @Html.HiddenFor(m => m.RowVersionBase64)
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card sb-card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold mb-3">@(isVi ? "Cập nhật món tại " : "Update Dishes at ") @Model.HubName</h2>
+                    <div class="row g-3">
+                        @for (int i = 0; i < Model.Items.Count; i++)
+                        {
+                            var row = Model.Items[i];
+                            <div class="col-md-6">
+                                <div class="border rounded-3 p-2 h-100 d-flex flex-column bg-white">
+                                    <div class="d-flex gap-2 mb-2">
+                                        <img src="@Url.Content("~" + row.ImageUrl)" alt="@row.ItemName"
+                                             class="rounded-2" style="width: 68px; height: 68px; object-fit: cover;" />
+                                        <div class="flex-grow-1">
+                                            <div class="text-danger fw-bold text-uppercase" style="font-size: 0.7rem;">@row.BrandName</div>
+                                            <div class="fw-bold small">@row.ItemName</div>
+                                            <div class="fw-semibold text-dark small">@string.Format("{0:N0} đ", row.Price)</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-auto d-flex align-items-center justify-content-between">
+                                        <label class="small text-muted mb-0">@(isVi ? "Số lượng:" : "Qty:")</label>
+                                        <input type="hidden" name="Items[@i].MenuItemId" value="@row.MenuItemId" />
+                                        <input type="number" name="Items[@i].Quantity" value="@row.Quantity"
+                                               min="0" max="20" class="form-control form-control-sm text-center" style="width: 80px;" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card sb-card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold mb-3">@(isVi ? "Thông tin chỉnh sửa" : "Edit Options")</h2>
+
+                    <div class="small mb-3">
+                        <div><strong>@(isVi ? "Tổng tiền hiện tại:" : "Original Total:")</strong> @string.Format("{0:N0} đ", Model.OriginalPayableTotal)</div>
+                        <div><strong>@(isVi ? "Thanh toán:" : "Payment:")</strong> @Model.PaymentMethod (@Model.PaymentStatus)</div>
+                    </div>
+
+                    @if (Model.HasVoucher)
+                    {
+                        <div class="form-check mb-3">
+                            @Html.CheckBoxFor(m => m.KeepVoucher, new { @class = "form-check-input" })
+                            <label class="form-check-label small fw-semibold" for="KeepVoucher">
+                                @(isVi ? "Giữ lại voucher " : "Keep voucher ") (@Model.VoucherCode)
+                            </label>
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="Notes">@(isVi ? "Ghi chú cho bếp" : "Kitchen Notes")</label>
+                        <input type="text" id="Notes" name="Notes" value="@Model.Notes" class="form-control" />
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" name="submitAction" value="quote" class="btn btn-outline-danger fw-semibold">
+                            @(isVi ? "Xem báo giá sau sửa" : "Preview Updated Quote")
+                        </button>
+                        <button type="submit" name="submitAction" value="save" class="btn btn-sb-primary">
+                            @(isVi ? "Lưu thay đổi (giữ Placed)" : "Save Order Changes")
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Quote != null && Model.Quote.Breakdown != null)
+            {
+                var b = Model.Quote.Breakdown;
+                <div class="card sb-card shadow-sm border-danger">
+                    <div class="card-body">
+                        <h3 class="h6 fw-bold mb-2">@(isVi ? "So sánh giá trước & sau sửa" : "Before vs. After Edit")</h3>
+                        <table class="table table-sm mb-2">
+                            <tbody>
+                                <tr>
+                                    <td>@(isVi ? "Tiền món (S)" : "Subtotal (S)")</td>
+                                    <td class="text-end">@string.Format("{0:N0} đ", b.Subtotal)</td>
+                                </tr>
+                                <tr>
+                                    <td>@(isVi ? "Giảm bếp vắng / Voucher" : "Quiet + Voucher")</td>
+                                    <td class="text-end text-success">-@string.Format("{0:N0} đ", b.QuietDiscount + b.VoucherDiscount)</td>
+                                </tr>
+                                <tr>
+                                    <td>@(isVi ? "Phí giao + cao điểm + mưa" : "Delivery + Rush + Rain")</td>
+                                    <td class="text-end">@string.Format("{0:N0} đ", b.DeliveryFee + b.RushFee + b.RainFee)</td>
+                                </tr>
+                                <tr class="fw-bold">
+                                    <td>@(isVi ? "Tổng mới (BR11)" : "New Payable Total")</td>
+                                    <td class="text-end text-danger">@string.Format("{0:N0} đ", b.PayableTotal)</td>
+                                </tr>
+                                <tr>
+                                    <td>@(isVi ? "Chênh lệch" : "Difference")</td>
+                                    <td class="text-end fw-semibold">
+                                        @if (Model.Quote.Difference > 0)
+                                        {
+                                            <span class="text-danger">+@string.Format("{0:N0} đ", Model.Quote.Difference)</span>
+                                        }
+                                        else if (Model.Quote.Difference < 0)
+                                        {
+                                            <span class="text-success">@string.Format("{0:N0} đ", Model.Quote.Difference)</span>
+                                        }
+                                        else
+                                        {
+                                            <span>0 đ</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        @if (Model.Quote.HasOnlineAdjustment)
+                        {
+                            <div class="alert alert-light border small mb-0">
+                                @(isVi ? "Điều chỉnh thanh toán online mô phỏng (AMB05):" : "Simulated online adjustment (AMB05):")
+                                <strong>@Model.Quote.AdjustmentType</strong>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

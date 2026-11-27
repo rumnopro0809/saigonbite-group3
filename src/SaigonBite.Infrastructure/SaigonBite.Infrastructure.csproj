@@ -35,6 +35,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.4.4" />
@@ -53,6 +54,8 @@
     <Compile Include="Repositories\EfUserRepository.cs" />
     <Compile Include="Repositories\EfVoucherRepository.cs" />
     <Compile Include="Security\PasswordHasher.cs" />
+    <Compile Include="Services\OrderService.cs" />
+    <Compile Include="Services\OrderTransitionService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202611240719260_InitialCreate.resx">
