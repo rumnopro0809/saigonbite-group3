@@ -1,0 +1,168 @@
+@model SaigonBite.Web.Models.MenuIndexViewModel
+@{
+    bool isVi = Model.Lang == "vi";
+    ViewBag.Title = isVi ? "UC02 · Quản lý thực đơn" : "UC02 · Manage Menu";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / @(isVi ? "VẬN HÀNH · UC02" : "OPERATIONS · UC02")</div>
+        <h1 class="h3 fw-bold mb-1">@(isVi ? "Quản lý món" : "Menu Management")</h1>
+        <p class="text-muted small mb-0">
+            @(isVi ? "Thực đơn theo thương hiệu và trạng thái mở bán (FR08–FR11, BR12)." : "Menu items by virtual brand and availability status (FR08–FR11, BR12).")
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="@Url.Action("Browse", "Menu")">
+            @(isVi ? "Xem thực đơn theo Bếp" : "Customer Hub Menu")
+        </a>
+        <a class="btn btn-sb-primary btn-sm" href="@Url.Action("Create", "Menu")">
+            + @(isVi ? "Thêm món" : "Add Item")
+        </a>
+    </div>
+</div>
+
+<ul class="nav nav-pills gap-2 mb-3">
+    <li class="nav-item">
+        <a class="nav-link active bg-danger" href="@Url.Action("Index", "Menu")">@(isVi ? "Món ăn" : "Menu Items")</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link bg-white border text-dark" href="@Url.Action("Index", "Brands")">@(isVi ? "Thương hiệu" : "Brands")</a>
+    </li>
+</ul>
+
+<div class="alert alert-success py-2 px-3 small mb-3">
+    @(isVi
+        ? "Giá và tình trạng mở bán áp dụng cho đơn tạo sau khi cập nhật. Xóa mềm (soft-delete) giữ nguyên lịch sử đơn hàng và báo cáo R1."
+        : "Price and availability changes apply to future orders only. Soft-delete preserves historical OrderLines and R1 revenue reports.")
+</div>
+
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-info py-2 px-3 small mb-3">@TempData["StatusMessage"]</div>
+}
+
+<form method="get" action="@Url.Action("Index", "Menu")" class="card sb-card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">@(isVi ? "Tìm kiếm" : "Search")</label>
+                <input type="text" name="search" value="@Model.Search" class="form-control form-control-sm"
+                       placeholder="@(isVi ? "Tên món hoặc thương hiệu..." : "Dish or brand name...")" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold">@(isVi ? "Thương hiệu" : "Brand")</label>
+                <select name="brandId" class="form-select form-select-sm">
+                    <option value="">@(isVi ? "Tất cả thương hiệu" : "All brands")</option>
+                    @foreach (var b in Model.Brands)
+                    {
+                        <option value="@b.Id" @(Model.BrandId == b.Id ? "selected" : "")>@b.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold">@(isVi ? "Danh mục (R1)" : "Category (R1)")</label>
+                <select name="category" class="form-select form-select-sm">
+                    <option value="">@(isVi ? "Tất cả" : "All")</option>
+                    @foreach (var c in Model.Categories)
+                    {
+                        <option value="@c" @(Model.Category == c ? "selected" : "")>@c</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold">@(isVi ? "Trạng thái" : "Availability")</label>
+                <select name="isAvailable" class="form-select form-select-sm">
+                    <option value="">@(isVi ? "Tất cả" : "All")</option>
+                    <option value="true" @(Model.IsAvailable == true ? "selected" : "")>@(isVi ? "Đang bán" : "Available")</option>
+                    <option value="false" @(Model.IsAvailable == false ? "selected" : "")>@(isVi ? "Tạm ngưng" : "Unavailable")</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex flex-column gap-1">
+                <div class="form-check small">
+                    <input class="form-check-input" type="checkbox" id="includeDeleted" name="includeDeleted" value="true" @(Model.IncludeDeleted ? "checked" : "") />
+                    <label class="form-check-label" for="includeDeleted">@(isVi ? "Hiện đã xóa mềm" : "Show deleted")</label>
+                </div>
+                <button type="submit" class="btn btn-sm btn-outline-danger w-100">@(isVi ? "Lọc" : "Filter")</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="card sb-card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>@(isVi ? "Tên món" : "Item")</th>
+                    <th>@(isVi ? "Thương hiệu" : "Brand")</th>
+                    <th>@(isVi ? "Danh mục" : "Category")</th>
+                    <th class="text-end">@(isVi ? "Giá bán" : "Price")</th>
+                    <th>@(isVi ? "Trạng thái" : "Status")</th>
+                    <th class="text-end">@(isVi ? "Thao tác" : "Actions")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Items.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            @(isVi ? "Không có món ăn nào khớp bộ lọc." : "No menu items match the selected filter.")
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model.Items)
+                    {
+                        <tr class="@(item.IsDeleted ? "table-secondary text-muted" : "")">
+                            <td class="fw-semibold">@item.Name</td>
+                            <td>@(item.Brand != null ? item.Brand.Name : "-")</td>
+                            <td><span class="badge text-bg-light border">@(item.Brand != null ? item.Brand.Category : "-")</span></td>
+                            <td class="text-end fw-semibold">@string.Format("{0:N0} đ", item.Price)</td>
+                            <td>
+                                @if (item.IsDeleted)
+                                {
+                                    <span class="badge text-bg-secondary">@(isVi ? "Đã xóa mềm" : "Soft-deleted")</span>
+                                }
+                                else if (item.IsAvailable)
+                                {
+                                    <span class="badge text-bg-success">@(isVi ? "Đang bán" : "Available")</span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-warning text-dark">@(isVi ? "Tạm ngưng" : "Unavailable")</span>
+                                }
+                            </td>
+                            <td class="text-end text-nowrap">
+                                <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Details", "Menu", new { id = item.Id })">
+                                    @(isVi ? "Chi tiết" : "Details")
+                                </a>
+                                @if (!item.IsDeleted)
+                                {
+                                    <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", "Menu", new { id = item.Id })">
+                                        @(isVi ? "Sửa" : "Edit")
+                                    </a>
+                                    using (Html.BeginForm("ToggleAvailability", "Menu", new { id = item.Id, isAvailable = !item.IsAvailable }, FormMethod.Post, new { @class = "d-inline" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm @(item.IsAvailable ? "btn-outline-warning" : "btn-outline-success")">
+                                            @(item.IsAvailable ? (isVi ? "Tạm ngưng" : "Pause") : (isVi ? "Mở bán" : "Enable"))
+                                        </button>
+                                    }
+                                    using (Html.BeginForm("SoftDelete", "Menu", new { id = item.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Xác nhận ngừng bán (soft-delete) món này? Lịch sử đơn hàng và báo cáo R1 vẫn được giữ nguyên.');" : "return confirm('Confirm soft-delete? Historical orders and R1 revenue remain preserved.');" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            @(isVi ? "Ngừng bán" : "Soft-Delete")
+                                        </button>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

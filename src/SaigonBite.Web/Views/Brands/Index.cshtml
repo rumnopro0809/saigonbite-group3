@@ -1,0 +1,107 @@
+@model SaigonBite.Web.Models.BrandIndexViewModel
+@{
+    bool isVi = Model.Lang == "vi";
+    ViewBag.Title = isVi ? "UC02 · Quản lý thương hiệu" : "UC02 · Manage Brands";
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+        <div class="text-uppercase text-danger fw-bold small">SAIGONBITE / @(isVi ? "VẬN HÀNH · UC02" : "OPERATIONS · UC02")</div>
+        <h1 class="h3 fw-bold mb-1">@(isVi ? "Quản lý thương hiệu ảo" : "Virtual Brand Management")</h1>
+        <p class="text-muted small mb-0">
+            @(isVi ? "Quản lý thương hiệu, danh mục phục vụ báo cáo R1 và liên kết bếp (HubBrands)." : "Manage virtual brands, R1 reporting categories, and serving hub links (HubBrands).")
+        </p>
+    </div>
+    <a class="btn btn-sb-primary btn-sm" href="@Url.Action("Create", "Brands")">
+        + @(isVi ? "Thêm thương hiệu" : "Add Brand")
+    </a>
+</div>
+
+<ul class="nav nav-pills gap-2 mb-3">
+    <li class="nav-item">
+        <a class="nav-link bg-white border text-dark" href="@Url.Action("Index", "Menu")">@(isVi ? "Món ăn" : "Menu Items")</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active bg-danger" href="@Url.Action("Index", "Brands")">@(isVi ? "Thương hiệu" : "Brands")</a>
+    </li>
+</ul>
+
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-info py-2 px-3 small mb-3">@TempData["StatusMessage"]</div>
+}
+
+<div class="mb-3">
+    @if (Model.IncludeDeleted)
+    {
+        <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Index", "Brands", new { includeDeleted = false })">
+            @(isVi ? "Ẩn thương hiệu đã xóa mềm" : "Hide soft-deleted brands")
+        </a>
+    }
+    else
+    {
+        <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Index", "Brands", new { includeDeleted = true })">
+            @(isVi ? "Hiển thị cả thương hiệu đã xóa mềm" : "Show soft-deleted brands")
+        </a>
+    }
+</div>
+
+<div class="card sb-card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>@(isVi ? "Thương hiệu" : "Brand")</th>
+                    <th>@(isVi ? "Danh mục (R1)" : "Category (R1)")</th>
+                    <th class="text-center">@(isVi ? "Số bếp liên kết" : "Linked Hubs")</th>
+                    <th class="text-center">@(isVi ? "Số món" : "Items")</th>
+                    <th>@(isVi ? "Trạng thái" : "Status")</th>
+                    <th class="text-end">@(isVi ? "Thao tác" : "Actions")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var brand in Model.Brands)
+                {
+                    int hubCount = brand.HubBrands != null ? brand.HubBrands.Count : 0;
+                    int itemCount = brand.MenuItems != null ? brand.MenuItems.Count(m => !m.IsDeleted) : 0;
+                    <tr class="@(brand.IsDeleted ? "table-secondary text-muted" : "")">
+                        <td class="fw-semibold">@brand.Name</td>
+                        <td><span class="badge text-bg-light border">@brand.Category</span></td>
+                        <td class="text-center">@hubCount</td>
+                        <td class="text-center">@itemCount</td>
+                        <td>
+                            @if (brand.IsDeleted)
+                            {
+                                <span class="badge text-bg-secondary">@(isVi ? "Đã xóa mềm" : "Soft-deleted")</span>
+                            }
+                            else if (brand.IsActive)
+                            {
+                                <span class="badge text-bg-success">@(isVi ? "Đang hoạt động" : "Active")</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-warning text-dark">@(isVi ? "Tạm ngưng" : "Inactive")</span>
+                            }
+                        </td>
+                        <td class="text-end text-nowrap">
+                            <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Details", "Brands", new { id = brand.Id })">
+                                @(isVi ? "Chi tiết" : "Details")
+                            </a>
+                            @if (!brand.IsDeleted)
+                            {
+                                <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", "Brands", new { id = brand.Id })">
+                                    @(isVi ? "Sửa" : "Edit")
+                                </a>
+                                using (Html.BeginForm("SoftDelete", "Brands", new { id = brand.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Xác nhận ngừng hoạt động (soft-delete) thương hiệu này? Các món thuộc thương hiệu sẽ không đặt mới được, nhưng lịch sử đơn và báo cáo R1 vẫn giữ nguyên.');" : "return confirm('Confirm soft-delete for this brand? Items become ineligible for new orders while history and R1 stay intact.');" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">@(isVi ? "Ngừng hoạt động" : "Soft-Delete")</button>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

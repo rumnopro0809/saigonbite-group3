@@ -1,0 +1,63 @@
+@model SaigonBite.Web.Models.BrandFormViewModel
+@{
+    bool isVi = Model.Lang == "vi";
+    ViewBag.Title = isVi ? "Thêm thương hiệu" : "Create Brand";
+}
+
+<div class="mb-3">
+    <a class="text-decoration-none small" href="@Url.Action("Index", "Brands")">&larr; @(isVi ? "Quay lại danh sách thương hiệu" : "Back to brands")</a>
+    <h1 class="h3 fw-bold mt-1">@(isVi ? "Thêm thương hiệu mới (FR08)" : "Create Virtual Brand (FR08)")</h1>
+</div>
+
+<div class="card sb-card shadow-sm">
+    <div class="card-body">
+        @using (Html.BeginForm("Create", "Brands", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger small" })
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">@(isVi ? "Tên thương hiệu *" : "Brand Name *")</label>
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", maxlength = 120, required = "required" })
+                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">@(isVi ? "Danh mục (R1 Revenue) *" : "Category (R1 Revenue) *")</label>
+                    @Html.TextBoxFor(m => m.Category, new { @class = "form-control", maxlength = 80, required = "required", placeholder = "Vietnamese Rice / Banh Mi / Noodles & Hotpot" })
+                    @Html.ValidationMessageFor(m => m.Category, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">@(isVi ? "Mô tả" : "Description")</label>
+                    @Html.TextAreaFor(m => m.Description, 3, 40, new { @class = "form-control", maxlength = 500 })
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">@(isVi ? "Liên kết bếp vận hành (HubBrands — BR12)" : "Serving Kitchen Hubs (HubBrands — BR12)")</label>
+                    <div class="d-flex flex-wrap gap-3">
+                        @foreach (var hub in Model.AllHubs)
+                        {
+                            bool checkedHub = Model.SelectedHubIds != null && Model.SelectedHubIds.Contains(hub.Id);
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="SelectedHubIds" value="@hub.Id" id="hub_@hub.Id" @(checkedHub ? "checked" : "") />
+                                <label class="form-check-label" for="hub_@hub.Id">@hub.Name (@hub.District)</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-check">
+                        @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input" })
+                        <label class="form-check-label fw-semibold" for="IsActive">
+                            @(isVi ? "Đang hoạt động" : "Active")
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-sb-primary">@(isVi ? "Lưu thương hiệu" : "Save Brand")</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("Index", "Brands")">@(isVi ? "Hủy" : "Cancel")</a>
+            </div>
+        }
+    </div>
+</div>
