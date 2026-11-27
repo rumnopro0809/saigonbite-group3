@@ -41,7 +41,9 @@
     <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthServiceTests.cs" />
     <Compile Include="DatabaseSeedTests.cs" />
+    <Compile Include="MenuServiceTests.cs" />
     <Compile Include="OrderEditTests.cs" />
     <Compile Include="OrderServiceTests.cs" />
     <Compile Include="OrderTransitionTests.cs" />
@@ -50,6 +52,8 @@
     <Compile Include="PricingBoundaryTests.cs" />
     <Compile Include="PricingSmokeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RevenueReportServiceTests.cs" />
+    <Compile Include="VoucherServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

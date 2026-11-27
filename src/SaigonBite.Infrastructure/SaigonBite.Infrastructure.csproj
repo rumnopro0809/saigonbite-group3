@@ -49,6 +49,10 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\EfMenuRepository.cs" />
+    <Compile Include="Repositories\EfRevenueReportRepository.cs" />
+    <Compile Include="Repositories\EfUserRepository.cs" />
+    <Compile Include="Repositories\EfVoucherRepository.cs" />
     <Compile Include="Security\PasswordHasher.cs" />
     <Compile Include="Services\OrderService.cs" />
     <Compile Include="Services\OrderTransitionService.cs" />

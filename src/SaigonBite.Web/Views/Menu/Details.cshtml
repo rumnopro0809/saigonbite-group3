@@ -1,0 +1,68 @@
+@model SaigonBite.Domain.Entities.MenuItem
+@{
+    bool isVi = (ViewData["Lang"] as string) != "en";
+    ViewBag.Title = Model.Name;
+}
+
+<div class="mb-3">
+    <a class="text-decoration-none small" href="@Url.Action("Index", "Menu")">&larr; @(isVi ? "Quay lại danh sách món" : "Back to menu list")</a>
+    <h1 class="h3 fw-bold mt-1">@Model.Name</h1>
+</div>
+
+<div class="card sb-card shadow-sm">
+    <div class="card-body">
+        <div class="row g-4 align-items-start">
+            <div class="col-md-4">
+                <img src="@Url.Content("~" + (string.IsNullOrWhiteSpace(Model.ImageUrl) ? "/Content/images/hero.jpg" : Model.ImageUrl))"
+                     alt="@Model.Name"
+                     class="img-fluid rounded-3 border w-100"
+                     style="max-height: 240px; object-fit: cover;" />
+            </div>
+            <div class="col-md-8">
+                <dl class="row mb-3">
+                    <dt class="col-sm-4">@(isVi ? "Thương hiệu" : "Brand")</dt>
+                    <dd class="col-sm-8">@(Model.Brand != null ? Model.Brand.Name : "-")</dd>
+
+                    <dt class="col-sm-4">@(isVi ? "Danh mục (R1)" : "Brand Category (R1)")</dt>
+                    <dd class="col-sm-8">@(Model.Brand != null ? Model.Brand.Category : "-")</dd>
+
+                    <dt class="col-sm-4">@(isVi ? "Đơn giá hiện hành" : "Current Unit Price")</dt>
+                    <dd class="col-sm-8 fw-bold text-danger">@string.Format("{0:N0} đ", Model.Price)</dd>
+
+                    <dt class="col-sm-4">@(isVi ? "Trạng thái" : "Status")</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsDeleted)
+                        {
+                            <span class="badge text-bg-secondary">@(isVi ? "Đã xóa mềm (Soft-deleted)" : "Soft-deleted")</span>
+                        }
+                        else if (Model.IsAvailable)
+                        {
+                            <span class="badge text-bg-success">@(isVi ? "Đang mở bán (Available)" : "Available")</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-warning text-dark">@(isVi ? "Tạm ngưng (Unavailable)" : "Unavailable")</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">@(isVi ? "Mô tả" : "Description")</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.Description) ? "-" : Model.Description)</dd>
+                </dl>
+
+                @if (!Model.IsDeleted)
+                {
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-sb-primary btn-sm" href="@Url.Action("Edit", "Menu", new { id = Model.Id })">
+                            @(isVi ? "Chỉnh sửa món" : "Edit Item")
+                        </a>
+                        @using (Html.BeginForm("SoftDelete", "Menu", new { id = Model.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Xác nhận ngừng bán (soft-delete) món này?');" : "return confirm('Confirm soft-delete for this item?');" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-outline-danger btn-sm">@(isVi ? "Ngừng bán (Soft-Delete)" : "Soft-Delete")</button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,73 @@
+@model SaigonBite.Web.Models.MenuItemFormViewModel
+@{
+    bool isVi = Model.Lang == "vi";
+    ViewBag.Title = isVi ? "Chỉnh sửa món" : "Edit Menu Item";
+}
+
+<div class="mb-3">
+    <a class="text-decoration-none small" href="@Url.Action("Index", "Menu")">&larr; @(isVi ? "Quay lại danh sách món" : "Back to menu list")</a>
+    <h1 class="h3 fw-bold mt-1">@(isVi ? "Chỉnh sửa món ăn (FR10)" : "Edit Menu Item (FR10)")</h1>
+</div>
+
+<div class="alert alert-warning py-2 px-3 small mb-3">
+    @(isVi
+        ? "Lưu ý BR17: Thay đổi đơn giá và trạng thái mở bán chỉ áp dụng cho các đơn đặt mới; các OrderLine đã lưu trước đó giữ nguyên giá snapshot."
+        : "BR17 Notice: Price and availability updates apply only to future orders; existing OrderLine price snapshots remain unchanged.")
+</div>
+
+<div class="card sb-card shadow-sm">
+    <div class="card-body">
+        @using (Html.BeginForm("Edit", "Menu", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Id)
+            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger small" })
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">@(isVi ? "Thương hiệu *" : "Brand *")</label>
+                    <select name="BrandId" class="form-select" required>
+                        @foreach (var b in Model.Brands)
+                        {
+                            <option value="@b.Id" @(Model.BrandId == b.Id ? "selected" : "")>@b.Name (@b.Category)</option>
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(m => m.BrandId, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">@(isVi ? "Tên món *" : "Menu Item Name *")</label>
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", maxlength = 120, required = "required" })
+                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">@(isVi ? "Đơn giá (VND) *" : "Unit Price (VND) *")</label>
+                    @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", min = "0", step = "1000", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold">@(isVi ? "Đường dẫn hình ảnh" : "Image URL")</label>
+                    @Html.TextBoxFor(m => m.ImageUrl, new { @class = "form-control", maxlength = 500 })
+                    @Html.ValidationMessageFor(m => m.ImageUrl, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">@(isVi ? "Mô tả món" : "Description")</label>
+                    @Html.TextAreaFor(m => m.Description, 3, 40, new { @class = "form-control", maxlength = 500 })
+                    @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-12">
+                    <div class="form-check">
+                        @Html.CheckBoxFor(m => m.IsAvailable, new { @class = "form-check-input" })
+                        <label class="form-check-label fw-semibold" for="IsAvailable">
+                            @(isVi ? "Đang mở bán (Available — BR12)" : "Available for new orders (BR12)")
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-sb-primary">@(isVi ? "Lưu thay đổi" : "Save Changes")</button>
+                <a class="btn btn-outline-secondary" href="@Url.Action("Index", "Menu")">@(isVi ? "Hủy" : "Cancel")</a>
+            </div>
+        }
+    </div>
+</div>
