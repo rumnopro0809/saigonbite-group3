@@ -1,0 +1,47 @@
+@model HubFormVm
+@using SaigonBite.Application.Hubs
+@using SaigonBite.Web.ViewModels
+@{ bool en = HubText.IsEnglish(Request); }
+
+@* Chỉ hiện khung lỗi chung khi thật sự có lỗi cấp form (ví dụ xung đột rowversion), tránh khung đỏ rỗng. *@
+@if (ViewData.ModelState.ContainsKey("") && ViewData.ModelState[""].Errors.Count > 0)
+{
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+}
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.RowVersion)
+
+<div class="mb-3">
+    <label class="form-label" for="Name">@(en ? "Hub name" : "Tên bếp")</label>
+    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", maxlength = 100 })
+    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+</div>
+<div class="mb-3">
+    <label class="form-label" for="Location">@(en ? "Address" : "Địa chỉ")</label>
+    @Html.TextBoxFor(m => m.Location, new { @class = "form-control", maxlength = 200 })
+    @Html.ValidationMessageFor(m => m.Location, "", new { @class = "text-danger" })
+</div>
+<div class="mb-3">
+    <label class="form-label" for="District">@(en ? "District" : "Quận")</label>
+    @Html.TextBoxFor(m => m.District, new { @class = "form-control", maxlength = 80 })
+    @Html.ValidationMessageFor(m => m.District, "", new { @class = "text-danger" })
+</div>
+<div class="mb-3">
+    <label class="form-label" for="Capacity">@(en ? "Capacity (maximum simultaneous orders)" : "Công suất (số đơn tối đa cùng lúc)")</label>
+    @Html.TextBoxFor(m => m.Capacity, new { @class = "form-control", type = "number", min = 1, step = 1 })
+    @Html.ValidationMessageFor(m => m.Capacity, "", new { @class = "text-danger" })
+</div>
+<div class="mb-3">
+    <label class="form-label">@(en ? "Brands served" : "Brand phục vụ")</label>
+    <div>
+        @foreach (var brand in Model.AllBrands)
+        {
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="brand-@brand.Id" name="SelectedBrandIds" value="@brand.Id"
+                       checked="@(Model.SelectedBrandIds.Contains(brand.Id) ? "checked" : null)" />
+                <label class="form-check-label" for="brand-@brand.Id">@brand.Name</label>
+            </div>
+        }
+    </div>
+    @Html.ValidationMessageFor(m => m.SelectedBrandIds, "", new { @class = "text-danger" })
+</div>

@@ -31,6 +31,10 @@ namespace SaigonBite.Domain.Entities
 
         public bool IsDeleted { get; set; } = false;
 
+        /// <summary>UC03 (FR14.3): optimistic concurrency token for hub edits.</summary>
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
+
         public virtual ICollection<HubBrand> HubBrands { get; set; }
         public virtual ICollection<StaffProfile> StaffProfiles { get; set; }
     }

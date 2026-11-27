@@ -1,0 +1,68 @@
+@model DispatchViewModel
+@using SaigonBite.Application.Hubs
+@using SaigonBite.Web.ViewModels
+@{
+    bool en = HubText.IsEnglish(Request);
+    ViewBag.Title = en ? "Assign shippers" : "Gán shipper";
+    ViewBag.ActiveTab = "dispatch";
+    string ok = TempData["DispatchOk"] as string;
+    string error = TempData["DispatchError"] as string;
+}
+<link href="@Url.Content("~/Content/uc03.css")" rel="stylesheet" />
+<div class="sb-eyebrow">@(en ? "SAIGONBITE / OPERATIONS" : "SAIGONBITE / VẬN HÀNH")</div>
+<h1 class="sb-h1">@(en ? "Assign shippers" : "Gán shipper")</h1>
+<p class="sb-sub">@(en ? "Only orders that are Ready can be assigned. The shipper then sees the order on their own page." : "Chỉ gán được đơn đã sẵn sàng giao. Shipper sẽ thấy đơn ở trang của mình.")</p>
+
+@if (ok != null) { <div class="alert alert-success py-2" role="status">@ok</div> }
+@if (error != null) { <div class="alert alert-danger py-2" role="alert">@error</div> }
+
+@if (Model.Orders.Count == 0)
+{
+    <div class="sb-card">@(en ? "No order is waiting for a shipper." : "Chưa có đơn nào chờ gán shipper.")</div>
+}
+else if (Model.Shippers.Count == 0)
+{
+    <div class="alert alert-warning py-2">@(en ? "There is no active shipper account." : "Chưa có tài khoản shipper đang hoạt động.")</div>
+}
+else
+{
+    <div class="sb-card">
+        <table class="table sb-table mb-0">
+            <thead>
+                <tr>
+                    <th>@(en ? "ORDER" : "ĐƠN")</th>
+                    <th>@(en ? "HUB" : "BẾP")</th>
+                    <th>@(en ? "ADDRESS" : "ĐỊA CHỈ")</th>
+                    <th>@(en ? "PAYMENT" : "THANH TOÁN")</th>
+                    <th>@(en ? "SHIPPER" : "SHIPPER")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    <tr data-order="@order.OrderCode">
+                        <td>@order.OrderCode</td>
+                        <td>@order.HubName</td>
+                        <td>@order.DeliveryAddress</td>
+                        <td>@order.PaymentMethod · @order.PayableTotal.ToString("N0") ₫</td>
+                        <td>
+                            @using (Html.BeginForm("Assign", "Dispatch", FormMethod.Post, new { @class = "d-flex gap-2 m-0" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                <input type="hidden" name="rowVersion" value="@order.RowVersion" />
+                                <select name="shipperId" class="form-select form-select-sm" aria-label="@(en ? "Shipper" : "Shipper")">
+                                    @foreach (var shipper in Model.Shippers)
+                                    {
+                                        <option value="@shipper.UserId" selected="@(order.ShipperId == shipper.UserId)">@shipper.FullName (@shipper.Identifier)</option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-sm sb-btn-primary">@(order.ShipperId.HasValue ? (en ? "Reassign" : "Đổi") : (en ? "Assign" : "Gán"))</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

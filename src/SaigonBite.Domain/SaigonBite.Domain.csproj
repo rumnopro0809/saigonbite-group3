@@ -51,6 +51,7 @@
     <Compile Include="Entities\TouristProfile.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Entities\Voucher.cs" />
+    <Compile Include="HubLoad.cs" />
     <Compile Include="OrderLifecycle.cs" />
     <Compile Include="Pricing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

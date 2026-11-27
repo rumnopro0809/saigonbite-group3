@@ -43,6 +43,12 @@
   <ItemGroup>
     <Compile Include="AuthServiceTests.cs" />
     <Compile Include="DatabaseSeedTests.cs" />
+    <Compile Include="HubReportServiceTests.cs" />
+    <Compile Include="HubServiceTests.cs" />
+    <Compile Include="KitchenBoardServiceTests.cs" />
+    <Compile Include="RainSettingServiceTests.cs" />
+    <Compile Include="ShipperServiceTests.cs" />
+    <Compile Include="Uc03TestData.cs" />
     <Compile Include="MenuServiceTests.cs" />
     <Compile Include="OrderEditTests.cs" />
     <Compile Include="OrderServiceTests.cs" />

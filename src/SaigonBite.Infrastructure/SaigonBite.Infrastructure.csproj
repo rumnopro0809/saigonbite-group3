@@ -47,6 +47,10 @@
     <Compile Include="Migrations\202611240719260_InitialCreate.Designer.cs">
       <DependentUpon>202611240719260_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202611271138173_Uc03HubRowVersion.cs" />
+    <Compile Include="Migrations\202611271138173_Uc03HubRowVersion.Designer.cs">
+      <DependentUpon>202611271138173_Uc03HubRowVersion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\EfMenuRepository.cs" />
@@ -56,10 +60,19 @@
     <Compile Include="Security\PasswordHasher.cs" />
     <Compile Include="Services\OrderService.cs" />
     <Compile Include="Services\OrderTransitionService.cs" />
+    <Compile Include="Services\HubLoadService.cs" />
+    <Compile Include="Services\HubReportService.cs" />
+    <Compile Include="Services\HubService.cs" />
+    <Compile Include="Services\KitchenBoardService.cs" />
+    <Compile Include="Services\RainSettingService.cs" />
+    <Compile Include="Services\ShipperService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202611240719260_InitialCreate.resx">
       <DependentUpon>202611240719260_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202611271138173_Uc03HubRowVersion.resx">
+      <DependentUpon>202611271138173_Uc03HubRowVersion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

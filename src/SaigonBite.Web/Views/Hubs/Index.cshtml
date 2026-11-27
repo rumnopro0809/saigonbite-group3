@@ -1,0 +1,64 @@
+@model HubIndexVm
+@using SaigonBite.Application.Hubs
+@using SaigonBite.Web.ViewModels
+@{
+    bool en = HubText.IsEnglish(Request);
+    ViewBag.Title = en ? "Hubs and capacity" : "Quản lý bếp và công suất";
+    ViewBag.ActiveTab = "hubs";
+}
+<link href="@Url.Content("~/Content/uc03.css")" rel="stylesheet" />
+
+<div class="sb-eyebrow">@(en ? "SAIGONBITE / OPERATIONS" : "SAIGONBITE / VẬN HÀNH")</div>
+<h1 class="sb-h1">@(en ? "Hubs and capacity" : "Quản lý bếp và công suất")</h1>
+<p class="sb-sub">@(en ? "Monitor capacity and load to control which kitchens accept orders." : "Theo dõi công suất và tải để điều phối việc nhận đơn.")</p>
+
+<div class="sb-toolbar">
+    @* Nút cờ mưa gửi POST /Hubs/SetRain (xem Scripts/uc03.js). *@
+    @Html.AntiForgeryToken()
+    <button type="button" id="rain-toggle" class="btn sb-btn-outline"
+            data-url="@Url.Action("SetRain", "Hubs")"
+            data-on="@(Model.Rain.IsHeavyRainOn ? "true" : "false")"
+            data-rowversion="@Model.Rain.RowVersion">
+        @(en ? "Heavy rain" : "Có mưa lớn") · <span id="rain-state">@(Model.Rain.IsHeavyRainOn ? (en ? "On" : "Đang bật") : (en ? "Off" : "Đang tắt"))</span>
+    </button>
+    <a class="btn sb-btn-primary" href="@Url.Action("Create", "Hubs")">@(en ? "Add hub +" : "Thêm bếp +")</a>
+</div>
+
+<div class="sb-note">@(en ? "Hub load = Confirmed and Preparing orders ÷ capacity. A hub at 90% load or more pauses new orders." : "Tải bếp = đơn Confirmed và Preparing ÷ công suất. Bếp từ 90% tải trở lên tạm ngừng nhận đơn mới.")</div>
+<div id="sb-flash" role="status"></div>
+
+<div class="sb-card">
+    <table class="table sb-table align-middle mb-0">
+        <thead>
+            <tr>
+                <th>@(en ? "Hub" : "Bếp")</th>
+                <th>@(en ? "In progress" : "Đang xử lý")</th>
+                <th>@(en ? "Capacity" : "Công suất")</th>
+                <th>@(en ? "Current load" : "Tải hiện tại")</th>
+                <th>@(en ? "Status" : "Trạng thái")</th>
+                <th>@(en ? "Actions" : "Thao tác")</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var hub in Model.Hubs)
+            {
+                <tr>
+                    <td><strong>@hub.Name</strong><div class="sb-muted">@hub.Location · @hub.District</div></td>
+                    <td>@hub.ActiveOrders @(en ? "orders" : "đơn")</td>
+                    <td>@hub.Capacity @(en ? "orders" : "đơn")</td>
+                    <td>@hub.LoadPercent%</td>
+                    <td><span class="@HubDisplay.StatusCss(hub)">@HubDisplay.StatusText(hub, en)</span></td>
+                    <td><a class="btn sb-btn-outline btn-sm" href="@Url.Action("Details", "Hubs", new { id = hub.Id })">@(en ? "View details" : "Xem chi tiết")</a></td>
+                </tr>
+            }
+            @if (Model.Hubs.Count == 0)
+            {
+                <tr><td colspan="6" class="text-center sb-muted py-4">@(en ? "No hubs yet. Select \"Add hub\"." : "Chưa có bếp nào. Hãy bấm \"Thêm bếp\".")</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script src="@Url.Content("~/Scripts/uc03.js")"></script>
+}

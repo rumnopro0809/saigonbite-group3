@@ -1,0 +1,11 @@
+@model SaigonBite.Web.ViewModels.KitchenButtonModel
+@using SaigonBite.Application.Hubs
+@using SaigonBite.Web.ViewModels
+@using (Html.BeginForm("Act", "Kitchen", FormMethod.Post, new { @class = "m-0" }))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="orderId" value="@Model.Order.OrderId" />
+    <input type="hidden" name="action" value="@Model.Action" />
+    <input type="hidden" name="rowVersion" value="@Model.Order.RowVersion" />
+    <button type="submit" class="btn btn-sm @(Model.Primary ? "sb-btn-primary" : "sb-btn-outline")">@Model.Label</button>
+}

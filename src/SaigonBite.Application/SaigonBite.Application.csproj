@@ -38,6 +38,10 @@
   <ItemGroup>
     <Compile Include="Auth\AuthService.cs" />
     <Compile Include="Auth\IUserRepository.cs" />
+    <Compile Include="Hubs\HubModels.cs" />
+    <Compile Include="Hubs\HubReportModels.cs" />
+    <Compile Include="Hubs\HubValidator.cs" />
+    <Compile Include="Hubs\ServiceResult.cs" />
     <Compile Include="Menu\IMenuRepository.cs" />
     <Compile Include="Menu\MenuDtos.cs" />
     <Compile Include="Menu\MenuService.cs" />
