@@ -34,4 +34,4 @@ The current codebase is structurally prepared to absorb the Week 5 Change Reques
 | :--- | :--- | :--- | :--- |
 | `feat/uc01-orders` | Nguyễn Hải Triều (`524H0072`) | `b4a7fa2` (`main`) | Ready to merge cleanly into `main` (64/64 MSTest + 53/53 domain checks passing). |
 | `feature/uc02-menu` | Dương Phạm Thái (`524H0189`) | `b4a7fa2` (`main`) | Built directly on `main` (`SaigonBiteDbContext`, `Session["CurrentUserId"]`); expected clean merge with minor `_Layout.cshtml` / `.csproj` reconciliation. |
-| `feature/uc03-ui` | Lê Quang Tấn (`524H0188`) | `df3021d` (pre-scaffold) | Branched before `8044f69`/`b4a7fa2` and introduced a separate `AppDbContext` + `InitialUc03` migration. Requires planned team reconciliation onto the unified `SaigonBiteDbContext` schema before tagging `v1.0-part3`. |
+| `feature/uc03-on-main` | Lê Quang Tấn (`524H0188`) | `a33faac` (`main`) | Ported from the earlier `feature/uc03-ui` scaffold onto `SaigonBiteDbContext` and merged into `main` via PR #3 (28 Nov update). UC03 design decisions: `docs/part3/uc03-design-justification.md`. |
