@@ -91,18 +91,42 @@
                     <li class="nav-item">
                         <a class="nav-link fw-semibold" href="@Url.Action("Users", "Account")">@(isVi ? "Tài khoản" : "Users")</a>
                     </li>
-                </ul>
-                <div class="d-flex align-items-center gap-2">
-                    <a class="btn btn-sm btn-outline-danger" href="@Url.Action("Login", "Account")">
-                        @(isVi ? "Đăng nhập" : "Sign In")
-                    </a>
+                    <li class="nav-item">
                         <a class="nav-link fw-semibold" href="@Url.Action("Create", "Orders")">@(isVi ? "Đặt món" : "Place Order")</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link fw-semibold" href="@Url.Action("Index", "Orders")">@(isVi ? "Đơn hàng" : "My Orders")</a>
                     </li>
+                    @* UC03 / HT03: chỉ hiện cho đúng vai trò của tài khoản đang đăng nhập. *@
+                    @if (currentUser != null && currentUser.Role == SaigonBite.Domain.ActorRole.Admin)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="@Url.Action("Index", "Hubs")">@(isVi ? "UC03 · Bếp" : "UC03 · Hubs")</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="@Url.Action("HubUtilization", "HubReports")">@(isVi ? "R2 · Hiệu suất bếp" : "R2 · Hub utilization")</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="@Url.Action("Index", "Dispatch")">@(isVi ? "Gán shipper" : "Dispatch")</a>
+                        </li>
+                    }
+                    @if (currentUser != null && currentUser.Role == SaigonBite.Domain.ActorRole.KitchenStaff)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="@Url.Action("Index", "Kitchen")">@(isVi ? "Bảng đơn bếp" : "Kitchen board")</a>
+                        </li>
+                    }
+                    @if (currentUser != null && currentUser.Role == SaigonBite.Domain.ActorRole.Shipper)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="@Url.Action("Index", "Shipper")">@(isVi ? "Đơn cần giao" : "My deliveries")</a>
+                        </li>
+                    }
                 </ul>
                 <div class="d-flex align-items-center flex-wrap gap-2">
+                    <a class="btn btn-sm btn-outline-danger" href="@Url.Action("Login", "Account")">
+                        @(isVi ? "Đăng nhập" : "Sign In")
+                    </a>
                     @using (Html.BeginForm("SwitchDemoUser", "Home", FormMethod.Post, new { @class = "d-flex align-items-center gap-2" }))
                     {
                         @Html.AntiForgeryToken()
