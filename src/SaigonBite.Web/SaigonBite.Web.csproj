@@ -98,6 +98,9 @@
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
     <Content Include="Views\Web.config" />
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
