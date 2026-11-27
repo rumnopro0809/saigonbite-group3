@@ -12,7 +12,7 @@
             @(isVi ? "Tối đa 1 voucher hợp lệ mỗi đơn; giảm theo % tính trên (S - Q) có trần Cap, hoặc giảm cố định (BR9)." : "At most one active voucher per order; PERCENT applies to (S - Q) with cap, FIXED is bounded by (S - Q) (BR9).")
         </p>
     </div>
-    <a class="btn btn-sb-primary btn-sm" href="@Url.Action("Create", "Vouchers")">
+    <a class="btn btn-sb-primary sb-act" href="@Url.Action("Create", "Vouchers")">
         + @(isVi ? "Thêm voucher" : "Add Voucher")
     </a>
 </div>
@@ -23,7 +23,7 @@
 }
 
 <div class="mb-3">
-    <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Index", "Vouchers", new { includeDeleted = !Model.IncludeDeleted })">
+    <a class="btn btn-outline-secondary sb-act" href="@Url.Action("Index", "Vouchers", new { includeDeleted = !Model.IncludeDeleted })">
         @(Model.IncludeDeleted ? (isVi ? "Ẩn voucher đã xóa mềm" : "Hide soft-deleted") : (isVi ? "Hiện cả voucher đã xóa mềm" : "Show soft-deleted"))
     </a>
 </div>
@@ -71,16 +71,18 @@
                                 <span class="badge text-bg-warning text-dark">@(isVi ? "Tạm tắt" : "Inactive")</span>
                             }
                         </td>
-                        <td class="text-end text-nowrap">
-                            @if (!v.IsDeleted)
-                            {
-                                <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", "Vouchers", new { id = v.Id })">@(isVi ? "Sửa" : "Edit")</a>
-                                using (Html.BeginForm("SoftDelete", "Vouchers", new { id = v.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Ngưng hiệu lực (soft-delete) voucher này?');" : "return confirm('Soft-delete this voucher?');" }))
+                        <td class="text-end sb-col-actions">
+                            <div class="sb-actions">
+                                @if (!v.IsDeleted)
                                 {
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">@(isVi ? "Ngưng" : "Deactivate")</button>
+                                    <a class="btn btn-outline-primary sb-act" href="@Url.Action("Edit", "Vouchers", new { id = v.Id })">@(isVi ? "Sửa" : "Edit")</a>
+                                    using (Html.BeginForm("SoftDelete", "Vouchers", new { id = v.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Ngưng hiệu lực (soft-delete) voucher này?');" : "return confirm('Soft-delete this voucher?');" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger sb-act">@(isVi ? "Xóa mềm" : "Soft-delete")</button>
+                                    }
                                 }
-                            }
+                            </div>
                         </td>
                     </tr>
                 }

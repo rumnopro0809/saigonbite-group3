@@ -52,13 +52,13 @@
                 @if (!Model.IsDeleted)
                 {
                     <div class="d-flex gap-2">
-                        <a class="btn btn-sb-primary btn-sm" href="@Url.Action("Edit", "Menu", new { id = Model.Id })">
+                        <a class="btn btn-sb-primary sb-act" href="@Url.Action("Edit", "Menu", new { id = Model.Id })">
                             @(isVi ? "Chỉnh sửa món" : "Edit Item")
                         </a>
                         @using (Html.BeginForm("SoftDelete", "Menu", new { id = Model.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = isVi ? "return confirm('Xác nhận ngừng bán (soft-delete) món này?');" : "return confirm('Confirm soft-delete for this item?');" }))
                         {
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-outline-danger btn-sm">@(isVi ? "Ngừng bán (Soft-Delete)" : "Soft-Delete")</button>
+                            <button type="submit" class="btn btn-outline-danger sb-act">@(isVi ? "Ngừng bán (Soft-Delete)" : "Soft-Delete")</button>
                         }
                     </div>
                 }
